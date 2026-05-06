@@ -7,8 +7,8 @@ import Footer from '@/components/layout/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Mzinyathi Gardens | Gated Community Living',
-  description: 'Discover secure, sustainable, and community-driven living in South Africa.',
+  title: 'Mzinyathi Gardens | Gated Community Real Estate',
+  description: 'The Cradle of Ubuntu Lokubambana – SIYAKWAMUKELA EKHAYA. Affordable housing, infrastructure development, and sustainable living.',
 };
 
 export default function RootLayout({
@@ -18,9 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <Navbar />
-        <main className="min-h-screen">{children}</main>
+        <main className="flex-grow">{children}</main>
         <Footer />
       </body>
     </html>
