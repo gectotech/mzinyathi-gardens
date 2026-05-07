@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink } from 'lucide-react';
 
-// List of background images – adjust extensions if needed (e.g., .png)
+// Rotating background images – exact names as in public folder
 const backgroundImages = [
-  '/logo.jpg',          // logo
-  '/hero1.jpg',         // hero 1
-  '/house-i-1.jpg',     // house i 1
-  '/he3.jpg',           // he3
-  '/he2.jpg',           // he2
-  '/phase-icon7.jpg',   // phase icon7
-  '/phase1.jpg',        // phase1
+  '/logo.png',          // logo (PNG)
+  '/hero1.jpg',
+  '/house i 1.jpg',     // space between "house", "i", "1"
+  '/he3.jpg',
+  '/hero2.jpg',
+  '/phase icon3.jpg',
+  '/phase icon7.jpg',
+  '/phase icon11.jpg',
 ];
 
 export default function ContactPage() {
@@ -31,6 +32,9 @@ export default function ContactPage() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  // Helper to encode spaces and special characters in URLs
+  const encodeImageUrl = (url: string) => encodeURI(url);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,12 +65,12 @@ export default function ContactPage() {
             key={idx}
             className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
             style={{
-              backgroundImage: `url(${img})`,
+              backgroundImage: `url(${encodeImageUrl(img)})`,
               opacity: idx === currentIndex ? 1 : 0,
             }}
           />
         ))}
-        {/* Dark overlay for readability */}
+        {/* Dark overlay for text readability */}
         <div className="absolute inset-0 bg-blue-900/60" />
         <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white z-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
@@ -76,7 +80,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Rest of the contact page content */}
+      {/* Rest of the contact page (unchanged) */}
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12">
           {/* LEFT COLUMN – Contact Information */}
