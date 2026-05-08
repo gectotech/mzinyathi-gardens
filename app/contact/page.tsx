@@ -3,16 +3,14 @@
 import { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink } from 'lucide-react';
 
-// Rotating background images – exact names as in public folder
+// Six images for rotating hero background – every 2 seconds
 const backgroundImages = [
-  '/logo.png',          // logo (PNG)
-  '/hero1.jpg',
-  '/house i 1.jpg',     // space between "house", "i", "1"
+  '/logo.png',               // logo (PNG)
   '/he3.jpg',
   '/hero2.jpg',
-  '/phase icon3.jpg',
-  '/phase icon7.jpg',
-  '/phase icon11.jpg',
+  '/hero1.jpg',
+  '/hero3.jpg',
+  '/hero complete2.jpg',     // note space in filename
 ];
 
 export default function ContactPage() {
@@ -25,15 +23,15 @@ export default function ContactPage() {
   });
   const [loading, setLoading] = useState(false);
 
-  // Rotate background every 5 seconds
+  // Rotate background every 2 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % backgroundImages.length);
-    }, 5000);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  // Helper to encode spaces and special characters in URLs
+  // Helper to encode spaces in URLs
   const encodeImageUrl = (url: string) => encodeURI(url);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -58,7 +56,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with rotating background */}
+      {/* Hero Section with rotating background (6 images, 2s interval) */}
       <div className="relative h-[400px] md:h-[500px] overflow-hidden">
         {backgroundImages.map((img, idx) => (
           <div
@@ -80,7 +78,7 @@ export default function ContactPage() {
         </div>
       </div>
 
-      {/* Rest of the contact page (unchanged) */}
+      {/* Rest of the contact page – unchanged */}
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12">
           {/* LEFT COLUMN – Contact Information */}
