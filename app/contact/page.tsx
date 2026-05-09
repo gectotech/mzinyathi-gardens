@@ -3,14 +3,11 @@
 import { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink } from 'lucide-react';
 
-// Six images for rotating hero background – every 2 seconds
+// Three images for rotating hero background – change every 2 seconds
 const backgroundImages = [
-  '/logo.png',               // logo (PNG)
-  '/he3.jpg',
-  '/hero2.jpg',
   '/hero1.jpg',
-  '/hero3.jpg',
-  '/hero complete2.jpg',     // note space in filename
+  '/he10.jpg',
+  '/hero12.jpg',
 ];
 
 export default function ContactPage() {
@@ -30,9 +27,6 @@ export default function ContactPage() {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
-
-  // Helper to encode spaces in URLs
-  const encodeImageUrl = (url: string) => encodeURI(url);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,14 +50,14 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section with rotating background (6 images, 2s interval) */}
+      {/* Hero Section with rotating background (3 images, 2s interval) */}
       <div className="relative h-[400px] md:h-[500px] overflow-hidden">
         {backgroundImages.map((img, idx) => (
           <div
             key={idx}
             className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
             style={{
-              backgroundImage: `url(${encodeImageUrl(img)})`,
+              backgroundImage: `url(${img})`,
               opacity: idx === currentIndex ? 1 : 0,
             }}
           />
