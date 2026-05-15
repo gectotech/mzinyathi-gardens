@@ -1,9 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink } from 'lucide-react';
 
+// Three images for rotating hero background – change every 2 seconds
+const backgroundImages = [
+  '/hero1.jpg',
+  '/he10.jpg',
+  '/hero12.jpg',
+];
+
 export default function ContactPage() {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +19,14 @@ export default function ContactPage() {
     message: '',
   });
   const [loading, setLoading] = useState(false);
+
+  // Rotate background every 2 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % backgroundImages.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +50,21 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div
-        className="relative h-[300px] md:h-[400px] bg-cover bg-center"
-        style={{ backgroundImage: "url('/he1.jpg')" }}
-      >
-        <div className="absolute inset-0 bg-blue-900/70" />
-        <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
+      {/* Hero Section with rotating background (3 images, 2s interval) */}
+      <div className="relative h-[400px] md:h-[500px] overflow-hidden">
+        {backgroundImages.map((img, idx) => (
+          <div
+            key={idx}
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{
+              backgroundImage: `url(${img})`,
+              opacity: idx === currentIndex ? 1 : 0,
+            }}
+          />
+        ))}
+        {/* Dark overlay for text readability */}
+        <div className="absolute inset-0 bg-blue-900/60" />
+        <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white z-10">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
           <p className="text-lg md:text-xl max-w-2xl">
             Get in touch with Mzinyathi Gardens – your dream home awaits.
@@ -48,9 +72,10 @@ export default function ContactPage() {
         </div>
       </div>
 
+      {/* Rest of the contact page – unchanged */}
       <div className="container mx-auto px-4 py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12">
-          {/* LEFT COLUMN */}
+          {/* LEFT COLUMN – Contact Information */}
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl md:text-3xl font-bold text-blue-800 mb-4">Get in Touch</h2>
@@ -164,7 +189,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Social Links – using text instead of missing icons */}
+            {/* Social Links */}
             <div>
               <h3 className="text-xl font-semibold text-blue-800 mb-3">Follow Us</h3>
               <div className="flex gap-4">
