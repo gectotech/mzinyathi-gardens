@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Search, ArrowRight, Shield, Sun, Droplets, Road, TreePine, Construction, Home } from 'lucide-react';
 import { allPhases, phasesData } from '../../lib/housesData';
 
-// Hero images for carousel - using local images
+// Hero images for carousel
 const heroImages = [
   '/images/hero1.jpg',
   '/images/hero2.jpg',
@@ -54,8 +54,8 @@ export default function PropertiesPage() {
 
   return (
     <div className="bg-white min-h-screen">
-      {/* Hero Carousel */}
-      <div className="relative min-h-[60vh] md:min-h-[70vh] lg:min-h-[80vh] w-full">
+      {/* Hero Carousel - Full Screen Centered Text */}
+      <div className="relative h-screen w-full">
         {heroImages.map((img, idx) => (
           <div
             key={idx}
@@ -63,7 +63,7 @@ export default function PropertiesPage() {
               idx === currentHero ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-red-900/70 z-10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-red-900/60 z-10" />
             <img
               src={img}
               alt={`Hero ${idx + 1}`}
@@ -71,20 +71,23 @@ export default function PropertiesPage() {
             />
           </div>
         ))}
-        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 max-w-5xl mx-auto">
-            Modern Houses - Mzinyathi Gardens - Esigodlweni samatebele
-          </h1>
-          <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-yellow-300 mb-2">
-            The Matebele Legacy
-          </p>
-          <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-white/90">
-            Discover secure, modern living in our gated community. 
-            Stands available across 12 unique phases.
-          </p>
+        {/* Centered Content - Exactly in the middle */}
+        <div className="relative z-20 container mx-auto px-4 h-full flex items-center justify-center">
+          <div className="text-center text-white max-w-4xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
+              Modern Houses - Mzinyathi Gardens - Esigodlweni samatebele
+            </h1>
+            <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-yellow-300 mb-4">
+              The Matebele Legacy
+            </p>
+            <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+              Discover secure, modern living in our gated community. 
+              Stands available across 12 unique phases.
+            </p>
+          </div>
         </div>
         {/* Hero indicators */}
-        <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
+        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
           {heroImages.map((_, idx) => (
             <button
               key={idx}
@@ -101,15 +104,15 @@ export default function PropertiesPage() {
         </div>
       </div>
 
-      {/* Search Bar Only - No Filters */}
+      {/* Search Bar - Clean and Clear */}
       <div className="container mx-auto px-4 -mt-6 md:-mt-8 relative z-30">
-        <div className="bg-white rounded-2xl shadow-xl p-2 max-w-2xl mx-auto">
-          <div className="flex items-center bg-gray-50 rounded-xl px-4 py-2">
-            <Search size={18} className="text-gray-400" />
+        <div className="bg-white rounded-2xl shadow-xl p-1 max-w-2xl mx-auto">
+          <div className="flex items-center bg-white rounded-xl px-4 py-2 border border-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
+            <Search size={20} className="text-blue-500 mr-2" />
             <input
               type="text"
               placeholder="Search by phase name..."
-              className="flex-1 px-3 py-2 outline-none bg-transparent text-sm"
+              className="flex-1 px-2 py-2 outline-none bg-transparent text-gray-700 placeholder-gray-400 text-base"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
