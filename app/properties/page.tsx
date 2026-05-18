@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ArrowRight, Shield, Sun, Droplets, Road, TreePine, Construction, Home } from 'lucide-react';
-import { allPhases, phasesData } from '@/lib/housesData';
+import { allPhases, phasesData } from '../../lib/housesData';
 
 // Hero images for carousel - using local images
 const heroImages = [
@@ -15,7 +15,7 @@ const heroImages = [
 ];
 
 // Featured phases for the popular section (Phase I, VII, XI)
-const popularPhases = ['phase-i', 'phase-vii', 'phase-xi'];
+const popularPhases = ['phase_i', 'phase_vii', 'phase_xi'];
 
 export default function PropertiesPage() {
   const [currentHero, setCurrentHero] = useState(0);
@@ -71,11 +71,14 @@ export default function PropertiesPage() {
             />
           </div>
         ))}
-        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center text-white">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 max-w-4xl">
-            Find Your Dream Stand at Mzinyathi Gardens
+        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center text-center text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 max-w-5xl mx-auto">
+            Modern Houses - Mzinyathi Gardens - Esigodlweni samatebele
           </h1>
-          <p className="text-base sm:text-lg md:text-xl max-w-2xl text-white/90">
+          <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-yellow-300 mb-2">
+            The Matebele Legacy
+          </p>
+          <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto text-white/90">
             Discover secure, modern living in our gated community. 
             Stands available across 12 unique phases.
           </p>
@@ -137,9 +140,6 @@ export default function PropertiesPage() {
                       src={phase.image}
                       alt={phase.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/placeholder.jpg';
-                      }}
                     />
                     {phase.status === 'under_construction' && (
                       <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
@@ -227,9 +227,6 @@ export default function PropertiesPage() {
                           src={phase.image}
                           alt={phase.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = '/images/placeholder.jpg';
-                          }}
                         />
                         {!isActive && (
                           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">

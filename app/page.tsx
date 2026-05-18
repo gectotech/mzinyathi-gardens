@@ -101,9 +101,9 @@ export default function HomePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Available Stands */}
             <div className="bg-blue-50 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition">
-              <img src="/images/phase_icon1.jpg" alt="Available Stands" className="w-full h-40 object-cover" />
+              <img src="/images/phase_icon1.jpg" alt="View All Phases" className="w-full h-40 object-cover" />
               <div className="p-5 text-center">
-                <h3 className="text-xl font-bold text-blue-600">Available Stands</h3>
+                <h3 className="text-xl font-bold text-blue-600">View All Phases</h3>
                 <p className="text-gray-600 text-sm mb-3">Phase I to XI – secure your piece of land today.</p>
                 <Link href="/properties" className="text-blue-600 text-sm font-semibold hover:text-red-600">View Properties →</Link>
               </div>
