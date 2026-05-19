@@ -1,155 +1,220 @@
+// app/projects/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
-  Home, Droplets, Zap, Sun, TreePine, Road, 
-  Construction, CheckCircle, ArrowRight, 
-  Ruler, Bed, Building, MapPin, Users, Shield
+  ArrowLeft, Bed, Ruler, Home, DollarSign, Shield, Sun, Droplets, 
+  Road, TreePine, FileText, CheckCircle, Zap, Construction, MapPin 
 } from 'lucide-react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 
-// Hero images
-const heroImages = [
-  '/images/he1.jpg',
-  '/images/he2.jpg',
-  '/images/he3.jpg',
-];
+// House plan mapping based on bedroom count
+const getHousePlanImage = (beds: number, title: string): string => {
+  if (title?.toLowerCase().includes('double-story') || title?.toLowerCase().includes('double story')) {
+    return '/images/plan_double.jpg';
+  }
+  switch (beds) {
+    case 3:
+      return '/images/plan_3bed.jpg';
+    case 4:
+      return '/images/plan_4bed.jpg';
+    case 5:
+      return '/images/plan_5bed.jpg';
+    default:
+      return '/images/plan_4bed.jpg';
+  }
+};
 
-// House plans
-const housePlans = [
-  { id: 1, title: '3 Bedroom', beds: 3, baths: 2, size: '120m²', image: '/images/plan_3bed.jpg', features: ['Open plan living', 'Modern kitchen', 'Garden area'] },
-  { id: 2, title: '4 Bedroom', beds: 4, baths: 3, size: '160m²', image: '/images/plan_4bed.jpg', features: ['Master ensuite', 'Scullery', 'Covered patio'] },
-  { id: 3, title: '5 Bedroom', beds: 5, baths: 4, size: '200m²', image: '/images/plan_5bed.jpg', features: ['Double garage', 'Study nook', 'Entertainment area'] },
-  { id: 4, title: 'Double Story', beds: 5, baths: 4, size: '250m²', image: '/images/plan_double.jpg', features: ['Balcony views', 'Guest suite', 'Rooftop terrace'] },
-];
-
-// Completed houses
+// Completed houses - simple naming
 const completedHouses = [
-  { id: 1, title: 'Modern Family Home', image: '/images/house_complete1.jpg', location: 'Phase III' },
-  { id: 2, title: 'Eco-friendly Residence', image: '/images/house_complete2.jpg', location: 'Phase V' },
+  { id: 1, title: 'House 1', image: '/images/house_complete1.jpg', beds: 4, baths: 3, size: '800m²' },
+  { id: 2, title: 'House 2', image: '/images/house_complete2.jpg', beds: 3, baths: 2, size: '800m²' },
+  { id: 3, title: 'House 3', image: '/images/house_complete3.jpg', beds: 5, baths: 4, size: '800m²' },
 ];
 
-// Houses under construction
+// Houses under construction - no percentages
 const underConstructionHouses = [
-  { id: 3, title: 'Luxury Villa', image: '/images/house_construction1.jpg', location: 'Phase VII', progress: '60%' },
-  { id: 4, title: 'Affordable Stand Build', image: '/images/house_construction2.jpg', location: 'Phase IX', progress: '30%' },
+  { id: 4, title: 'House 4', image: '/images/house_construction1.jpg' },
+  { id: 5, title: 'House 5', image: '/images/house_construction2.jpg' },
+  { id: 6, title: 'House 6', image: '/images/house_construction3.jpg' },
 ];
 
-// Infrastructure items with descriptions
-const infrastructure = [
-  { icon: Road, title: 'Tarred Roads', desc: 'High-quality asphalt roads with proper drainage and signage throughout the estate.', image: '/images/infra_roads.jpg' },
-  { icon: Droplets, title: 'Community Boreholes', desc: 'Reliable water supply through multiple boreholes with backup storage for uninterrupted service.', image: '/images/infra_borehole.jpg' },
-  { icon: Zap, title: 'Solar Street Lights', desc: 'Energy-efficient LED street lighting powered by solar panels, illuminating all pathways.', image: '/images/infra_streetlight.jpg' },
-  { icon: Sun, title: 'Solar Systems', desc: 'Pre-installed solar geysers and optional rooftop PV systems for every home.', image: '/images/infra_solar.jpg' },
-  { icon: TreePine, title: 'Recreational Parks', desc: 'Beautifully landscaped parks, children’s playgrounds, and walking trails.', image: '/images/infra_park.jpg' },
+// Infrastructure projects
+const infrastructureProjects = [
+  {
+    id: 'roads',
+    title: 'Tarred Roads',
+    description: 'High-quality asphalt roads with proper drainage and street signage throughout the estate.',
+    image: '/images/infra_roads.jpg',
+    icon: Road,
+  },
+  {
+    id: 'streetlights',
+    title: 'Solar Street Lighting',
+    description: 'Energy-efficient LED street lighting powered by solar panels, illuminating all pathways for 24/7 security.',
+    image: '/images/infra_streetlight.jpg',
+    icon: Zap,
+  },
+  {
+    id: 'boreholes',
+    title: 'Community Boreholes',
+    description: 'Multiple boreholes providing reliable water supply to all phases with backup storage tanks.',
+    image: '/images/infra_borehole.jpg',
+    icon: Droplets,
+  },
+  {
+    id: 'solar',
+    title: 'Solar Systems',
+    description: 'Pre-installed solar geysers and optional rooftop PV systems for energy independence.',
+    image: '/images/infra_solar.jpg',
+    icon: Sun,
+  },
+  {
+    id: 'parks',
+    title: 'Recreational Parks',
+    description: 'Beautifully landscaped parks with playgrounds, walking trails, and picnic areas for families.',
+    image: '/images/infra_park.jpg',
+    icon: TreePine,
+  },
+  {
+    id: 'security',
+    title: '24/7 Security System',
+    description: 'Comprehensive security with CCTV cameras, access control, and 24/7 armed response.',
+    image: '/images/security.jpg',
+    icon: Shield,
+  },
 ];
 
-// Phases I to XI with descriptions
-const phases = Array.from({ length: 11 }, (_, i) => ({
-  id: i + 1,
-  name: `Phase ${toRoman(i + 1)}`,
-  image: `/images/phase_icon${i + 1}.jpg`,
-  description: getPhaseDescription(i + 1),
-  status: 'Under Construction',
-}));
+// House plans data
+const housePlans = [
+  { id: '3bed', name: '3 Bedroom House', beds: 3, baths: 2, size: '800m²', price: '$41,060.41', image: '/images/plan_3bed.jpg' },
+  { id: '4bed', name: '4 Bedroom House', beds: 4, baths: 3, size: '800m²', price: '$50,473.66', image: '/images/plan_4bed.jpg' },
+  { id: '5bed', name: '5 Bedroom House', beds: 5, baths: 4, size: '800m²', price: '$59,944.66', image: '/images/plan_5bed.jpg' },
+  { id: 'doublestory', name: 'Double Story House', beds: 5, baths: 4, size: '800m²', price: '$73,384.08', image: '/images/plan_double.jpg' },
+];
 
-function toRoman(num: number): string {
-  const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI'];
-  return roman[num - 1];
-}
+function HousePlanDetails() {
+  const searchParams = useSearchParams();
+  const houseTitle = searchParams.get('house');
+  const bedsParam = searchParams.get('beds');
+  const bathsParam = searchParams.get('baths');
+  const sizeParam = searchParams.get('size');
+  const priceParam = searchParams.get('price');
 
-function getPhaseDescription(phaseNum: number): string {
-  const descriptions: Record<number, string> = {
-    1: 'KwaNdebele - Emzini wamaTebele. Cultural heritage meets modern living.',
-    2: 'Premium stands with panoramic views of the surrounding hills.',
-    3: 'Family-focused zone with parks and easy access to schools.',
-    4: 'Eco-friendly design with water-wise landscaping.',
-    5: 'Close to the main clubhouse and recreational facilities.',
-    6: 'Secure enclave with enhanced perimeter walls.',
-    7: 'Umqombothi - Wine Estate. Vineyard-inspired living.',
-    8: 'Business and commercial node within the estate.',
-    9: 'Luxury stands with extra-large plot sizes.',
-    10: 'Hilltop views and exclusive privacy.',
-    11: 'Mzinyathi Bosch - Matebele Finest. Signature homes.',
-  };
-  return descriptions[phaseNum] || 'Coming soon. Reserve your stand today.';
-}
+  const [selectedBeds, setSelectedBeds] = useState<number>(bedsParam ? parseInt(bedsParam) : 4);
 
-export default function ProjectsPage() {
-  const [currentHero, setCurrentHero] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const interval = setInterval(() => {
-      setCurrentHero((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  const housePlanImage = getHousePlanImage(selectedBeds, houseTitle || '');
 
   return (
-    <div className="bg-white">
-      
-      {/* Hero Carousel */}
-      <div className="relative h-screen md:h-[90vh] w-full">
-        {heroImages.map((img, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              idx === currentHero ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-red-900/60 z-10" />
-            <img src={img} alt={`Hero ${idx + 1}`} className="w-full h-full object-cover" />
-          </div>
-        ))}
-        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
-          <div className="bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/30">
-            <p className="uppercase tracking-wider text-sm md:text-base font-semibold">The Modern Lifestyle | Gated Community</p>
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 drop-shadow-lg">Building The Matebele Legacy</h1>
-          <p className="text-xl md:text-2xl max-w-3xl mx-auto">Creating a sustainable, secure, and culturally rich community for generations to come.</p>
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2">
-            {heroImages.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => { setCurrentHero(idx); setIsAutoPlaying(false); setTimeout(() => setIsAutoPlaying(true), 10000); }}
-                className={`w-3 h-3 rounded-full transition-all ${idx === currentHero ? 'bg-red-500 w-6' : 'bg-white/70'}`}
-              />
-            ))}
-          </div>
+    <div className="bg-white min-h-screen">
+      {/* Hero Section */}
+      <div className="relative h-[50vh] md:h-[60vh] w-full bg-gradient-to-r from-blue-800 to-red-800">
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-20 container mx-auto px-4 h-full flex flex-col justify-center text-white">
+          <Link href="/properties" className="inline-flex items-center gap-2 text-white/80 hover:text-white mb-4 w-fit">
+            <ArrowLeft size={16} /> Back to Properties
+          </Link>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Our Projects & Development</h1>
+          <p className="text-base sm:text-lg md:text-xl max-w-2xl">Building The Matebele Legacy - Modern living with world-class infrastructure</p>
         </div>
       </div>
 
+      {/* Selected House Banner */}
+      {houseTitle && (
+        <div className="bg-blue-50 border-b border-blue-200 py-4">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div>
+                <span className="text-sm text-gray-500">Selected Property:</span>
+                <h2 className="text-xl font-bold text-blue-600">{houseTitle}</h2>
+                <div className="flex gap-4 mt-1 text-sm flex-wrap">
+                  <span className="flex items-center gap-1"><Bed size={14} /> {bedsParam || selectedBeds} beds</span>
+                  <span className="flex items-center gap-1"><Ruler size={14} /> {bathsParam || (selectedBeds === 3 ? 2 : selectedBeds === 4 ? 3 : 4)} baths</span>
+                  <span className="flex items-center gap-1"><Home size={14} /> {sizeParam || (selectedBeds === 3 ? '160m²' : selectedBeds === 4 ? '200m²' : '250m²')}</span>
+                  <span className="flex items-center gap-1"><DollarSign size={14} /> {priceParam || (selectedBeds === 3 ? '$41,060.41' : selectedBeds === 4 ? '$50,473.66' : '$59,944.66')}</span>
+                </div>
+              </div>
+              <Link href="/contact" className="bg-red-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-red-700 transition shadow-md">
+                Inquire About This Property
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* House Plans Section */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-blue-600 inline-block border-b-4 border-red-600 pb-2">House Plans</h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">Choose from our thoughtfully designed layouts to suit your family's needs.</p>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-600 mb-3">House Plans</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Choose from our thoughtfully designed layouts to suit your family's needs</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+          {/* Current Plan View */}
+          <div className="grid lg:grid-cols-3 gap-8 mb-12">
+            <div className="lg:col-span-2">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl p-6 border border-blue-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                    <FileText className="text-white" size={24} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-blue-600">{selectedBeds}-Bedroom House Plan</h3>
+                    <p className="text-gray-600 text-sm">Detailed floor plan and specifications</p>
+                  </div>
+                </div>
+                <div className="relative rounded-xl overflow-hidden shadow-lg bg-white p-4">
+                  <img src={housePlanImage} alt={`${selectedBeds} Bedroom House Plan`} className="w-full h-auto object-contain" />
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sticky top-32">
+                <h3 className="text-xl font-bold text-blue-600 mb-4">Plan Specifications</h3>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-500">Bedrooms</span>
+                    <span className="font-semibold">{selectedBeds}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-500">Bathrooms</span>
+                    <span className="font-semibold">{selectedBeds === 3 ? 2 : selectedBeds === 4 ? 3 : 4}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-500">Size</span>
+                    <span className="font-semibold">{selectedBeds === 3 ? '160m²' : selectedBeds === 4 ? '200m²' : '250m²'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                    <span className="text-gray-500">Price Range</span>
+                    <span className="font-semibold text-red-600">{selectedBeds === 3 ? '$41,060.41' : selectedBeds === 4 ? '$50,473.66' : '$59,944.66'}</span>
+                  </div>
+                </div>
+                <Link href="/contact" className="block w-full bg-blue-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-red-600 transition">
+                  Request a Quote
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* All House Plans Grid */}
+          <h3 className="text-xl font-bold text-blue-600 mb-4">Browse All House Plans</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {housePlans.map((plan) => (
-              <div key={plan.id} className="bg-blue-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition">
-                <img src={plan.image} alt={plan.title} className="w-full h-48 object-cover" />
-                <div className="p-5">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-xl font-bold text-blue-600">{plan.title}</h3>
-                    <span className="text-sm bg-red-100 text-red-600 px-2 py-1 rounded-full">{plan.size}</span>
+              <div 
+                key={plan.id} 
+                className={`bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all cursor-pointer ${selectedBeds === plan.beds ? 'ring-2 ring-red-500' : ''}`}
+                onClick={() => setSelectedBeds(plan.beds)}
+              >
+                <img src={plan.image} alt={plan.name} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <h3 className="text-lg font-bold text-blue-600 mb-2">{plan.name}</h3>
+                  <div className="flex justify-between text-gray-600 text-sm mb-3">
+                    <span><Bed size={14} className="inline" /> {plan.beds} beds</span>
+                    <span><Ruler size={14} className="inline" /> {plan.baths} baths</span>
+                    <span><Home size={14} className="inline" /> {plan.size}</span>
                   </div>
-                  <div className="flex gap-3 text-gray-600 text-sm mb-3">
-                    <span className="flex items-center"><Bed size={14} className="mr-1 text-red-500" /> {plan.beds} beds</span>
-                    <span className="flex items-center"><Ruler size={14} className="mr-1 text-red-500" /> {plan.baths} baths</span>
-                  </div>
-                  <ul className="text-gray-600 text-sm space-y-1 mb-4">
-                    {plan.features.map((feat, i) => <li key={i} className="flex items-center"><CheckCircle size={12} className="mr-2 text-blue-500" /> {feat}</li>)}
-                  </ul>
-                  <button className="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-red-600 transition">Request Plan</button>
+                  <p className="text-red-600 font-semibold">{plan.price}</p>
                 </div>
               </div>
             ))}
@@ -157,40 +222,30 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Completed Houses */}
-      <section className="py-20 bg-blue-50">
+      {/* Complete Houses Section */}
+      <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-blue-600 mb-4">Completed Homes</h2>
-          <p className="text-center text-gray-600 mb-12">Inspiring examples of what you can build in Mzinyathi Gardens.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-600 mb-3">Complete Houses</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Examples of completed homes in Mzinyathi Gardens</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {completedHouses.map((house) => (
-              <div key={house.id} className="relative group overflow-hidden rounded-2xl shadow-xl">
-                <img src={house.image} alt={house.title} className="w-full h-80 object-cover transition duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent flex flex-col justify-end p-6">
-                  <h3 className="text-2xl font-bold text-white">{house.title}</h3>
-                  <p className="text-white/80 flex items-center"><MapPin size={14} className="mr-1" /> {house.location}</p>
+              <div key={house.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition group">
+                <div className="relative h-64 overflow-hidden">
+                  <img src={house.image} alt={house.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                  <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">Completed</div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Houses Under Construction */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-blue-600 mb-4">Homes Under Construction</h2>
-          <p className="text-center text-gray-600 mb-12">Watch your dream home take shape. Many more underway.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {underConstructionHouses.map((house) => (
-              <div key={house.id} className="relative group overflow-hidden rounded-2xl shadow-xl">
-                <img src={house.image} alt={house.title} className="w-full h-80 object-cover transition duration-500 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-red-900/80 to-transparent flex flex-col justify-end p-6">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-2xl font-bold text-white">{house.title}</h3>
-                    <span className="bg-white text-red-600 px-3 py-1 rounded-full text-sm font-bold">{house.progress}</span>
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-blue-600 mb-2">{house.title}</h3>
+                  <div className="flex gap-3 text-gray-600 text-sm mb-4">
+                    <span>{house.beds} beds</span>
+                    <span>{house.baths} baths</span>
+                    <span>{house.size}</span>
                   </div>
-                  <p className="text-white/80 flex items-center"><MapPin size={14} className="mr-1" /> {house.location}</p>
+                  <Link href={`/contact?property=${encodeURIComponent(house.title)}`} className="block w-full bg-blue-600 text-white text-center py-2 rounded-full text-sm font-semibold hover:bg-red-600 transition">
+                    Inquire About This Design
+                  </Link>
                 </div>
               </div>
             ))}
@@ -198,21 +253,53 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Infrastructure & Amenities */}
-      <section className="py-20 bg-blue-50">
+      {/* Houses Under Construction Section - No Percentages */}
+      <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-blue-600 mb-4">World-Class Infrastructure</h2>
-          <p className="text-center text-gray-600 mb-12">Every detail designed for comfort, safety, and sustainability.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {infrastructure.map((item, idx) => (
-              <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition">
-                <img src={item.image} alt={item.title} className="w-full h-48 object-cover" />
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-600 mb-3">Houses Under Construction</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Currently being built - secure yours today</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {underConstructionHouses.map((house) => (
+              <div key={house.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition group">
+                <div className="relative h-64 overflow-hidden">
+                  <img src={house.image} alt={house.title} className="w-full h-full object-cover group-hover:scale-110 transition duration-500" />
+                  <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                    <Construction size={12} /> Under Construction
+                  </div>
+                </div>
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-blue-600 mb-2">{house.title}</h3>
+                  <Link href={`/contact?property=${encodeURIComponent(house.title)}`} className="block w-full bg-blue-600 text-white text-center py-2 rounded-full text-sm font-semibold hover:bg-red-600 transition">
+                    Register Interest
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Infrastructure Section - Roads, Street Lights, Boreholes, Solar */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-blue-600 mb-3">Infrastructure Development</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">Every detail designed for comfort, safety, and sustainability</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {infrastructureProjects.map((project) => (
+              <div key={project.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition">
+                <div className="relative h-48 overflow-hidden">
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <item.icon className="text-red-500" size={24} />
-                    <h3 className="text-xl font-bold text-blue-600">{item.title}</h3>
+                    <project.icon className="text-red-500" size={24} />
+                    <h3 className="text-xl font-bold text-blue-600">{project.title}</h3>
                   </div>
-                  <p className="text-gray-600">{item.desc}</p>
+                  <p className="text-gray-600 text-sm">{project.description}</p>
                 </div>
               </div>
             ))}
@@ -220,40 +307,32 @@ export default function ProjectsPage() {
         </div>
       </section>
 
-      {/* Phases with Descriptions */}
-      <section className="py-20">
+      {/* CTA Section */}
+      <section className="py-12 md:py-16 bg-red-600 text-white text-center">
         <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center text-blue-600 mb-4">Our Phases I – XI</h2>
-          <p className="text-center text-gray-600 mb-12">Each phase has its own unique character and advantages.</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {phases.map((phase) => (
-              <div key={phase.id} className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition border-l-4 border-red-500">
-                <img src={phase.image} alt={phase.name} className="w-full h-40 object-cover" onError={(e) => (e.currentTarget.src = '/images/placeholder.jpg')} />
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-blue-600">{phase.name}</h3>
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full flex items-center gap-1"><Construction size={10} /> {phase.status}</span>
-                  </div>
-                  <p className="text-gray-600 text-sm mb-3">{phase.description}</p>
-                  <Link href="/contact" className="text-blue-600 hover:text-red-600 text-sm font-semibold flex items-center gap-1">Inquire <ArrowRight size={14} /></Link>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <p className="text-gray-500 italic">All phases are currently under construction – secure your stand now for best selection.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-20 bg-red-600 text-white text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Join the Matebele Legacy</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">Be part of a community built on pride, security, and modern living.</p>
-          <Link href="/contact" className="inline-block bg-white text-red-600 px-10 py-4 rounded-full font-bold text-lg hover:bg-gray-100 transition shadow-xl">Contact Sales Team</Link>
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to Start Building?</h2>
+          <p className="text-base md:text-lg mb-6 max-w-2xl mx-auto">Contact our team to discuss your preferred house plan and get a detailed quote.</p>
+          <Link href="/contact" className="inline-block bg-white text-red-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition shadow-lg">
+            Contact Sales Team
+          </Link>
         </div>
       </section>
     </div>
+  );
+}
+
+// Main component with Suspense
+export default function ProjectsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading projects...</p>
+        </div>
+      </div>
+    }>
+      <HousePlanDetails />
+    </Suspense>
   );
 }
