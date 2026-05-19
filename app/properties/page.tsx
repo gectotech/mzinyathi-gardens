@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ArrowRight, Shield, Sun, Droplets, Road, TreePine, Construction, Home } from 'lucide-react';
-import { allPhases, phasesData } from '@/lib/housesData';
+import { allPhases, phasesData } from '../../lib/housesData';
 
 // Hero images for carousel - using local images
 const heroImages = [

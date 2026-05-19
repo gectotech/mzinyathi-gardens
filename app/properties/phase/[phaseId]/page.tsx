@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Bed, Ruler, Home, ArrowLeft, CheckCircle, MapPin, Shield, Sun, Droplets, Road, TreePine, Construction, DollarSign } from 'lucide-react';
-import { phasesData } from '@/lib/housesData';
+import { phasesData } from '../../../../lib/housesData';
 
 // Generate static params for build time
 export async function generateStaticParams() {
