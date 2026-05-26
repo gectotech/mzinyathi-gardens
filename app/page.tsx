@@ -128,7 +128,7 @@ export default function HomePage() {
             </div>
             {/* Community Events */}
             <div className="bg-blue-50 rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition">
-              <img src="/images/phase_icon7.jpg" alt="Community" className="w-full h-40 object-cover" />
+              <img src="/images/phase_icon7.jpg" alt="Community events at Mzinyathi Gardens" className="w-full h-40 object-cover" />
               <div className="p-5 text-center">
                 <h3 className="text-xl font-bold text-blue-600">Community Events</h3>
                 <p className="text-gray-600 text-sm mb-3">Join the Matebele legacy – Ubuntu spirit.</p>
