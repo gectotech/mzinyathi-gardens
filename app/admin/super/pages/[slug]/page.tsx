@@ -37,27 +37,46 @@ export default function SuperPageEditor() {
 
   useEffect(() => {
     fetch(`/api/super/pages?slug=${slug}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error('Failed to load page');
+        return r.json();
+      })
       .then((d) => {
         const page = d.page;
+        const nextTitle = page?.title || slug.charAt(0).toUpperCase() + slug.slice(1);
+        const nextMeta = page?.metaDescription || '';
+        const nextSections = JSON.stringify(page?.sections || {}, null, 2);
+        const nextCss = page?.customCss || '';
+        const nextJs = page?.customJs || '';
+        const nextHtml = page?.htmlContent || '';
+
+        setTitle(nextTitle);
+        setMetaDescription(nextMeta);
+        setSections(nextSections);
+        setCustomCss(nextCss);
+        setCustomJs(nextJs);
+        setHtmlContent(nextHtml);
+
         if (page) {
-          setTitle(page.title || slug);
-          setMetaDescription(page.metaDescription || '');
-          setSections(JSON.stringify(page.sections || {}, null, 2));
-          setCustomCss(page.customCss || '');
-          setCustomJs(page.customJs || '');
-          setHtmlContent(page.htmlContent || '');
           setMeta({
             status: page.status || 'draft',
             version: page.version || 1,
             updatedAt: page.updatedAt,
           });
-        } else {
-          setTitle(slug.charAt(0).toUpperCase() + slug.slice(1));
         }
-        setTimeout(() => setSavedSnapshot(snapshot()), 0);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+        setSavedSnapshot(
+          JSON.stringify({
+            title: nextTitle,
+            metaDescription: nextMeta,
+            sections: nextSections,
+            customCss: nextCss,
+            customJs: nextJs,
+            htmlContent: nextHtml,
+          })
+        );
+      })
+      .catch(() => toast.error('Could not load page data'));
   }, [slug]);
 
   const isDirty = snapshot() !== savedSnapshot;
@@ -148,8 +167,27 @@ export default function SuperPageEditor() {
 
   const publicUrl = slug === 'home' ? '/' : `/${slug}`;
 
+  const openPreview = () => {
+    sessionStorage.setItem(
+      `cms-preview-${slug}`,
+      JSON.stringify({
+        customCss,
+        customJs,
+        htmlContent,
+        sections: (() => {
+          try {
+            return JSON.parse(sections);
+          } catch {
+            return {};
+          }
+        })(),
+      })
+    );
+    window.open(`/admin/super/preview/${slug}`, '_blank');
+  };
+
   return (
-    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col">
+    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col overflow-hidden">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Edit: {title || slug}</h1>
@@ -168,13 +206,13 @@ export default function SuperPageEditor() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link
-            href={`/admin/super/preview/${slug}`}
-            target="_blank"
+          <button
+            type="button"
+            onClick={openPreview}
             className="inline-flex items-center gap-2 border px-4 py-2 rounded-md text-sm hover:bg-gray-50"
           >
             <Globe size={16} /> Full Preview
-          </Link>
+          </button>
           <Link
             href={publicUrl}
             target="_blank"
@@ -214,33 +252,34 @@ export default function SuperPageEditor() {
             {t.label}
           </button>
         ))}
-      </div>
-
-      <div className="flex-1 min-h-0 grid lg:grid-cols-2 gap-4">
-        <div className="min-h-[420px]">
-          {tab === 'sections' && <CodeEditor value={sections} onChange={setSections} language="json" height="100%" />}
-          {tab === 'css' && <CodeEditor value={customCss} onChange={setCustomCss} language="css" height="100%" />}
-          {tab === 'js' && <CodeEditor value={customJs} onChange={setCustomJs} language="javascript" height="100%" />}
-          {tab === 'html' && <CodeEditor value={htmlContent} onChange={setHtmlContent} language="html" height="100%" />}
-        </div>
-        <LivePreviewPanel
-          type={tabs.find((t) => t.id === tab)!.previewType}
-          content={previewContent}
-          title={`${tabs.find((t) => t.id === tab)!.label} Preview`}
-        />
-      </div>
-
-      <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-900">
-        <strong>Content JSON example</strong> — paste into Content JSON tab to show an announcement banner:
-        <pre className="mt-2 text-xs bg-white p-3 rounded overflow-auto">{`{
+        <details className="ml-auto text-sm">
+          <summary className="cursor-pointer text-[#4169E1] py-2 select-none">JSON example</summary>
+          <pre className="absolute z-10 mt-1 right-6 max-w-md text-xs bg-white border shadow-lg p-3 rounded overflow-auto">{`{
   "announcement": {
     "enabled": true,
-    "text": "Phase XI now available — enquire today!",
+    "text": "Phase XI now available!",
     "link": "/properties",
     "linkLabel": "View properties",
     "style": "info"
   }
 }`}</pre>
+        </details>
+      </div>
+
+      <div className="flex-1 min-h-[480px] grid lg:grid-cols-2 gap-4 overflow-hidden">
+        <div className="h-full min-h-[480px] overflow-hidden">
+          {tab === 'sections' && <CodeEditor value={sections} onChange={setSections} language="json" />}
+          {tab === 'css' && <CodeEditor value={customCss} onChange={setCustomCss} language="css" />}
+          {tab === 'js' && <CodeEditor value={customJs} onChange={setCustomJs} language="javascript" />}
+          {tab === 'html' && <CodeEditor value={htmlContent} onChange={setHtmlContent} language="html" />}
+        </div>
+        <div className="h-full min-h-[480px] overflow-hidden">
+          <LivePreviewPanel
+            type={tabs.find((t) => t.id === tab)!.previewType}
+            content={previewContent}
+            title={`${tabs.find((t) => t.id === tab)!.label} Preview`}
+          />
+        </div>
       </div>
     </div>
   );

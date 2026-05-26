@@ -51,7 +51,7 @@ export default function LivePreviewPanel({ type, content, title = 'Live Preview'
   }, [type, content]);
 
   return (
-    <div className="flex flex-col h-full min-h-[420px] border rounded-lg overflow-hidden bg-white">
+    <div className="flex flex-col h-full min-h-[480px] border rounded-lg overflow-hidden bg-white">
       <div className="px-4 py-2 border-b bg-gray-50 flex items-center justify-between">
         <span className="text-sm font-semibold text-gray-700">{title}</span>
         <span className="text-xs text-gray-400 uppercase tracking-wide">{type}</span>

@@ -108,7 +108,7 @@ export default function SuperCodeStudio() {
   };
 
   return (
-    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col">
+    <div className="space-y-4 h-[calc(100vh-8rem)] flex flex-col overflow-hidden">
       <div className="flex flex-wrap justify-between items-start gap-4">
         <div>
           <h1 className="text-2xl font-bold">Global Code Studio</h1>
@@ -163,11 +163,13 @@ export default function SuperCodeStudio() {
         ))}
       </div>
 
-      <div className="flex-1 min-h-0 grid lg:grid-cols-2 gap-4">
-        <div className="min-h-[420px]">
-          <CodeEditor value={content} onChange={setContent} language={current.language} height="100%" />
+      <div className="flex-1 min-h-[480px] grid lg:grid-cols-2 gap-4 overflow-hidden">
+        <div className="h-full min-h-[480px] overflow-hidden">
+          <CodeEditor value={content} onChange={setContent} language={current.language} />
         </div>
-        <LivePreviewPanel type={current.previewType} content={content} title={`${current.label} Preview`} />
+        <div className="h-full min-h-[480px] overflow-hidden">
+          <LivePreviewPanel type={current.previewType} content={content} title={`${current.label} Preview`} />
+        </div>
       </div>
     </div>
   );
