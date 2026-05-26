@@ -9,10 +9,10 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/properties', label: 'Properties' },
   { href: '/projects', label: 'Projects' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
-  { href: '/about', label: 'About' },
-  { href: '/services', label: 'Services' },
 ];
 
 export default function Navbar() {
@@ -20,62 +20,87 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const closeMenu = () => setIsOpen(false);
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="bg-white shadow-md sticky top-0 z-50">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo / Brand */}
-          <Link href="/" className="text-xl md:text-2xl font-bold text-blue-600">
-            Mzinyathi <span className="text-red-600">Gardens</span>
+        <div className="flex justify-between items-center h-16 lg:h-[4.25rem]">
+          <Link
+            href="/"
+            className="text-xl md:text-2xl font-bold tracking-tight text-[#4169E1] hover:opacity-90 transition-opacity"
+          >
+            Mzinyathi <span className="text-[#DD3210]">Gardens</span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-4 lg:space-x-6">
+          <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`hover:text-red-600 transition ${
-                  pathname === link.href
-                    ? 'text-red-600 border-b-2 border-red-600'
-                    : 'text-gray-700'
+                className={`relative px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive(link.href)
+                    ? 'text-[#DD3210]'
+                    : 'text-gray-600 hover:text-[#4169E1] hover:bg-blue-50/80'
                 }`}
               >
                 {link.label}
+                {isActive(link.href) && (
+                  <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-[#DD3210] rounded-full" />
+                )}
               </Link>
             ))}
+            <Link
+              href="/contact"
+              className="ml-3 px-4 py-2 text-sm font-semibold text-white bg-[#DD3210] hover:bg-[#c42b0e] rounded-lg transition-colors shadow-sm"
+            >
+              Enquire Now
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-md focus:outline-none"
+            className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
             aria-label="Toggle menu"
+            aria-expanded={isOpen}
           >
-            {isOpen ? <X size={24} className="text-gray-700" /> : <Menu size={24} className="text-gray-700" />}
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden pb-4 space-y-1">
+        <div
+          className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isOpen ? 'max-h-[28rem] opacity-100 pb-4' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className="pt-2 space-y-1 border-t border-gray-100">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={closeMenu}
-                className={`block py-2 px-3 rounded-lg hover:bg-blue-50 ${
-                  pathname === link.href
-                    ? 'text-red-600 font-semibold bg-blue-50'
-                    : 'text-gray-700'
+                className={`block py-2.5 px-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive(link.href)
+                    ? 'text-[#DD3210] bg-red-50'
+                    : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/contact"
+              onClick={closeMenu}
+              className="block mt-2 py-2.5 px-3 text-center text-sm font-semibold text-white bg-[#DD3210] rounded-lg"
+            >
+              Enquire Now
+            </Link>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );

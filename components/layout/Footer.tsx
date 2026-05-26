@@ -1,45 +1,166 @@
 import Link from 'next/link';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, ArrowUpRight, Share2, Camera, Shield } from 'lucide-react';
+
+const quickLinks = [
+  { href: '/properties', label: 'Properties' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About Us' },
+  { href: '/careers', label: 'Careers' },
+  { href: '/contact', label: 'Contact' },
+];
 
 export default function Footer() {
+  const year = new Date().getFullYear();
+
   return (
-    <footer className="bg-gray-900 text-white py-12 mt-auto">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="text-xl font-bold mb-4">Mzinyathi Gardens</h3>
-            <p className="text-gray-400">
-              The Cradle of Ubuntu Lokubambana – SIYAKWAMUKELA EKHAYA
+    <footer className="mt-auto bg-[#0f172a] text-white">
+      {/* Brand accent strip */}
+      <div className="h-1 bg-gradient-to-r from-[#4169E1] via-[#6366f1] to-[#DD3210]" />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-4">
+            <Link href="/" className="inline-block group">
+              <h3 className="text-2xl font-bold tracking-tight">
+                Mzinyathi <span className="text-[#DD3210]">Gardens</span>
+              </h3>
+            </Link>
+            <p className="mt-3 text-gray-400 text-sm leading-relaxed max-w-sm">
+              The Cradle of Ubuntu Lokubambana — secure, sustainable gated community living in Bulawayo, Zimbabwe.
+            </p>
+            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-[#4169E1]">
+              Siyakwamukela Ekhaya
             </p>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Contact</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li className="flex items-center gap-2"><Phone size={18}/> +27 123 456 789</li>
-              <li className="flex items-center gap-2"><Mail size={18}/> info@mzinyathigardens.co.za</li>
-              <li className="flex items-center gap-2"><MapPin size={18}/> Mzinyathi, South Africa</li>
+
+          {/* Contact */}
+          <div className="lg:col-span-4">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">
+              Contact Us
+            </h4>
+            <ul className="space-y-4 text-sm">
+              <li>
+                <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">South Africa</p>
+                <a
+                  href="tel:+27760828987"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <Phone size={16} className="text-[#4169E1] shrink-0" />
+                  +27 76 082 8987
+                </a>
+              </li>
+              <li>
+                <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Zimbabwe</p>
+                <div className="space-y-1.5">
+                  <a
+                    href="tel:+263776203372"
+                    className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                  >
+                    <Phone size={16} className="text-[#4169E1] shrink-0" />
+                    +263 77 620 3372
+                  </a>
+                  <a
+                    href="tel:+263771160529"
+                    className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                  >
+                    <Phone size={16} className="text-[#4169E1] shrink-0" />
+                    +263 77 116 0529
+                  </a>
+                </div>
+              </li>
+              <li>
+                <a
+                  href="mailto:info@mzinyathigardens.co.zw"
+                  className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  <Mail size={16} className="text-[#4169E1] shrink-0" />
+                  info@mzinyathigardens.co.zw
+                </a>
+              </li>
+              <li className="flex items-start gap-2 text-gray-400">
+                <MapPin size={16} className="text-[#4169E1] shrink-0 mt-0.5" />
+                <span>
+                  125 Harold Road, Hope Valley, Kensington Township 2, Bulawayo
+                </span>
+              </li>
+              <li className="flex items-center gap-2 text-gray-500 text-xs">
+                <Clock size={14} className="text-[#4169E1] shrink-0" />
+                Mon – Sun: 08:00 – 17:00
+              </li>
             </ul>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-gray-400">
-              <li><Link href="/properties" className="hover:text-primary transition">Properties</Link></li>
-              <li><Link href="/projects" className="hover:text-primary transition">Projects</Link></li>
-              <li><Link href="/careers" className="hover:text-primary transition">Careers</Link></li>
-              <li><Link href="/contact" className="hover:text-primary transition">Contact</Link></li>
+
+          {/* Quick links + Social */}
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">
+              Quick Links
+            </h4>
+            <ul className="space-y-2.5">
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white hover:translate-x-0.5 inline-flex items-center gap-1 transition-all duration-200"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
-          <div>
-            <h4 className="font-semibold mb-4">Follow Us</h4>
-            <div className="flex space-x-4">
-              <a href="#" className="hover:text-primary transition">Facebook</a>
-              <a href="#" className="hover:text-primary transition">Twitter</a>
-              <a href="#" className="hover:text-primary transition">LinkedIn</a>
+
+          <div className="lg:col-span-2">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">
+              Follow Us
+            </h4>
+            <div className="flex flex-col gap-3">
+              <a
+                href="https://www.facebook.com/mzinyathigardens"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors border border-white/5"
+              >
+                <Share2 size={18} className="text-[#4169E1]" />
+                Facebook
+                <ArrowUpRight size={14} className="ml-auto opacity-50" />
+              </a>
+              <a
+                href="https://www.instagram.com/mzinyathigardens_official"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors border border-white/5"
+              >
+                <Camera size={18} className="text-[#DD3210]" />
+                Instagram
+                <ArrowUpRight size={14} className="ml-auto opacity-50" />
+              </a>
             </div>
+            <Link
+              href="/properties"
+              className="mt-6 inline-flex items-center justify-center w-full text-sm font-semibold bg-[#DD3210] hover:bg-[#c42b0e] text-white px-4 py-2.5 rounded-lg transition-colors"
+            >
+              View Properties
+            </Link>
           </div>
         </div>
-        <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Mzinyathi Gardens. All rights reserved.
+
+        {/* Bottom bar */}
+        <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+          <p>&copy; {year} Mzinyathi Gardens. All rights reserved.</p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <p className="text-xs text-gray-600">
+              Bulawayo, Zimbabwe · Gated community living
+            </p>
+            <Link
+              href="/admin/login"
+              className="inline-flex items-center gap-1.5 text-xs text-gray-500 hover:text-white border border-white/10 hover:border-white/25 px-3 py-1.5 rounded-md transition-colors"
+            >
+              <Shield size={14} />
+              Staff Login
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

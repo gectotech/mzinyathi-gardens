@@ -1,39 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Mail, User, MessageSquare, Briefcase, MapPin, Download, Smartphone, ChevronDown } from 'lucide-react';
+import PageHtmlBlock from '@/components/PageHtmlBlock';
 
-// ----- Job listings (display only, no buttons) -----
-const jobs = [
-  {
-    id: 1,
-    title: 'Security Officer',
-    department: 'Security',
-    location: 'Mzinyathi Gardens',
-    tagline: 'Protect our community with integrity and vigilance.',
-  },
-  {
-    id: 2,
-    title: 'Construction Worker',
-    department: 'Construction',
-    location: 'Mzinyathi Gardens',
-    tagline: 'Build the future – one brick at a time.',
-  },
-  {
-    id: 3,
-    title: 'Administrative Assistant',
-    department: 'Administration',
-    location: 'Mzinyathi Gardens',
-    tagline: 'Keep our operations smooth and efficient.',
-  },
-  {
-    id: 4,
-    title: 'Teacher (Primary)',
-    department: 'Teaching',
-    location: 'Mzinyathi Gardens',
-    tagline: 'Shape young minds and inspire lifelong learning.',
-  },
-];
+type JobListing = {
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  tagline: string;
+};
 
 // ----- Hero images (placed in public/images/) -----
 const heroImages = ['/images/hero1.jpg', '/images/hero2.jpg', '/images/hero3.jpg'];
@@ -55,7 +33,35 @@ type ApplicationData = {
 };
 
 export default function CareersPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <CareersPageContent />
+    </Suspense>
+  );
+}
+
+function CareersPageContent() {
+  const searchParams = useSearchParams();
+  const [jobs, setJobs] = useState<JobListing[]>([]);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+  useEffect(() => {
+    fetch('/api/careers')
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.jobs?.length) {
+          setJobs(d.jobs.map((j: JobListing & { id: string }) => ({ ...j, id: j.id })));
+        } else {
+          setJobs([
+            { id: '1', title: 'Security Officer', department: 'Security', location: 'Mzinyathi Gardens', tagline: 'Protect our community with integrity and vigilance.' },
+            { id: '2', title: 'Construction Worker', department: 'Construction', location: 'Mzinyathi Gardens', tagline: 'Build the future – one brick at a time.' },
+            { id: '3', title: 'Administrative Assistant', department: 'Administration', location: 'Mzinyathi Gardens', tagline: 'Keep our operations smooth and efficient.' },
+            { id: '4', title: 'Teacher (Primary)', department: 'Teaching', location: 'Mzinyathi Gardens', tagline: 'Shape young minds and inspire lifelong learning.' },
+          ]);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentHeroIndex((prev) => (prev + 1) % heroImages.length);
@@ -63,7 +69,7 @@ export default function CareersPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const [selectedJob, setSelectedJob] = useState<typeof jobs[0] | null>(null);
+  const [selectedJob, setSelectedJob] = useState<JobListing | null>(null);
   const [showAppPrompt, setShowAppPrompt] = useState(false);
   const [appDownloaded, setAppDownloaded] = useState(false);
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
@@ -91,7 +97,6 @@ export default function CareersPage() {
     const matchedJob = jobs.find(job => job.title === interestForm.position);
     if (matchedJob) {
       setSelectedJob(matchedJob);
-      localStorage.setItem('interestInfo', JSON.stringify(interestForm));
       setShowAppPrompt(true);
     } else {
       alert('Please select a valid position.');
@@ -110,18 +115,29 @@ export default function CareersPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmitApplication = (e: React.FormEvent) => {
+  const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedJob) return;
-    const newTrackingId = `MG-${Date.now()}`;
-    const application = { ...formData, jobId: selectedJob.id, trackingId: newTrackingId, status: 'Submitted', timestamp: new Date().toISOString() };
-    const existing = JSON.parse(localStorage.getItem('applications') || '[]');
-    localStorage.setItem('applications', JSON.stringify([...existing, application]));
-    setTrackingId(newTrackingId);
-    setApplicationSubmitted(true);
-    setSelectedJob(null);
-    setAppDownloaded(false);
-    setInterestForm({ name: '', email: '', position: '', message: '' });
+    try {
+      const res = await fetch('/api/careers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobTitle: selectedJob.title,
+          interestMessage: interestForm.message,
+          ...formData,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Submission failed');
+      setTrackingId(data.trackingId);
+      setApplicationSubmitted(true);
+      setSelectedJob(null);
+      setAppDownloaded(false);
+      setInterestForm({ name: '', email: '', position: '', message: '' });
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Failed to submit application');
+    }
   };
 
   const resetAndApplyAgain = () => {
@@ -362,6 +378,7 @@ export default function CareersPage() {
           </div>
         </div>
       )}
+      <PageHtmlBlock slug="careers" />
     </main>
   );
 }

@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink, CheckCircle2 } from 'lucide-react';
+import PageHtmlBlock from '@/components/PageHtmlBlock';
+import toast from 'react-hot-toast';
 
 // Three images for rotating hero background – change every 2 seconds
 const backgroundImages = [
@@ -11,14 +14,36 @@ const backgroundImages = [
 ];
 
 export default function ContactPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <ContactPageContent />
+    </Suspense>
+  );
+}
+
+function ContactPageContent() {
+  const searchParams = useSearchParams();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     message: '',
+    propertyInterest: '',
   });
   const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    const property = searchParams.get('property');
+    if (property) {
+      setFormData((prev) => ({
+        ...prev,
+        propertyInterest: property,
+        message: prev.message || `I'm interested in ${property}. `,
+      }));
+    }
+  }, [searchParams]);
 
   // Rotate background every 2 seconds
   useEffect(() => {
@@ -31,11 +56,29 @@ export default function ContactPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      alert('Thank you! Your message has been sent. We will get back to you soon.');
-      setFormData({ name: '', email: '', phone: '', message: '' });
+    setSubmitted(false);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          message: formData.message.trim(),
+          ...(formData.propertyInterest ? { propertyInterest: formData.propertyInterest.trim() } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to send');
+      setSubmitted(true);
+      toast.success('Message sent! Our team will respond soon.');
+      setFormData({ name: '', email: '', phone: '', message: '', propertyInterest: '' });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send message. Please try again.');
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const getDirections = (address: string) => {
@@ -216,7 +259,29 @@ export default function ContactPage() {
           {/* RIGHT COLUMN – Contact Form */}
           <div className="bg-gray-50 p-6 md:p-8 rounded-lg shadow-md">
             <h2 className="text-2xl font-bold text-blue-800 mb-6">Send us a Message</h2>
+
+            {submitted && (
+              <div className="mb-5 flex items-start gap-3 rounded-lg bg-green-50 border border-green-200 p-4 text-green-800">
+                <CheckCircle2 size={20} className="shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-semibold">Message received!</p>
+                  <p className="mt-1 text-green-700">Your enquiry was sent to our admin team. We will get back to you soon.</p>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
+              {formData.propertyInterest && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Property Interest</label>
+                  <input
+                    type="text"
+                    readOnly
+                    className="w-full border border-blue-200 bg-blue-50 rounded-md px-4 py-2 text-blue-900"
+                    value={formData.propertyInterest}
+                  />
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
                 <input
@@ -268,6 +333,7 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
+      <PageHtmlBlock slug="contact" />
     </div>
   );
 }
