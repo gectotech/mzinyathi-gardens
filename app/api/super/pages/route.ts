@@ -6,7 +6,7 @@ import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await requireAuth(['super_admin']);
+    await requireAuth(['super_admin']);
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
 
@@ -33,6 +33,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     if (!body.slug) return jsonError('Missing slug');
 
+    const publish = body.action === 'publish' || body.status === 'published';
     const db = getDb();
     const [existing] = await db
       .select()
@@ -50,14 +51,16 @@ export async function PUT(request: NextRequest) {
           customCss: body.customCss ?? existing.customCss,
           customJs: body.customJs ?? existing.customJs,
           htmlContent: body.htmlContent ?? existing.htmlContent,
-          status: body.status ?? existing.status,
-          version: (existing.version || 1) + 1,
+          status: publish ? 'published' : 'draft',
+          version: publish ? (existing.version || 1) + 1 : existing.version,
           updatedAt: new Date(),
           updatedBy: user.id,
         })
         .where(eq(schema.sitePages.slug, body.slug))
         .returning();
-      await logAudit(user.id, 'update', 'site_page', page.id);
+      await logAudit(user.id, publish ? 'publish' : 'draft', 'site_page', page.id, {
+        slug: body.slug,
+      });
       return jsonOk({ page });
     }
 
@@ -71,12 +74,14 @@ export async function PUT(request: NextRequest) {
         customCss: body.customCss || '',
         customJs: body.customJs || '',
         htmlContent: body.htmlContent || '',
-        status: body.status || 'draft',
+        status: publish ? 'published' : 'draft',
         updatedBy: user.id,
       })
       .returning();
 
-    await logAudit(user.id, 'create', 'site_page', page.id);
+    await logAudit(user.id, publish ? 'publish' : 'create', 'site_page', page.id, {
+      slug: body.slug,
+    });
     return jsonOk({ page }, 201);
   } catch (error) {
     return handleAuthError(error);

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Shield, Sun, Droplets, ArrowRight, Home, Building2, Users, TreePine } from 'lucide-react';
+import FAQSection from '@/components/ui/FAQSection';
 
 // Hero images for carousel
 const heroImages = [
@@ -178,6 +179,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <FAQSection />
 
       {/* CTA */}
       <section className="py-20 bg-red-600 text-white text-center">

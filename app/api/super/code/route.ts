@@ -31,8 +31,9 @@ export async function PUT(request: NextRequest) {
   try {
     const user = await requireAuth(['super_admin']);
     const body = await request.json();
-    if (!body.slug || !body.content) return jsonError('Missing slug or content');
+    if (!body.slug || body.content === undefined) return jsonError('Missing slug or content');
 
+    const publish = body.action === 'publish' || body.status === 'published';
     const db = getDb();
     const [existing] = await db
       .select()
@@ -47,14 +48,16 @@ export async function PUT(request: NextRequest) {
           name: body.name ?? existing.name,
           content: body.content,
           assetType: body.assetType ?? existing.assetType,
-          status: body.status ?? existing.status,
-          version: (existing.version || 1) + 1,
+          status: publish ? 'published' : 'draft',
+          version: publish ? (existing.version || 1) + 1 : existing.version,
           updatedAt: new Date(),
           updatedBy: user.id,
         })
         .where(eq(schema.codeAssets.slug, body.slug))
         .returning();
-      await logAudit(user.id, 'update', 'code_asset', asset.id);
+      await logAudit(user.id, publish ? 'publish' : 'draft', 'code_asset', asset.id, {
+        slug: body.slug,
+      });
       return jsonOk({ asset });
     }
 
@@ -65,12 +68,14 @@ export async function PUT(request: NextRequest) {
         name: body.name || body.slug,
         assetType: body.assetType || 'js',
         content: body.content,
-        status: body.status || 'draft',
+        status: publish ? 'published' : 'draft',
         updatedBy: user.id,
       })
       .returning();
 
-    await logAudit(user.id, 'create', 'code_asset', asset.id);
+    await logAudit(user.id, publish ? 'publish' : 'create', 'code_asset', asset.id, {
+      slug: body.slug,
+    });
     return jsonOk({ asset }, 201);
   } catch (error) {
     return handleAuthError(error);

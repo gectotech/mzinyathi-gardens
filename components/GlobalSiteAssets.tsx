@@ -1,35 +1,37 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { onCmsUpdated } from '@/lib/cms-events';
 
 export default function GlobalSiteAssets() {
-  useEffect(() => {
-    let cssEl: HTMLStyleElement | null = null;
-    let jsEl: HTMLScriptElement | null = null;
+  const applyAssets = useCallback(() => {
+    document.querySelectorAll('[data-global-css],[data-global-js]').forEach((el) => el.remove());
 
-    fetch('/api/content/code')
+    fetch(`/api/content/code?v=${Date.now()}`)
       .then((r) => r.json())
       .then((data) => {
         if (data.css) {
-          cssEl = document.createElement('style');
+          const cssEl = document.createElement('style');
           cssEl.setAttribute('data-global-css', 'true');
           cssEl.textContent = data.css;
           document.head.appendChild(cssEl);
         }
         if (data.js) {
-          jsEl = document.createElement('script');
+          const jsEl = document.createElement('script');
           jsEl.setAttribute('data-global-js', 'true');
           jsEl.textContent = data.js;
           document.body.appendChild(jsEl);
         }
       })
       .catch(() => {});
-
-    return () => {
-      cssEl?.remove();
-      jsEl?.remove();
-    };
   }, []);
+
+  useEffect(() => {
+    applyAssets();
+    return onCmsUpdated((detail) => {
+      if (!detail?.type || detail.type === 'code') applyAssets();
+    });
+  }, [applyAssets]);
 
   return null;
 }

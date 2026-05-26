@@ -16,7 +16,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
       .catch(() => setUser(null));
   }, [pathname]);
 
-  if (pathname === '/admin/login') {
+  if (pathname === '/admin/login' || pathname.startsWith('/admin/super/preview/')) {
     return <>{children}</>;
   }
 

@@ -14,6 +14,7 @@ import {
   Shield,
   LogOut,
   FileCode2,
+  ScrollText,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -35,6 +36,7 @@ const navItems = [
 const superNavItems = [
   { href: '/admin/super', label: 'Super Admin', icon: Shield },
   { href: '/admin/super/code', label: 'Code Studio', icon: Code2 },
+  { href: '/admin/super/audit', label: 'Audit Log', icon: ScrollText },
   { href: '/admin/users', label: 'Users', icon: Users },
 ];
 

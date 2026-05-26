@@ -28,6 +28,8 @@ export async function GET(
         customCss: page.customCss,
         customJs: page.customJs,
         htmlContent: page.htmlContent,
+        version: page.version,
+        updatedAt: page.updatedAt?.toISOString(),
       },
     });
   } catch (error) {

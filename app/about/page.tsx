@@ -15,7 +15,7 @@ import {
   ArrowRight,
   Sparkles,
 } from 'lucide-react';
-import PageHtmlBlock from '@/components/PageHtmlBlock';
+import PageCmsContent from '@/components/PageCmsContent';
 
 const heroImages = [
   '/images/hero1.jpg',
@@ -314,7 +314,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <PageHtmlBlock slug="about" />
+      <PageCmsContent slug="about" />
     </main>
   );
 }

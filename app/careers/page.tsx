@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Mail, User, MessageSquare, Briefcase, MapPin, Download, Smartphone, ChevronDown } from 'lucide-react';
-import PageHtmlBlock from '@/components/PageHtmlBlock';
+import PageCmsContent from '@/components/PageCmsContent';
 
 type JobListing = {
   id: string;
@@ -378,7 +378,7 @@ function CareersPageContent() {
           </div>
         </div>
       )}
-      <PageHtmlBlock slug="careers" />
+      <PageCmsContent slug="careers" />
     </main>
   );
 }

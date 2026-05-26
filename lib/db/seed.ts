@@ -38,6 +38,7 @@ const DEFAULT_PAGES = [
   { slug: 'properties', title: 'Properties', metaDescription: 'Property phases at Mzinyathi Gardens' },
   { slug: 'projects', title: 'Projects', metaDescription: 'Projects and house plans' },
   { slug: 'services', title: 'Services', metaDescription: 'Estate services and amenities' },
+  { slug: 'faq', title: 'FAQ', metaDescription: 'Frequently asked questions about Mzinyathi Gardens' },
 ];
 
 const DEFAULT_SETTINGS: Record<string, unknown> = {

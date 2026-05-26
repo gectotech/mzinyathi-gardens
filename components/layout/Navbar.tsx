@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ const navLinks = [
   { href: '/properties', label: 'Properties' },
   { href: '/projects', label: 'Projects' },
   { href: '/services', label: 'Services' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/about', label: 'About' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
@@ -29,9 +31,18 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16 lg:h-[4.25rem]">
           <Link
             href="/"
-            className="text-xl md:text-2xl font-bold tracking-tight text-[#4169E1] hover:opacity-90 transition-opacity"
+            className="flex items-center gap-2 md:gap-3 text-xl md:text-2xl font-bold tracking-tight text-[#4169E1] hover:opacity-90 transition-opacity"
           >
-            Mzinyathi <span className="text-[#DD3210]">Gardens</span>
+            <Image
+              src="/images/logo.png"
+              alt="Mzinyathi Gardens logo"
+              width={44}
+              height={44}
+              className="rounded-full object-cover shrink-0"
+            />
+            <span>
+              Mzinyathi <span className="text-[#DD3210]">Gardens</span>
+            </span>
           </Link>
 
           {/* Desktop Menu */}

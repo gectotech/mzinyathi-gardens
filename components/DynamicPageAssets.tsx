@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { onCmsUpdated } from '@/lib/cms-events';
 
 type DynamicPageAssetsProps = {
   slug: string;
@@ -10,42 +11,38 @@ type DynamicPageAssetsProps = {
 export default function DynamicPageAssets({ slug }: DynamicPageAssetsProps) {
   const pathname = usePathname();
 
-  useEffect(() => {
-    let cssEl: HTMLStyleElement | null = null;
-    let jsEl: HTMLScriptElement | null = null;
+  const applyAssets = useCallback(() => {
+    document.querySelectorAll(`[data-page-css="${slug}"],[data-page-js="${slug}"]`).forEach((el) => el.remove());
 
-    async function loadAssets() {
-      try {
-        const res = await fetch(`/api/content/pages/${slug}`);
-        const data = await res.json();
+    fetch(`/api/content/pages/${slug}?v=${Date.now()}`)
+      .then((r) => r.json())
+      .then((data) => {
         const page = data.page;
         if (!page) return;
 
         if (page.customCss) {
-          cssEl = document.createElement('style');
+          const cssEl = document.createElement('style');
           cssEl.setAttribute('data-page-css', slug);
           cssEl.textContent = page.customCss;
           document.head.appendChild(cssEl);
         }
 
         if (page.customJs) {
-          jsEl = document.createElement('script');
+          const jsEl = document.createElement('script');
           jsEl.setAttribute('data-page-js', slug);
           jsEl.textContent = page.customJs;
           document.body.appendChild(jsEl);
         }
-      } catch {
-        // Fallback silently to static UI
-      }
-    }
+      })
+      .catch(() => {});
+  }, [slug]);
 
-    loadAssets();
-
-    return () => {
-      cssEl?.remove();
-      jsEl?.remove();
-    };
-  }, [slug, pathname]);
+  useEffect(() => {
+    applyAssets();
+    return onCmsUpdated((detail) => {
+      if (!detail?.slug || detail.slug === slug) applyAssets();
+    });
+  }, [slug, pathname, applyAssets]);
 
   return null;
 }

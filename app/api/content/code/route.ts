@@ -10,11 +10,19 @@ export async function GET() {
       .from(schema.codeAssets)
       .where(eq(schema.codeAssets.status, 'published'));
 
-    const css = assets.find((a) => a.slug === 'global-css')?.content || '';
-    const js = assets.find((a) => a.slug === 'global-js')?.content || '';
+    const cssAsset = assets.find((a) => a.slug === 'global-css');
+    const jsAsset = assets.find((a) => a.slug === 'global-js');
 
-    return jsonOk({ css, js });
+    return jsonOk({
+      css: cssAsset?.content || '',
+      js: jsAsset?.content || '',
+      version: Math.max(cssAsset?.version || 0, jsAsset?.version || 0),
+      updatedAt: [cssAsset?.updatedAt, jsAsset?.updatedAt]
+        .filter(Boolean)
+        .sort((a, b) => new Date(b!).getTime() - new Date(a!).getTime())[0]
+        ?.toISOString(),
+    });
   } catch {
-    return jsonOk({ css: '', js: '' });
+    return jsonOk({ css: '', js: '', version: 0 });
   }
 }

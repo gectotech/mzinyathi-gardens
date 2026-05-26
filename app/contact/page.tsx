@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink, CheckCircle2 } from 'lucide-react';
-import PageHtmlBlock from '@/components/PageHtmlBlock';
+import PageCmsContent from '@/components/PageCmsContent';
 import toast from 'react-hot-toast';
 
 // Three images for rotating hero background – change every 2 seconds
@@ -333,7 +333,7 @@ function ContactPageContent() {
           </div>
         </div>
       </div>
-      <PageHtmlBlock slug="contact" />
+      <PageCmsContent slug="contact" />
     </div>
   );
 }

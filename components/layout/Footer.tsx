@@ -1,10 +1,13 @@
 import Link from 'next/link';
-import { Mail, Phone, MapPin, Clock, ArrowUpRight, Share2, Camera, Shield } from 'lucide-react';
+import Image from 'next/image';
+import { Mail, Phone, MapPin, Clock, ArrowUpRight, Shield } from 'lucide-react';
+import { FaFacebook, FaInstagram } from 'react-icons/fa';
 
 const quickLinks = [
   { href: '/properties', label: 'Properties' },
   { href: '/projects', label: 'Projects' },
   { href: '/services', label: 'Services' },
+  { href: '/faq', label: 'FAQ' },
   { href: '/about', label: 'About Us' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
@@ -22,7 +25,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand */}
           <div className="lg:col-span-4">
-            <Link href="/" className="inline-block group">
+            <Link href="/" className="inline-flex flex-col items-start group">
+              <Image
+                src="/images/Wlogo.png"
+                alt="Mzinyathi Gardens logo"
+                width={88}
+                height={88}
+                className="rounded-full object-cover mb-3 -mt-2"
+              />
               <h3 className="text-2xl font-bold tracking-tight">
                 Mzinyathi <span className="text-[#DD3210]">Gardens</span>
               </h3>
@@ -122,7 +132,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors border border-white/5"
               >
-                <Share2 size={18} className="text-[#4169E1]" />
+                <FaFacebook size={18} className="text-[#4169E1]" />
                 Facebook
                 <ArrowUpRight size={14} className="ml-auto opacity-50" />
               </a>
@@ -132,7 +142,7 @@ export default function Footer() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 text-sm text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors border border-white/5"
               >
-                <Camera size={18} className="text-[#DD3210]" />
+                <FaInstagram size={18} className="text-[#DD3210]" />
                 Instagram
                 <ArrowUpRight size={14} className="ml-auto opacity-50" />
               </a>
