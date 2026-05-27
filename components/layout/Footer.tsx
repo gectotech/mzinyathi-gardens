@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="lg:col-span-4">
             <Link href="/" className="inline-block group" aria-label="Mzinyathi Gardens home">
               <Image
-                src="/images/Wlogo.png"
+                src="/images/logo-light.png"
                 alt="Mzinyathi Gardens"
                 width={280}
                 height={110}
