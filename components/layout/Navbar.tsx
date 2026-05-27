@@ -31,18 +31,17 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16 lg:h-[4.25rem]">
           <Link
             href="/"
-            className="flex items-center gap-2 md:gap-3 text-xl md:text-2xl font-bold tracking-tight text-[#4169E1] hover:opacity-90 transition-opacity"
+            className="flex items-center hover:opacity-90 transition-opacity"
+            aria-label="Mzinyathi Gardens home"
           >
             <Image
               src="/images/logo.png"
-              alt="Mzinyathi Gardens logo"
-              width={180}
-              height={64}
-              className="h-11 w-auto object-contain shrink-0"
+              alt="Mzinyathi Gardens"
+              width={220}
+              height={80}
+              priority
+              className="h-12 sm:h-14 w-auto object-contain bg-transparent"
             />
-            <span>
-              Mzinyathi <span className="text-[#DD3210]">Gardens</span>
-            </span>
           </Link>
 
           {/* Desktop Menu */}
