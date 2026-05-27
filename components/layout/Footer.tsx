@@ -29,9 +29,9 @@ export default function Footer() {
               <Image
                 src="/images/Wlogo.png"
                 alt="Mzinyathi Gardens logo"
-                width={88}
-                height={88}
-                className="rounded-full object-cover mb-3 -mt-2"
+                width={240}
+                height={96}
+                className="h-24 w-auto object-contain mb-3"
               />
               <h3 className="text-2xl font-bold tracking-tight">
                 Mzinyathi <span className="text-[#DD3210]">Gardens</span>

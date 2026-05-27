@@ -36,9 +36,9 @@ export default function Navbar() {
             <Image
               src="/images/logo.png"
               alt="Mzinyathi Gardens logo"
-              width={44}
-              height={44}
-              className="rounded-full object-cover shrink-0"
+              width={180}
+              height={64}
+              className="h-11 w-auto object-contain shrink-0"
             />
             <span>
               Mzinyathi <span className="text-[#DD3210]">Gardens</span>
