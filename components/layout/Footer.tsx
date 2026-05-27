@@ -24,21 +24,19 @@ export default function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           {/* Brand */}
-          <div className="lg:col-span-4">
-            <Link href="/" className="inline-block group" aria-label="Mzinyathi Gardens home">
+          <div className="lg:col-span-4 text-center lg:text-left">
+            <div className="mb-2 -mt-10 flex flex-col items-center lg:items-start gap-1">
               <Image
-                src="/images/logo-light.png"
-                alt="Mzinyathi Gardens"
-                width={280}
-                height={110}
-                className="h-24 sm:h-28 w-auto object-contain bg-transparent"
+                src="/images/fologo.png"
+                alt="Mzinyathi Gardens logo"
+                width={320}
+                height={230}
+                className="h-28 sm:h-32 w-auto object-contain"
               />
-            </Link>
-            <p className="mt-3 text-gray-400 text-sm leading-relaxed max-w-sm">
-              The Cradle of Ubuntu Lokubambana — secure, sustainable gated community living in Bulawayo, Zimbabwe.
-            </p>
-            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-[#4169E1]">
-              Siyakwamukela Ekhaya
+              <h3 className="text-xl font-bold">Mzinyathi Gardens</h3>
+            </div>
+            <p className="text-gray-400 -mt-2 text-sm leading-relaxed max-w-sm mx-auto lg:mx-0">
+              The Cradle of Ubuntu Lokubambana – SIYAKWAMUKELA EKHAYA
             </p>
           </div>
 
