@@ -1,11 +1,14 @@
 import { Toaster } from 'react-hot-toast';
 import { Inter } from 'next/font/google';
+import type { Metadata } from 'next';
 import './globals.css';
 import ConditionalLayout from '../components/layout/ConditionalLayout';
+import { getSiteUrl } from '@/lib/site-url';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: 'Mzinyathi Gardens | Gated Community Living',
   description: 'Discover secure, sustainable, and community-driven living in Bulawayo, Zimbabwe.',
 };
