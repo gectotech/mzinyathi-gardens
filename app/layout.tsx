@@ -1,14 +1,14 @@
+// app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import Navbar from '../components/layout/Navbar';
-import Footer from '../components/layout/Footer';
+import ClientLayout from '../components/layout/ClientLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Mzinyathi Gardens | Gated Community Living',
-  description: 'Discover secure, sustainable, and community-driven living in South Africa.',
+  description: 'Discover secure, sustainable, and community-driven living in Zimbabwe.',
 };
 
 export default function RootLayout({
@@ -19,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+        <script src='https://cdn.jotfor.ms/agent/embedjs/019e7847ea5578e59f9e1bebcbba1e20df61/embed.js'>
+</script>
       </body>
     </html>
   );

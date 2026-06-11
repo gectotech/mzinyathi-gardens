@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -12,6 +11,7 @@ const navLinks = [
   { href: '/projects', label: 'Projects' },
   { href: '/services', label: 'Services' },
   { href: '/faq', label: 'FAQ' },
+  { href: '/school', label: 'School' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
   { href: '/about', label: 'About' },
@@ -33,21 +33,10 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo / Brand */}
-          <Link href="/" className="flex items-center gap-3 text-xl md:text-2xl font-bold text-blue-600">
-            <Image
-              src="/images/logo.png"
-              alt="Mzinyathi Gardens logo"
-              width={120}
-              height={120}
-              className="rounded-full object-cover"
-            />
-            <span>
-              Mzinyathi <span className="text-red-600">Gardens</span>
-            </span>
+          <Link href="/" className="text-xl md:text-2xl font-bold text-blue-600">
+            Mzinyathi <span className="text-red-600">Gardens</span>
           </Link>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex space-x-4 lg:space-x-6">
             {navLinks.map((link) => (
               <Link
@@ -64,7 +53,6 @@ export default function Navbar() {
             ))}
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden p-2 rounded-md focus:outline-none"
@@ -74,7 +62,6 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
           <div className="md:hidden pb-4 space-y-1">
             {navLinks.map((link) => (
