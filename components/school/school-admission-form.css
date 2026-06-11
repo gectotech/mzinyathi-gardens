@@ -1,0 +1,121 @@
+.school-admission-form .section-title {
+  color: #0f5132;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.school-admission-form .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.school-admission-form input,
+.school-admission-form select,
+.school-admission-form textarea {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  background: #fff;
+  color: #111;
+}
+
+.school-admission-form textarea {
+  min-height: 100px;
+  margin-bottom: 15px;
+}
+
+.school-admission-form .upload-label {
+  display: block;
+  margin-bottom: 20px;
+  color: #111;
+  font-weight: 600;
+}
+
+.school-admission-form .document-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.school-admission-form .document-card {
+  background: #f8fafc;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.school-admission-form .document-card label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.school-admission-form .declaration-box {
+  background: #f8fafc;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
+.school-admission-form .checkbox-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: flex-start;
+}
+
+.school-admission-form .application-info {
+  margin-top: 40px;
+  background: #ecfdf5;
+  border-left: 5px solid #0f5132;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+.school-admission-form .application-info h4 {
+  margin-bottom: 15px;
+  color: #0f5132;
+}
+
+.school-admission-form .application-info ol {
+  padding-left: 20px;
+  line-height: 1.9;
+  color: #374151;
+}
+
+.school-admission-form .submit-section {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.school-admission-form .submit-btn {
+  background: #0f5132;
+  color: white;
+  border: none;
+  padding: 15px 35px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.school-admission-form .submit-btn:hover:not(:disabled) {
+  background: #0b3f27;
+}
+
+.school-admission-form .submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.school-admission-form .submit-section p {
+  margin-top: 10px;
+  color: #666;
+}

@@ -7,6 +7,7 @@ import {
   Mail,
   Users,
   Briefcase,
+  GraduationCap,
   Home,
   Image,
   Settings,
@@ -26,7 +27,8 @@ type AdminShellProps = {
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/contacts', label: 'Contacts', icon: Mail },
-  { href: '/admin/applications', label: 'Applications', icon: Users },
+  { href: '/admin/applications', label: 'Job Applications', icon: Users },
+  { href: '/admin/school-applications', label: 'School Admissions', icon: GraduationCap },
   { href: '/admin/jobs', label: 'Jobs', icon: Briefcase },
   { href: '/admin/properties', label: 'Properties', icon: Home },
   { href: '/admin/media', label: 'Media Library', icon: Image },

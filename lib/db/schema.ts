@@ -23,6 +23,13 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'rejected',
   'hired',
 ]);
+export const schoolAdmissionStatusEnum = pgEnum('school_admission_status', [
+  'submitted',
+  'under_review',
+  'accepted',
+  'waitlisted',
+  'rejected',
+]);
 export const phaseStatusEnum = pgEnum('phase_status', [
   'active',
   'under_construction',
@@ -67,6 +74,64 @@ export const jobs = pgTable('jobs', {
   requirements: jsonb('requirements').$type<string[]>().default([]),
   responsibilities: jsonb('responsibilities').$type<string[]>().default([]),
   isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export type SchoolAdmissionDocuments = {
+  studentPhoto?: string;
+  birthCertificate?: string;
+  previousReport?: string;
+  passportPhoto?: string;
+  parentId?: string;
+  proofOfResidence?: string;
+  transferLetter?: string;
+  recentResults?: string;
+};
+
+export const schoolApplications = pgTable('school_applications', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  trackingId: text('tracking_id').notNull().unique(),
+  source: text('source').notNull().default('admissions_page'),
+  firstName: text('first_name').notNull(),
+  surname: text('surname').notNull(),
+  dateOfBirth: text('date_of_birth').notNull(),
+  gender: text('gender').notNull(),
+  nationality: text('nationality').notNull(),
+  birthCertNumber: text('birth_cert_number').notNull(),
+  gradeApplying: text('grade_applying').notNull(),
+  learnerPreviousSchool: text('learner_previous_school'),
+  parentName: text('parent_name').notNull(),
+  parentRelationship: text('parent_relationship').notNull(),
+  parentNationalId: text('parent_national_id'),
+  parentPhone: text('parent_phone').notNull(),
+  parentAltPhone: text('parent_alt_phone'),
+  parentEmail: text('parent_email'),
+  parentOccupation: text('parent_occupation'),
+  homeAddress: text('home_address').notNull(),
+  city: text('city').notNull(),
+  province: text('province').notNull(),
+  suburb: text('suburb').notNull(),
+  postalAddress: text('postal_address'),
+  emergencyName: text('emergency_name').notNull(),
+  emergencyRelationship: text('emergency_relationship').notNull(),
+  emergencyPhone: text('emergency_phone').notNull(),
+  emergencyAltPhone: text('emergency_alt_phone'),
+  medicalConditions: text('medical_conditions'),
+  allergies: text('allergies'),
+  disabilities: text('disabilities'),
+  medications: text('medications'),
+  doctorInfo: text('doctor_info'),
+  currentSchool: text('current_school'),
+  lastGradeCompleted: text('last_grade_completed').notNull(),
+  languagesSpoken: text('languages_spoken'),
+  talentsInterests: text('talents_interests'),
+  documents: jsonb('documents').$type<SchoolAdmissionDocuments>().default({}),
+  requiresTransport: text('requires_transport'),
+  pickupArea: text('pickup_area'),
+  informationConfirmed: boolean('information_confirmed').notNull().default(false),
+  parentSignature: text('parent_signature').notNull(),
+  status: schoolAdmissionStatusEnum('status').notNull().default('submitted'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -190,6 +255,7 @@ export type User = typeof users.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type Job = typeof jobs.$inferSelect;
 export type JobApplication = typeof jobApplications.$inferSelect;
+export type SchoolApplication = typeof schoolApplications.$inferSelect;
 export type Phase = typeof phases.$inferSelect;
 export type House = typeof houses.$inferSelect;
 export type MediaFile = typeof mediaFiles.$inferSelect;

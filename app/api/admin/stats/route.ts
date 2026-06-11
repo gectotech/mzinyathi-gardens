@@ -10,6 +10,9 @@ export async function GET() {
 
     const [contacts] = await db.select({ value: count() }).from(schema.contactSubmissions);
     const [applications] = await db.select({ value: count() }).from(schema.jobApplications);
+    const [schoolApplications] = await db
+      .select({ value: count() })
+      .from(schema.schoolApplications);
     const [jobs] = await db.select({ value: count() }).from(schema.jobs);
     const [phases] = await db.select({ value: count() }).from(schema.phases);
     const [media] = await db.select({ value: count() }).from(schema.mediaFiles);
@@ -35,16 +38,32 @@ export async function GET() {
       .orderBy(desc(schema.jobApplications.createdAt))
       .limit(5);
 
+    const recentSchoolApplications = await db
+      .select({
+        id: schema.schoolApplications.id,
+        trackingId: schema.schoolApplications.trackingId,
+        firstName: schema.schoolApplications.firstName,
+        surname: schema.schoolApplications.surname,
+        gradeApplying: schema.schoolApplications.gradeApplying,
+        status: schema.schoolApplications.status,
+        createdAt: schema.schoolApplications.createdAt,
+      })
+      .from(schema.schoolApplications)
+      .orderBy(desc(schema.schoolApplications.createdAt))
+      .limit(5);
+
     return jsonOk({
       stats: {
         contacts: contacts.value,
         applications: applications.value,
+        schoolApplications: schoolApplications.value,
         jobs: jobs.value,
         phases: phases.value,
         media: media.value,
       },
       recentContacts,
       recentApplications,
+      recentSchoolApplications,
     });
   } catch (error) {
     return handleAuthError(error);

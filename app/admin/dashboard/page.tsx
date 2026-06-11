@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Mail, Users, Briefcase, Home, Image } from 'lucide-react';
+import { Mail, Users, GraduationCap, Briefcase, Home, Image } from 'lucide-react';
 import Link from 'next/link';
 
 type Stats = {
   contacts: number;
   applications: number;
+  schoolApplications: number;
   jobs: number;
   phases: number;
   media: number;
@@ -16,6 +17,9 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recentContacts, setRecentContacts] = useState<Array<Record<string, string>>>([]);
   const [recentApplications, setRecentApplications] = useState<Array<Record<string, string>>>([]);
+  const [recentSchoolApplications, setRecentSchoolApplications] = useState<
+    Array<Record<string, string>>
+  >([]);
   const [dbReady, setDbReady] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -31,6 +35,7 @@ export default function AdminDashboard() {
           setStats(d.stats);
           setRecentContacts(d.recentContacts || []);
           setRecentApplications(d.recentApplications || []);
+          setRecentSchoolApplications(d.recentSchoolApplications || []);
         }
       })
       .catch(() => {});
@@ -50,6 +55,7 @@ export default function AdminDashboard() {
   const cards = [
     { label: 'Contact Messages', value: stats?.contacts ?? 0, icon: Mail, href: '/admin/contacts', color: 'bg-blue-600' },
     { label: 'Job Applications', value: stats?.applications ?? 0, icon: Users, href: '/admin/applications', color: 'bg-red-600' },
+    { label: 'School Admissions', value: stats?.schoolApplications ?? 0, icon: GraduationCap, href: '/admin/school-applications', color: 'bg-teal-600' },
     { label: 'Open Jobs', value: stats?.jobs ?? 0, icon: Briefcase, href: '/admin/jobs', color: 'bg-green-600' },
     { label: 'Property Phases', value: stats?.phases ?? 0, icon: Home, href: '/admin/properties', color: 'bg-purple-600' },
     { label: 'Media Files', value: stats?.media ?? 0, icon: Image, href: '/admin/media', color: 'bg-orange-600' },
@@ -74,7 +80,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {cards.map(({ label, value, icon: Icon, href, color }) => (
           <Link key={label} href={href} className="bg-white rounded-lg shadow p-5 hover:shadow-md transition">
             <div className={`inline-flex p-2 rounded-md text-white ${color} mb-3`}>
@@ -107,11 +113,11 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b font-semibold">Recent Applications</div>
+          <div className="px-6 py-4 border-b font-semibold">Recent Job Applications</div>
           <table className="min-w-full text-sm">
             <tbody>
               {recentApplications.length === 0 ? (
-                <tr><td className="px-6 py-8 text-gray-500">No applications yet</td></tr>
+                <tr><td className="px-6 py-8 text-gray-500">No job applications yet</td></tr>
               ) : (
                 recentApplications.map((a) => (
                   <tr key={a.id} className="border-t">
@@ -124,6 +130,30 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="px-6 py-4 border-b font-semibold flex items-center justify-between">
+          <span>Recent School Admissions</span>
+          <Link href="/admin/school-applications" className="text-sm text-[#4169E1] hover:underline">
+            View all
+          </Link>
+        </div>
+        <table className="min-w-full text-sm">
+          <tbody>
+            {recentSchoolApplications.length === 0 ? (
+              <tr><td className="px-6 py-8 text-gray-500">No school applications yet</td></tr>
+            ) : (
+              recentSchoolApplications.map((a) => (
+                <tr key={a.id} className="border-t">
+                  <td className="px-6 py-3">{a.firstName} {a.surname}</td>
+                  <td className="px-6 py-3 text-gray-500">{a.gradeApplying}</td>
+                  <td className="px-6 py-3 font-mono text-xs">{a.trackingId}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -16,8 +16,11 @@ import {
   Building2,
   ChevronRight,
 } from "lucide-react";
+import SchoolAdmissionForm from "@/components/school/SchoolAdmissionForm";
 
 export default function ContactPage() {
+  const [admissionSubmitted, setAdmissionSubmitted] = useState(false);
+  const [admissionTrackingId, setAdmissionTrackingId] = useState("");
   const targetDate = new Date("2027-01-15T00:00:00").getTime();
 
   const [timeLeft, setTimeLeft] = useState({
@@ -359,165 +362,31 @@ export default function ContactPage() {
 
           </div>
 
-          <form
-            action="mailto:admissions@mzinyathigardens.co.zw"
-            method="POST"
-            encType="multipart/form-data"
-            className="bg-white rounded-[40px] p-10 shadow-2xl"
-          >
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <input
-                type="text"
-                placeholder="First Name"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Surname"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="date"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              >
-                <option>Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Nationality"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-              <input
-                type="text"
-                placeholder="Birth Certificate Number"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              >
-                <option>Grade Applying For</option>
-                <option>ECD A</option>
-                <option>ECD B</option>
-                <option>Grade 1</option>
-                <option>Grade 2</option>
-                <option>Grade 3</option>
-                <option>Grade 4</option>
-                <option>Grade 5</option>
-                <option>Grade 6</option>
-                <option>Grade 7</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Previous School"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="mt-8">
-
-              <textarea
-                rows={5}
-                placeholder="Parent / Guardian Information"
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-            {/* DOCUMENT UPLOADS */}
-
-            <div className="mt-10">
-
-              <h3 className="text-2xl font-black text-black mb-6">
-                Required Documents
-              </h3>
-
-              <div className="grid md:grid-cols-2 gap-6">
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Birth Certificate Copy
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Previous School Report
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Parent / Guardian ID Copy
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Proof Of Residence
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
+          <div className="bg-white rounded-[40px] p-10 shadow-2xl">
+            {admissionSubmitted ? (
+              <div className="text-center py-16">
+                <h3 className="text-3xl font-black text-black mb-4">
+                  Application Submitted
+                </h3>
+                <p className="text-lg text-black mb-2">
+                  Your application number is{" "}
+                  <strong className="font-mono">{admissionTrackingId}</strong>
+                </p>
+                <p className="text-gray-600">
+                  The Admissions Office will review your application and contact you.
+                </p>
               </div>
-
-              <button
-                type="submit"
-                className="
-                mt-10
-                bg-[#2654a7]
-                hover:bg-[#1f468d]
-                text-white
-                px-10
-                py-4
-                rounded-xl
-                font-bold
-                transition
-                hover:scale-105
-                "
-              >
-                Submit Admission Application
-              </button>
-
-            </div>
-
-          </form>
+            ) : (
+              <SchoolAdmissionForm
+                source="contact_page"
+                submitLabel="Submit Admission Application"
+                onSuccess={(id) => {
+                  setAdmissionTrackingId(id);
+                  setAdmissionSubmitted(true);
+                }}
+              />
+            )}
+          </div>
 
         </div>
 
