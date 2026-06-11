@@ -12,6 +12,7 @@ const navLinks = [
   { href: '/projects', label: 'Projects' },
   { href: '/services', label: 'Services' },
   { href: '/faq', label: 'FAQ' },
+  { href: '/school', label: 'School' },
   { href: '/about', label: 'About' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
@@ -45,7 +46,6 @@ export default function Navbar() {
           : 'border-gray-100 shadow-none'
       }`}
     >
-      {/* Brand accent */}
       <div
         className="h-[3px] w-full bg-gradient-to-r from-[#4169E1] via-[#6366f1] to-[#DD3210]"
         aria-hidden
@@ -69,7 +69,6 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Desktop */}
             <div className="hidden lg:flex items-center gap-0.5">
               {navLinks.map((link) => (
                 <Link
@@ -95,7 +94,6 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile toggle */}
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
@@ -107,10 +105,9 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile menu */}
           <div
             className={`lg:hidden overflow-hidden bg-white transition-[max-height,opacity] duration-300 ease-in-out ${
-              isOpen ? 'max-h-[32rem] opacity-100 pb-5' : 'max-h-0 opacity-0'
+              isOpen ? 'max-h-[36rem] opacity-100 pb-5' : 'max-h-0 opacity-0'
             }`}
           >
             <div className="pt-3 pb-1 border-t border-gray-100">

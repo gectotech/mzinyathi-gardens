@@ -1,6 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { Inter } from 'next/font/google';
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import ConditionalLayout from '../components/layout/ConditionalLayout';
 import { getSiteUrl } from '@/lib/site-url';
@@ -19,6 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <ConditionalLayout>{children}</ConditionalLayout>
         <Toaster position="top-right" />
+        <Script
+          src="https://cdn.jotfor.ms/agent/embedjs/019e7847ea5578e59f9e1bebcbba1e20df61/embed.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

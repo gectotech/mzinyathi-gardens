@@ -8,6 +8,7 @@ const quickLinks = [
   { href: '/projects', label: 'Projects' },
   { href: '/services', label: 'Services' },
   { href: '/faq', label: 'FAQ' },
+  { href: '/school', label: 'School' },
   { href: '/about', label: 'About Us' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
@@ -18,12 +19,10 @@ export default function Footer() {
 
   return (
     <footer className="mt-auto bg-[#0f172a] text-white">
-      {/* Brand accent strip */}
       <div className="h-1 bg-gradient-to-r from-[#4169E1] via-[#6366f1] to-[#DD3210]" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-          {/* Brand */}
           <div className="lg:col-span-4 text-center lg:text-left">
             <div className="mb-2 -mt-10 flex flex-col items-center lg:items-start gap-1">
               <Image
@@ -40,7 +39,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Contact */}
           <div className="lg:col-span-4">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">
               Contact Us
@@ -97,7 +95,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Quick links + Social */}
           <div className="lg:col-span-2">
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">
               Quick Links
@@ -151,7 +148,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
         <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <p>&copy; {year} Mzinyathi Gardens. All rights reserved.</p>
           <div className="flex flex-wrap items-center justify-center gap-4">

@@ -10,6 +10,12 @@ export const staticRoutes = [
   { path: '/faq', priority: 0.7, changeFrequency: 'monthly' as const },
   { path: '/careers', priority: 0.6, changeFrequency: 'weekly' as const },
   { path: '/contact', priority: 0.8, changeFrequency: 'monthly' as const },
+  { path: '/school', priority: 0.8, changeFrequency: 'monthly' as const },
+  { path: '/school/about', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/school/admissions', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/school/what-we-offer', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/school/news', priority: 0.6, changeFrequency: 'weekly' as const },
+  { path: '/school/contact', priority: 0.7, changeFrequency: 'monthly' as const },
 ];
 
 /** Property detail slugs defined in app/properties/[id]/page.tsx */

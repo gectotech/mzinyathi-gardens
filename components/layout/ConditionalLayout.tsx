@@ -21,9 +21,10 @@ const slugMap: Record<string, string> = {
 export default function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
+  const isSchool = pathname.startsWith('/school');
   const pageSlug = slugMap[pathname];
 
-  if (isAdmin) {
+  if (isAdmin || isSchool) {
     return <>{children}</>;
   }
 
