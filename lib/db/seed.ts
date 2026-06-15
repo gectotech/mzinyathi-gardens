@@ -44,6 +44,7 @@ const DEFAULT_PAGES = [
 const DEFAULT_SETTINGS: Record<string, unknown> = {
   site_name: 'Mzinyathi Gardens',
   contact_email: 'info@mzinyathigardens.co.zw',
+  reply_email: 'info@mzinyathigardens.co.zw',
   phone_za: '+27 76 082 8987',
   phone_zw_1: '+263 77 620 3372',
   phone_zw_2: '+263 77 116 0529',

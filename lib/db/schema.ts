@@ -16,6 +16,11 @@ export const contactStatusEnum = pgEnum('contact_status', [
   'replied',
   'archived',
 ]);
+export const contactPreferenceEnum = pgEnum('contact_preference', [
+  'call',
+  'email',
+  'whatsapp',
+]);
 export const applicationStatusEnum = pgEnum('application_status', [
   'submitted',
   'under_review',
@@ -60,6 +65,7 @@ export const contactSubmissions = pgTable('contact_submissions', {
   phone: text('phone').notNull(),
   message: text('message').notNull(),
   propertyInterest: text('property_interest'),
+  preferredContact: contactPreferenceEnum('preferred_contact').notNull().default('email'),
   status: contactStatusEnum('status').notNull().default('new'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

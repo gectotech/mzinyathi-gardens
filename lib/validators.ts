@@ -7,6 +7,7 @@ export const contactSchema = z.object({
   phone: z.string().min(6),
   message: z.string().min(10),
   propertyInterest: z.string().optional(),
+  preferredContact: z.enum(['call', 'email', 'whatsapp']),
 });
 
 export const applicationSchema = z.object({

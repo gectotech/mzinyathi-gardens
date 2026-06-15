@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle, ExternalLink, CheckCircle2 } from 'lucide-react';
 import PageCmsContent from '@/components/PageCmsContent';
 import toast from 'react-hot-toast';
+import type { ContactPreference } from '@/lib/contact-reply';
 
 // Three images for rotating hero background – change every 2 seconds
 const backgroundImages = [
@@ -30,9 +31,11 @@ function ContactPageContent() {
     phone: '',
     message: '',
     propertyInterest: '',
+    preferredContact: 'email' as ContactPreference,
   });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedPreference, setSubmittedPreference] = useState<ContactPreference>('email');
 
   useEffect(() => {
     const property = searchParams.get('property');
@@ -66,14 +69,23 @@ function ContactPageContent() {
           email: formData.email.trim(),
           phone: formData.phone.trim(),
           message: formData.message.trim(),
+          preferredContact: formData.preferredContact,
           ...(formData.propertyInterest ? { propertyInterest: formData.propertyInterest.trim() } : {}),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send');
       setSubmitted(true);
+      setSubmittedPreference(formData.preferredContact);
       toast.success('Message sent! Our team will respond soon.');
-      setFormData({ name: '', email: '', phone: '', message: '', propertyInterest: '' });
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: '',
+        propertyInterest: '',
+        preferredContact: 'email',
+      });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to send message. Please try again.');
     } finally {
@@ -265,7 +277,21 @@ function ContactPageContent() {
                 <CheckCircle2 size={20} className="shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <p className="font-semibold">Message received!</p>
-                  <p className="mt-1 text-green-700">Your enquiry was sent to our admin team. We will get back to you soon.</p>
+                  {submittedPreference === 'email' && (
+                    <p className="mt-1 text-green-700">
+                      We will reply to you by email at the address you provided.
+                    </p>
+                  )}
+                  {submittedPreference === 'whatsapp' && (
+                    <p className="mt-1 text-green-700">
+                      We will reach you on WhatsApp at the number you provided.
+                    </p>
+                  )}
+                  {submittedPreference === 'call' && (
+                    <p className="mt-1 text-green-700">
+                      We will call you at the phone number you provided.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -322,6 +348,40 @@ function ContactPageContent() {
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Preferred way to hear back from us *
+                </label>
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {([
+                    { value: 'call' as const, label: 'Phone Call', icon: Phone },
+                    { value: 'email' as const, label: 'Email', icon: Mail },
+                    { value: 'whatsapp' as const, label: 'WhatsApp', icon: MessageCircle },
+                  ]).map(({ value, label, icon: Icon }) => (
+                    <label
+                      key={value}
+                      className={`flex items-center gap-2 border rounded-md px-4 py-3 cursor-pointer transition ${
+                        formData.preferredContact === value
+                          ? 'border-blue-600 bg-blue-50 text-blue-900'
+                          : 'border-gray-300 hover:border-blue-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="preferredContact"
+                        value={value}
+                        checked={formData.preferredContact === value}
+                        onChange={() => setFormData({ ...formData, preferredContact: value })}
+                        className="sr-only"
+                      />
+                      <Icon size={18} />
+                      <span className="text-sm font-medium">{label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}

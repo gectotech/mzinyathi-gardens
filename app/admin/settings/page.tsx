@@ -34,7 +34,8 @@ export default function AdminSettingsPage() {
 
   const fields = [
     { key: 'site_name', label: 'Site Name' },
-    { key: 'contact_email', label: 'Contact Email' },
+    { key: 'contact_email', label: 'Contact Email (public)' },
+    { key: 'reply_email', label: 'Reply Email (admin replies from this address)' },
     { key: 'phone_za', label: 'South Africa Phone' },
     { key: 'phone_zw_1', label: 'Zimbabwe Phone 1' },
     { key: 'phone_zw_2', label: 'Zimbabwe Phone 2' },

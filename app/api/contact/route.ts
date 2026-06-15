@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
       phone: body.phone?.trim(),
       message: body.message?.trim(),
       propertyInterest: body.propertyInterest?.trim() || undefined,
+      preferredContact: body.preferredContact,
     });
 
     if (!parsed.success) {
@@ -29,6 +30,7 @@ export async function POST(request: NextRequest) {
         phone: parsed.data.phone,
         message: parsed.data.message,
         propertyInterest: parsed.data.propertyInterest ?? null,
+        preferredContact: parsed.data.preferredContact,
         status: 'new',
       })
       .returning();
