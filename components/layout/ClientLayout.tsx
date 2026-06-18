@@ -10,7 +10,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   
   // Don't show navbar and footer on school pages and portal pages
   const isSchoolPage = pathname?.startsWith('/school');
-  const isPortalPage = pathname?.startsWith('/school/portal');
+  const isPortalPage = pathname?.startsWith('/school/pathway');
 
   // Hide navbar and footer for both school and portal pages
   const hideNavFooter = isSchoolPage || isPortalPage;

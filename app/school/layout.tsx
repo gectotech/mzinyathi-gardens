@@ -9,7 +9,7 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   
   // Hide school navbar and footer on portal pages
-  const isPortalPage = pathname?.startsWith('/school/portal');
+  const isPortalPage = pathname?.startsWith('/school/pathway');
 
   return (
     <div className="school-site">

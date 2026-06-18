@@ -65,7 +65,7 @@ export default function NewsPage() {
 
           <Image
             src="/school/dev.jpg"
-            alt=""
+            alt="School Development"
             fill
             className="object-cover"
           />
@@ -104,7 +104,7 @@ export default function NewsPage() {
 
               <Image
                 src="/school/school2.jpg"
-                alt=""
+                alt="School Building"
                 fill
                 className="object-cover rounded-[40px]"
               />
@@ -171,7 +171,7 @@ export default function NewsPage() {
 
                 <Image
                   src="/school/schooldev.jpg"
-                  alt=""
+                  alt="School Development"
                   fill
                   className="object-cover"
                 />
@@ -242,10 +242,10 @@ export default function NewsPage() {
             </div>
 
             <Link
-              href="/school/admissions"
+              href="/school/pathway"
               className="mt-8 block text-center bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold transition"
             >
-              Apply For Admission
+              Apply
             </Link>
 
           </div>
@@ -416,7 +416,7 @@ export default function NewsPage() {
             <div className="absolute inset-0 opacity-20">
               <Image
                 src="/school/student.jpg"
-                alt=""
+                alt="Students"
                 fill
                 className="object-cover"
               />
@@ -464,7 +464,7 @@ export default function NewsPage() {
 
                 <Image
                   src="/school/student.jpg"
-                  alt=""
+                  alt="Students"
                   fill
                   className="object-contain"
                 />
@@ -511,10 +511,10 @@ export default function NewsPage() {
             </p>
 
             <Link
-              href="/school/admissions"
+              href="/school/pathway"
               className="inline-flex items-center gap-3 bg-white text-red-600 px-10 py-5 rounded-xl font-black text-lg hover:scale-105 transition"
             >
-              Apply For Admission
+              Apply
               <ArrowRight size={22} />
             </Link>
 

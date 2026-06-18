@@ -92,7 +92,8 @@ export default function CareersPage() {
     if (matchedJob) {
       setSelectedJob(matchedJob);
       localStorage.setItem('interestInfo', JSON.stringify(interestForm));
-      setShowAppPrompt(true);
+      // Redirect to school careers portal
+      window.location.href = '/school/careers';
     } else {
       alert('Please select a valid position.');
     }
@@ -251,7 +252,7 @@ export default function CareersPage() {
                 </button>
               </form>
               <p className="text-xs text-gray-600 mt-4 text-center">
-                By applying, you agree to our privacy policy. You will be asked to download our app to complete the full application.
+                By applying, you agree to our privacy policy. You will be redirected to our school careers portal to complete your application.
               </p>
             </div>
           </div>

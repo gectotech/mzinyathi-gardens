@@ -12,7 +12,7 @@ export default function AdmissionsSection() {
           <div className="bg-[#001F6B] rounded-3xl overflow-hidden text-white">
             <img
               src="/school/student.jpg"
-              alt=""
+              alt="Students"
               className="w-full h-[350px] object-cover"
             />
 
@@ -64,10 +64,10 @@ export default function AdmissionsSection() {
             </ul>
 
             <Link
-              href="/school/news"
+              href="/school/careers"
               className="inline-block mt-8 bg-black text-white px-8 py-4 rounded-xl"
             >
-              View Recruitment News
+              Apply Now
             </Link>
           </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, Briefcase, X, Eye, EyeOff, ArrowLeft, CheckCircle } from "lucide-react";
+import { GraduationCap, Briefcase, X, Eye, EyeOff, ArrowLeft, CheckCircle, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +18,7 @@ export default function PortalPage() {
   const [loading, setLoading]         = useState(false);
   const [success, setSuccess]         = useState(false);
   const [error, setError]             = useState("");
+
 
   const [form, setForm] = useState({
     firstname: "", lastname: "", email: "", password: "", confirm: "",
@@ -99,6 +100,11 @@ export default function PortalPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-16"
         >
+          <div className="mb-6">
+            <Link href="/school" className="inline-flex items-center gap-2 text-green-200 hover:text-white transition">
+              <ArrowLeft size={16} /> Back to Website
+            </Link>
+          </div>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm text-green-200 mb-6 backdrop-blur-sm">
             <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             Grand Opening · January 2027
@@ -113,7 +119,7 @@ export default function PortalPage() {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
 
           {/* Admissions */}
           <Link href="/school/admissions">
@@ -141,28 +147,54 @@ export default function PortalPage() {
           </Link>
 
           {/* Jobs */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ y: -4 }}
-            className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 overflow-hidden group cursor-pointer"
-            onClick={() => openPortal("jobs")}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
-            <div className="relative z-10">
-              <div className="w-16 h-16 rounded-2xl bg-green-500/20 border border-green-400/30 flex items-center justify-center mb-6">
-                <Briefcase className="w-8 h-8 text-green-400" />
+          <Link href="/school/careers">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              whileHover={{ y: -4 }}
+              className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 overflow-hidden group cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+              <div className="relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-green-500/20 border border-green-400/30 flex items-center justify-center mb-6">
+                  <Briefcase className="w-8 h-8 text-green-400" />
+                </div>
+                <h2 className="text-3xl font-bold mb-3">Careers</h2>
+                <p className="text-gray-300 mb-8 leading-relaxed">
+                  Apply for positions, upload qualifications, track your recruitment progress and receive updates directly from the HR team.
+                </p>
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-400 transition-colors">
+                  <Briefcase size={18} /> Get Started
+                </div>
               </div>
-              <h2 className="text-3xl font-bold mb-3">Careers Portal</h2>
-              <p className="text-gray-300 mb-8 leading-relaxed">
-                Apply for positions, upload qualifications, track your recruitment progress and receive updates directly from the HR team.
-              </p>
-              <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-400 transition-colors">
-                <Briefcase size={18} /> Get Started
+            </motion.div>
+          </Link>
+
+          {/* Track Application */}
+          <Link href="/school/track-application">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              whileHover={{ y: -4 }}
+              className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-10 overflow-hidden group cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-3xl" />
+              <div className="relative z-10">
+                <div className="w-16 h-16 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center mb-6">
+                  <Search className="w-8 h-8 text-blue-400" />
+                </div>
+                <h2 className="text-3xl font-bold mb-3">Track Application</h2>
+                <p className="text-gray-300 mb-8 leading-relaxed">
+                  Check your application status, interview schedules, and admission decisions using your application number.
+                </p>
+                <div className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-500 text-white font-semibold hover:bg-blue-400 transition-colors">
+                  <Search size={18} /> Track Now
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </Link>
         </div>
 
         {/* Footer note */}

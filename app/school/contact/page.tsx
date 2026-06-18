@@ -64,7 +64,7 @@ export default function ContactPage() {
 
           <Image
             src="/school/tour.jpg"
-            alt=""
+            alt="School Tour"
             fill
             className="object-cover"
           />
@@ -100,14 +100,14 @@ export default function ContactPage() {
             <div className="mt-10 flex flex-wrap gap-5">
 
               <a
-                href="#admissions"
+                href="/school/admissions"
                 className="bg-[#c1242b] hover:scale-105 transition text-white px-8 py-4 rounded-xl font-bold"
               >
                 Apply For Admission
               </a>
 
               <a
-                href="#jobs"
+                href="/school/careers"
                 className="bg-[#2654a7] hover:scale-105 transition text-white px-8 py-4 rounded-xl font-bold"
               >
                 Apply For Jobs
@@ -326,7 +326,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ADMISSIONS FORM */}
+      {/* ADMISSIONS SECTION */}
 
       <section
         id="admissions"
@@ -353,171 +353,20 @@ export default function ContactPage() {
 
             <p className="text-lg text-black mt-5">
 
-              Complete the application form below.
+              Complete your application through our secure online portal.
 
             </p>
 
           </div>
 
-          <form
-            action="mailto:admissions@mzinyathigardens.co.zw"
-            method="POST"
-            encType="multipart/form-data"
-            className="bg-white rounded-[40px] p-10 shadow-2xl"
-          >
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <input
-                type="text"
-                placeholder="First Name"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Surname"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="date"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              >
-                <option>Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Nationality"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-              <input
-                type="text"
-                placeholder="Birth Certificate Number"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              >
-                <option>Grade Applying For</option>
-                <option>ECD A</option>
-                <option>ECD B</option>
-                <option>Grade 1</option>
-                <option>Grade 2</option>
-                <option>Grade 3</option>
-                <option>Grade 4</option>
-                <option>Grade 5</option>
-                <option>Grade 6</option>
-                <option>Grade 7</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Previous School"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="mt-8">
-
-              <textarea
-                rows={5}
-                placeholder="Parent / Guardian Information"
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-            {/* DOCUMENT UPLOADS */}
-
-            <div className="mt-10">
-
-              <h3 className="text-2xl font-black text-black mb-6">
-                Required Documents
-              </h3>
-
-              <div className="grid md:grid-cols-2 gap-6">
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Birth Certificate Copy
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Previous School Report
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Parent / Guardian ID Copy
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-black mb-2">
-                    Proof Of Residence
-                  </label>
-
-                  <input
-                    type="file"
-                    className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                  />
-                </div>
-
-              </div>
-
-              <button
-                type="submit"
-                className="
-                mt-10
-                bg-[#2654a7]
-                hover:bg-[#1f468d]
-                text-white
-                px-10
-                py-4
-                rounded-xl
-                font-bold
-                transition
-                hover:scale-105
-                "
-              >
-                Submit Admission Application
-              </button>
-
-            </div>
-
-          </form>
+          <div className="text-center">
+            <a
+              href="/school/admissions"
+              className="inline-block bg-[#2654a7] hover:bg-[#1f468d] text-white px-10 py-4 rounded-xl font-bold transition hover:scale-105"
+            >
+              Go to Admissions Portal
+            </a>
+          </div>
 
         </div>
 
@@ -558,136 +407,14 @@ export default function ContactPage() {
 
           </div>
 
-          <form
-            action="mailto:admissions@mzinyathigardens.co.zw"
-            method="POST"
-            encType="multipart/form-data"
-            className="bg-gray-50 rounded-[40px] p-10 shadow-xl"
-          >
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              >
-                <option>Select Position</option>
-
-                <option>Principal</option>
-
-                <option>Teacher</option>
-
-                <option>Cook</option>
-
-                <option>Cleaner</option>
-
-                <option>Matron</option>
-
-                <option>Boarding Master</option>
-
-                <option>Administrator</option>
-
-                <option>Receptionist</option>
-
-                <option>Security Officer</option>
-
-              </select>
-
-              <input
-                type="text"
-                placeholder="Highest Qualification"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Years Of Experience"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="mt-6">
-
-              <textarea
-                rows={6}
-                placeholder="Tell us about yourself and why you would like to join Mzinyathi Elite Primary School."
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-
-              <div>
-
-                <label className="block font-bold text-black mb-2">
-                  Upload CV
-                </label>
-
-                <input
-                  type="file"
-                  className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                />
-
-              </div>
-
-              <div>
-
-                <label className="block font-bold text-black mb-2">
-                  Upload Qualifications
-                </label>
-
-                <input
-                  type="file"
-                  className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                />
-
-              </div>
-
-            </div>
-
-            <button
-              type="submit"
-              className="
-              mt-10
-              bg-[#c1242b]
-              hover:bg-[#a91d24]
-              text-white
-              px-10
-              py-4
-              rounded-xl
-              font-bold
-              transition
-              hover:scale-105
-              "
+          <div className="text-center">
+            <a
+              href="/school/careers"
+              className="inline-block bg-[#c1242b] hover:bg-[#a91d24] text-white px-10 py-4 rounded-xl font-bold transition hover:scale-105"
             >
-              Submit Job Application
-            </button>
-
-          </form>
+              Go to Careers Portal
+            </a>
+          </div>
 
         </div>
 
@@ -725,43 +452,6 @@ export default function ContactPage() {
             today and help shape the future.
 
           </p>
-
-          <div className="flex flex-wrap justify-center gap-5 mt-10">
-
-            <a
-              href="#admissions"
-              className="
-              bg-white
-              text-[#2654a7]
-              px-8
-              py-4
-              rounded-xl
-              font-bold
-              hover:scale-105
-              transition
-              "
-            >
-              Student Admissions
-            </a>
-
-            <a
-              href="#jobs"
-              className="
-              border-2
-              border-white
-              px-8
-              py-4
-              rounded-xl
-              font-bold
-              hover:bg-white
-              hover:text-[#c1242b]
-              transition
-              "
-            >
-              Apply For Jobs
-            </a>
-
-          </div>
 
         </div>
 

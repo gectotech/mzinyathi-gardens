@@ -8,7 +8,7 @@ export default function SchoolFooter() {
   const pathname = usePathname();
   
   // Hide footer on portal pages
-  const isPortalPage = pathname?.startsWith('/school/portal');
+  const isPortalPage = pathname?.startsWith('/school/pathway');
   
   if (isPortalPage) return null;
 

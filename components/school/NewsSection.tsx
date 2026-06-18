@@ -47,7 +47,7 @@ export default function NewsSection() {
             >
               <img
                 src={item.image}
-                alt=""
+                alt={item.title}
                 className="h-56 w-full object-cover"
               />
 

@@ -17,6 +17,7 @@ export default function Footer() {
                 width={192}
                 height={192}
                 className="rounded-full object-cover"
+                style={{ width: 'auto', height: 'auto' }}
               />
               <h3 className="text-xl font-bold">Mzinyathi Gardens</h3>
             </div>

@@ -38,7 +38,7 @@ export default function AboutPage() {
           >
             <Image
               src={img}
-              alt=""
+              alt="School Campus"
               fill
               priority
               className="object-cover"
@@ -377,14 +377,6 @@ export default function AboutPage() {
               of a new generation of excellence, leadership and
               innovation.
             </p>
-
-            <Link
-              href="/school/admissions"
-              className="inline-flex items-center gap-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-10 py-5 rounded-xl transition duration-300 shadow-xl"
-            >
-              Apply For Admission
-              <span>→</span>
-            </Link>
 
           </motion.div>
 
