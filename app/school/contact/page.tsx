@@ -16,11 +16,8 @@ import {
   Building2,
   ChevronRight,
 } from "lucide-react";
-import SchoolAdmissionForm from "@/components/school/SchoolAdmissionForm";
 
 export default function ContactPage() {
-  const [admissionSubmitted, setAdmissionSubmitted] = useState(false);
-  const [admissionTrackingId, setAdmissionTrackingId] = useState("");
   const targetDate = new Date("2027-01-15T00:00:00").getTime();
 
   const [timeLeft, setTimeLeft] = useState({
@@ -67,7 +64,7 @@ export default function ContactPage() {
 
           <Image
             src="/school/tour.jpg"
-            alt=""
+            alt="School Tour"
             fill
             className="object-cover"
           />
@@ -103,14 +100,14 @@ export default function ContactPage() {
             <div className="mt-10 flex flex-wrap gap-5">
 
               <a
-                href="#admissions"
+                href="/school/admissions"
                 className="bg-[#c1242b] hover:scale-105 transition text-white px-8 py-4 rounded-xl font-bold"
               >
                 Apply For Admission
               </a>
 
               <a
-                href="#jobs"
+                href="/school/careers"
                 className="bg-[#2654a7] hover:scale-105 transition text-white px-8 py-4 rounded-xl font-bold"
               >
                 Apply For Jobs
@@ -329,7 +326,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ADMISSIONS FORM */}
+      {/* ADMISSIONS SECTION */}
 
       <section
         id="admissions"
@@ -356,36 +353,19 @@ export default function ContactPage() {
 
             <p className="text-lg text-black mt-5">
 
-              Complete the application form below.
+              Complete your application through our secure online portal.
 
             </p>
 
           </div>
 
-          <div className="bg-white rounded-[40px] p-10 shadow-2xl">
-            {admissionSubmitted ? (
-              <div className="text-center py-16">
-                <h3 className="text-3xl font-black text-black mb-4">
-                  Application Submitted
-                </h3>
-                <p className="text-lg text-black mb-2">
-                  Your application number is{" "}
-                  <strong className="font-mono">{admissionTrackingId}</strong>
-                </p>
-                <p className="text-gray-600">
-                  The Admissions Office will review your application and contact you.
-                </p>
-              </div>
-            ) : (
-              <SchoolAdmissionForm
-                source="contact_page"
-                submitLabel="Submit Admission Application"
-                onSuccess={(id) => {
-                  setAdmissionTrackingId(id);
-                  setAdmissionSubmitted(true);
-                }}
-              />
-            )}
+          <div className="text-center">
+            <a
+              href="/school/admissions"
+              className="inline-block bg-[#2654a7] hover:bg-[#1f468d] text-white px-10 py-4 rounded-xl font-bold transition hover:scale-105"
+            >
+              Go to Admissions Portal
+            </a>
           </div>
 
         </div>
@@ -427,136 +407,14 @@ export default function ContactPage() {
 
           </div>
 
-          <form
-            action="mailto:admissions@mzinyathigardens.co.zw"
-            method="POST"
-            encType="multipart/form-data"
-            className="bg-gray-50 rounded-[40px] p-10 shadow-xl"
-          >
-
-            <div className="grid md:grid-cols-2 gap-6">
-
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <select
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              >
-                <option>Select Position</option>
-
-                <option>Principal</option>
-
-                <option>Teacher</option>
-
-                <option>Cook</option>
-
-                <option>Cleaner</option>
-
-                <option>Matron</option>
-
-                <option>Boarding Master</option>
-
-                <option>Administrator</option>
-
-                <option>Receptionist</option>
-
-                <option>Security Officer</option>
-
-              </select>
-
-              <input
-                type="text"
-                placeholder="Highest Qualification"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-                required
-              />
-
-              <input
-                type="text"
-                placeholder="Years Of Experience"
-                className="border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="mt-6">
-
-              <textarea
-                rows={6}
-                placeholder="Tell us about yourself and why you would like to join Mzinyathi Elite Primary School."
-                className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-              />
-
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-
-              <div>
-
-                <label className="block font-bold text-black mb-2">
-                  Upload CV
-                </label>
-
-                <input
-                  type="file"
-                  className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                />
-
-              </div>
-
-              <div>
-
-                <label className="block font-bold text-black mb-2">
-                  Upload Qualifications
-                </label>
-
-                <input
-                  type="file"
-                  className="w-full border-2 border-gray-300 rounded-xl p-4 text-black"
-                />
-
-              </div>
-
-            </div>
-
-            <button
-              type="submit"
-              className="
-              mt-10
-              bg-[#c1242b]
-              hover:bg-[#a91d24]
-              text-white
-              px-10
-              py-4
-              rounded-xl
-              font-bold
-              transition
-              hover:scale-105
-              "
+          <div className="text-center">
+            <a
+              href="/school/careers"
+              className="inline-block bg-[#c1242b] hover:bg-[#a91d24] text-white px-10 py-4 rounded-xl font-bold transition hover:scale-105"
             >
-              Submit Job Application
-            </button>
-
-          </form>
+              Go to Careers Portal
+            </a>
+          </div>
 
         </div>
 
@@ -594,43 +452,6 @@ export default function ContactPage() {
             today and help shape the future.
 
           </p>
-
-          <div className="flex flex-wrap justify-center gap-5 mt-10">
-
-            <a
-              href="#admissions"
-              className="
-              bg-white
-              text-[#2654a7]
-              px-8
-              py-4
-              rounded-xl
-              font-bold
-              hover:scale-105
-              transition
-              "
-            >
-              Student Admissions
-            </a>
-
-            <a
-              href="#jobs"
-              className="
-              border-2
-              border-white
-              px-8
-              py-4
-              rounded-xl
-              font-bold
-              hover:bg-white
-              hover:text-[#c1242b]
-              transition
-              "
-            >
-              Apply For Jobs
-            </a>
-
-          </div>
 
         </div>
 

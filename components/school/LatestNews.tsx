@@ -31,7 +31,7 @@ export default function LatestNews() {
               <img
                 src={item.image}
                 className="h-64 w-full object-cover"
-                alt=""
+                alt={item.title}
               />
 
               <div className="p-6">

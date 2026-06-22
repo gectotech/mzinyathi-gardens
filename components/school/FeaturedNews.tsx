@@ -13,7 +13,7 @@ export default function FeaturedNews() {
             <img
               src="/school/schooldev.jpg"
               className="h-[350px] w-full object-cover"
-              alt=""
+              alt="School Development"
             />
 
             <div className="p-8">
@@ -35,6 +35,7 @@ export default function FeaturedNews() {
               <img
                 src="/school/student.jpg"
                 className="w-40 h-28 object-cover rounded-xl"
+                alt="Students"
               />
               <div>
                 <h4 className="font-bold">
@@ -47,6 +48,7 @@ export default function FeaturedNews() {
               <img
                 src="/school/staff.jpg"
                 className="w-40 h-28 object-cover rounded-xl"
+                alt="Staff"
               />
               <div>
                 <h4 className="font-bold">
@@ -59,6 +61,7 @@ export default function FeaturedNews() {
               <img
                 src="/school/school1.jpg"
                 className="w-40 h-28 object-cover rounded-xl"
+                alt="School Building"
               />
               <div>
                 <h4 className="font-bold">

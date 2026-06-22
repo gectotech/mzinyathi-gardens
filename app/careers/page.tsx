@@ -97,7 +97,8 @@ function CareersPageContent() {
     const matchedJob = jobs.find(job => job.title === interestForm.position);
     if (matchedJob) {
       setSelectedJob(matchedJob);
-      setShowAppPrompt(true);
+      localStorage.setItem('interestInfo', JSON.stringify(interestForm));
+      window.location.href = '/school/careers';
     } else {
       alert('Please select a valid position.');
     }
@@ -267,7 +268,7 @@ function CareersPageContent() {
                 </button>
               </form>
               <p className="text-xs text-gray-600 mt-4 text-center">
-                By applying, you agree to our privacy policy. You will be asked to download our app to complete the full application.
+                By applying, you agree to our privacy policy. You will be redirected to our school careers portal to complete your application.
               </p>
             </div>
           </div>

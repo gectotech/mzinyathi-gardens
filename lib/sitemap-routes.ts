@@ -16,6 +16,8 @@ export const staticRoutes = [
   { path: '/school/what-we-offer', priority: 0.7, changeFrequency: 'monthly' as const },
   { path: '/school/news', priority: 0.6, changeFrequency: 'weekly' as const },
   { path: '/school/contact', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/school/careers', priority: 0.6, changeFrequency: 'weekly' as const },
+  { path: '/school/track-application', priority: 0.6, changeFrequency: 'monthly' as const },
 ];
 
 /** Property detail slugs defined in app/properties/[id]/page.tsx */

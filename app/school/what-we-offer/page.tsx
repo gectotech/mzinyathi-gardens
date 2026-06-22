@@ -80,7 +80,7 @@ export default function WhatWeOfferPage() {
           >
             <Image
               src={image}
-              alt=""
+              alt="School Facility"
               fill
               className="object-cover"
             />
@@ -370,14 +370,6 @@ export default function WhatWeOfferPage() {
                 Join a new generation of excellence, innovation and character
                 development.
               </p>
-
-              <Link
-                href="/school/admissions"
-                className="inline-flex items-center gap-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-8 py-4 rounded-xl transition"
-              >
-                Apply For Admission
-                <span>→</span>
-              </Link>
 
             </div>
 
