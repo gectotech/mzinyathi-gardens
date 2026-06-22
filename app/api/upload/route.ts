@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import { getDb, schema } from '@/lib/db';
 import { uploadToCloudinary } from '@/lib/cloudinary';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('media', true);
     const formData = await request.formData();
     const file = formData.get('file');
 

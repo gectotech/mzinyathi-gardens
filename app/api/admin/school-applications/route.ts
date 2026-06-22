@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 import { csvDownloadResponse, parseDateRange, rowsToCsv } from '@/lib/csv-export';
 import type { SchoolAdmissionDocuments } from '@/lib/db/schema';
@@ -16,7 +16,7 @@ function docLinks(documents: SchoolAdmissionDocuments | null) {
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('school_applications');
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'json';
     const { fromDate, toDate } = parseDateRange(searchParams);
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('school_applications', true);
     const { id, status } = await request.json();
     if (!id || !status) return jsonError('Missing id or status');
 

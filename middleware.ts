@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { canAccessAdminRoute } from '@/lib/roles';
 
 const COOKIE_NAME = 'mg_session';
 
@@ -30,11 +31,9 @@ export async function middleware(request: NextRequest) {
     if (!payload) {
       return NextResponse.redirect(new URL('/admin/login', request.url));
     }
-  }
 
-  if (pathname.startsWith('/admin/super')) {
-    const payload = await getTokenPayload(request);
-    if (!payload || payload.role !== 'super_admin') {
+    const role = String(payload.role || '');
+    if (!canAccessAdminRoute(role, pathname)) {
       return NextResponse.redirect(new URL('/admin/dashboard', request.url));
     }
   }

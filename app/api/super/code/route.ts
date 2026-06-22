@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
-    await requireAuth(['super_admin']);
+    await requirePermission('super_code');
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await requireAuth(['super_admin']);
+    const user = await requirePermission('super_code', true);
     const body = await request.json();
     if (!body.slug || body.content === undefined) return jsonError('Missing slug or content');
 

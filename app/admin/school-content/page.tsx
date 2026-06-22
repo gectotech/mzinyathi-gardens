@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { Eye, ImageIcon } from 'lucide-react';
+import MediaPicker from '@/components/admin/MediaPicker';
+import ViewDrawer from '@/components/admin/ViewDrawer';
+import StatusBadge from '@/components/admin/StatusBadge';
+import { DetailMessage } from '@/components/admin/DetailSection';
 
 type SchoolPost = {
   id: string;
@@ -28,6 +33,8 @@ export default function AdminSchoolContentPage() {
   const [posts, setPosts] = useState<SchoolPost[]>([]);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [viewing, setViewing] = useState<SchoolPost | null>(null);
 
   const load = () => {
     fetch('/api/admin/school-posts')
@@ -65,6 +72,7 @@ export default function AdminSchoolContentPage() {
       status: post.status,
       sortOrder: post.sortOrder,
     });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const remove = async (id: string) => {
@@ -81,19 +89,20 @@ export default function AdminSchoolContentPage() {
         <p className="text-gray-600 text-sm">Manage news, activities, and events shown on the school website.</p>
       </div>
 
-      <form onSubmit={save} className="bg-white rounded-lg shadow p-6 grid md:grid-cols-2 gap-4">
+      <form onSubmit={save} className="bg-white rounded-xl shadow-sm border p-6 grid md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
-          <h2 className="font-semibold mb-3">{editingId ? 'Edit post' : 'Create post'}</h2>
+          <h2 className="font-semibold mb-1">{editingId ? 'Edit post' : 'Create post'}</h2>
+          <p className="text-xs text-gray-500">Use the media picker to choose a gallery image.</p>
         </div>
         <input
-          className="border rounded px-3 py-2 md:col-span-2"
+          className="border rounded-lg px-3 py-2 md:col-span-2"
           placeholder="Title *"
           required
           value={form.title}
           onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
         <textarea
-          className="border rounded px-3 py-2 md:col-span-2"
+          className="border rounded-lg px-3 py-2 md:col-span-2"
           placeholder="Short excerpt *"
           required
           rows={2}
@@ -101,21 +110,27 @@ export default function AdminSchoolContentPage() {
           onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
         />
         <textarea
-          className="border rounded px-3 py-2 md:col-span-2"
-          placeholder="Full content (optional)"
-          rows={4}
+          className="border rounded-lg px-3 py-2 md:col-span-2"
+          placeholder="Full content"
+          rows={5}
           value={form.content}
           onChange={(e) => setForm({ ...form, content: e.target.value })}
         />
-        <input
-          className="border rounded px-3 py-2 md:col-span-2"
-          placeholder="Image URL * (upload in Media Library, copy URL)"
-          required
-          value={form.imageUrl}
-          onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
-        />
+        <div className="md:col-span-2 flex gap-3 items-start">
+          {form.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={form.imageUrl} alt="" className="w-24 h-20 object-cover rounded-lg border" />
+          )}
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="inline-flex items-center gap-2 border border-dashed rounded-lg px-4 py-3 text-sm text-gray-600 hover:border-[#4169E1] hover:text-[#4169E1]"
+          >
+            <ImageIcon size={16} /> {form.imageUrl ? 'Change image' : 'Pick image from library *'}
+          </button>
+        </div>
         <select
-          className="border rounded px-3 py-2"
+          className="border rounded-lg px-3 py-2"
           value={form.category}
           onChange={(e) => setForm({ ...form, category: e.target.value as SchoolPost['category'] })}
         >
@@ -124,7 +139,7 @@ export default function AdminSchoolContentPage() {
           <option value="event">Event</option>
         </select>
         <select
-          className="border rounded px-3 py-2"
+          className="border rounded-lg px-3 py-2"
           value={form.status}
           onChange={(e) => setForm({ ...form, status: e.target.value as SchoolPost['status'] })}
         >
@@ -133,13 +148,13 @@ export default function AdminSchoolContentPage() {
         </select>
         <input
           type="number"
-          className="border rounded px-3 py-2"
+          className="border rounded-lg px-3 py-2"
           placeholder="Sort order"
           value={form.sortOrder}
           onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })}
         />
         <div className="flex gap-2 md:col-span-2">
-          <button type="submit" className="bg-[#4169E1] text-white px-5 py-2 rounded-md">
+          <button type="submit" className="bg-[#4169E1] text-white px-5 py-2 rounded-lg" disabled={!form.imageUrl}>
             {editingId ? 'Update' : 'Publish'}
           </button>
           {editingId && (
@@ -149,7 +164,7 @@ export default function AdminSchoolContentPage() {
                 setEditingId(null);
                 setForm(emptyForm);
               }}
-              className="border px-5 py-2 rounded-md"
+              className="border px-5 py-2 rounded-lg"
             >
               Cancel
             </button>
@@ -157,31 +172,56 @@ export default function AdminSchoolContentPage() {
         </div>
       </form>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left">Title</th>
-              <th className="px-4 py-3 text-left">Category</th>
-              <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {posts.map((post) => (
-              <tr key={post.id} className="border-t">
-                <td className="px-4 py-3">{post.title}</td>
-                <td className="px-4 py-3 capitalize">{post.category}</td>
-                <td className="px-4 py-3">{post.status}</td>
-                <td className="px-4 py-3 space-x-3">
-                  <button onClick={() => edit(post)} className="text-[#4169E1] hover:underline">Edit</button>
-                  <button onClick={() => remove(post.id)} className="text-red-600 hover:underline">Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {posts.map((post) => (
+          <div key={post.id} className="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={post.imageUrl} alt="" className="w-full h-36 object-cover" />
+            <div className="p-4">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="font-semibold line-clamp-2">{post.title}</h3>
+                <StatusBadge status={post.status} />
+              </div>
+              <p className="text-xs text-gray-500 capitalize mb-3">{post.category}</p>
+              <p className="text-sm text-gray-600 line-clamp-2 mb-4">{post.excerpt}</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setViewing(post)}
+                  className="inline-flex items-center gap-1 text-[#4169E1] text-xs font-medium px-2 py-1 rounded-lg hover:bg-blue-50"
+                >
+                  <Eye size={14} /> View
+                </button>
+                <button onClick={() => edit(post)} className="text-xs text-gray-600 hover:underline">
+                  Edit
+                </button>
+                <button onClick={() => remove(post.id)} className="text-xs text-red-600 hover:underline">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
+
+      <MediaPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onSelect={(url) => setForm({ ...form, imageUrl: url })} />
+
+      <ViewDrawer
+        open={!!viewing}
+        onClose={() => setViewing(null)}
+        title={viewing?.title || ''}
+        subtitle={viewing?.category}
+        badge={viewing ? <StatusBadge status={viewing.status} /> : undefined}
+        width="lg"
+      >
+        {viewing && (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={viewing.imageUrl} alt="" className="w-full rounded-xl object-cover max-h-48" />
+            <p className="text-gray-700">{viewing.excerpt}</p>
+            {viewing.content && <DetailMessage>{viewing.content}</DetailMessage>}
+          </>
+        )}
+      </ViewDrawer>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 import { desc, eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { jsonOk, handleAuthError } from '@/lib/api-utils';
 
 export async function GET() {
   try {
-    await requireAuth(['super_admin']);
+    await requirePermission('super_audit');
     const db = getDb();
     const logs = await db
       .select({

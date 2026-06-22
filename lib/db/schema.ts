@@ -9,7 +9,14 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-export const userRoleEnum = pgEnum('user_role', ['admin', 'super_admin']);
+export const userRoleEnum = pgEnum('user_role', [
+  'super_admin',
+  'admin',
+  'property_admin',
+  'school_admin',
+  'content_editor',
+  'viewer',
+]);
 export const contactStatusEnum = pgEnum('contact_status', [
   'new',
   'read',

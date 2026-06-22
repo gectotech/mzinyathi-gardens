@@ -7,6 +7,7 @@ import {
   Shield, Sun, Droplets, Road, TreePine, Zap, 
   CheckCircle, ArrowRight
 } from 'lucide-react';
+import PageCmsContent from '@/components/PageCmsContent';
 
 // Hero images for carousel - hero1 to hero4
 const heroImages = [
@@ -327,6 +328,8 @@ export default function ServicesPage() {
           </div>
         </div>
       </section>
+
+      <PageCmsContent slug="services" />
     </div>
   );
 }

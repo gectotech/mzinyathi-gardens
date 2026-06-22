@@ -141,6 +141,12 @@ export default async function PhasePage({ params }: { params: Promise<{ phaseId:
                       <span className="flex items-center gap-1"><Home size={16} className="text-red-500" /> {house.size} m²</span>
                     </div>
 
+                    {house.price && (
+                      <p className="text-lg font-bold text-red-600 mb-4 flex items-center gap-1">
+                        <DollarSign size={18} /> {house.price}
+                      </p>
+                    )}
+
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center gap-2 text-gray-500 text-xs">
                         <Shield size={12} className="text-green-500" />

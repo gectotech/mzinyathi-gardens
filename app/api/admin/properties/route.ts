@@ -1,12 +1,13 @@
 import { NextRequest } from 'next/server';
 import { asc, eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
+import { hasPermission } from '@/lib/roles';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function GET() {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('properties');
     const db = getDb();
     const allPhases = await db.select().from(schema.phases).orderBy(asc(schema.phases.sortOrder));
     const allHouses = await db.select().from(schema.houses);
@@ -18,7 +19,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('properties');
+    if (!hasPermission(user.role, 'write')) return jsonError('Read-only access', 403);
+
     const body = await request.json();
     const db = getDb();
 
@@ -42,14 +45,17 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('properties');
+    if (!hasPermission(user.role, 'write')) return jsonError('Read-only access', 403);
+
     const body = await request.json();
     const db = getDb();
 
     if (body.type === 'phase') {
+      const { id, ...rest } = body.data || {};
       const [phase] = await db
         .update(schema.phases)
-        .set({ ...body.data, updatedAt: new Date() })
+        .set({ ...rest, updatedAt: new Date() })
         .where(eq(schema.phases.id, body.id))
         .returning();
       await logAudit(user.id, 'update', 'phase', body.id);
@@ -57,9 +63,10 @@ export async function PATCH(request: NextRequest) {
     }
 
     if (body.type === 'house') {
+      const { id: _id, phaseId: _phaseId, ...rest } = body.data || {};
       const [house] = await db
         .update(schema.houses)
-        .set({ ...body.data, updatedAt: new Date() })
+        .set({ ...rest, updatedAt: new Date() })
         .where(eq(schema.houses.id, body.id))
         .returning();
       await logAudit(user.id, 'update', 'house', body.id);
@@ -74,7 +81,9 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('properties');
+    if (!hasPermission(user.role, 'write')) return jsonError('Read-only access', 403);
+
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
     const id = searchParams.get('id');

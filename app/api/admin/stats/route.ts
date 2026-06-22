@@ -1,11 +1,11 @@
 import { count, desc, eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth } from '@/lib/auth';
+import { requirePermission } from '@/lib/auth';
 import { jsonOk, handleAuthError } from '@/lib/api-utils';
 
 export async function GET() {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('dashboard');
     const db = getDb();
 
     const [contacts] = await db.select({ value: count() }).from(schema.contactSubmissions);
@@ -15,6 +15,7 @@ export async function GET() {
       .from(schema.schoolApplications);
     const [jobs] = await db.select({ value: count() }).from(schema.jobs);
     const [phases] = await db.select({ value: count() }).from(schema.phases);
+    const [houses] = await db.select({ value: count() }).from(schema.houses);
     const [media] = await db.select({ value: count() }).from(schema.mediaFiles);
 
     const recentContacts = await db
@@ -59,6 +60,7 @@ export async function GET() {
         schoolApplications: schoolApplications.value,
         jobs: jobs.value,
         phases: phases.value,
+        houses: houses.value,
         media: media.value,
       },
       recentContacts,

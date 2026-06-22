@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ArrowRight, Shield, Sun, Droplets, Road, TreePine, Construction, Home } from 'lucide-react';
 import { allPhases, phasesData } from '../../lib/housesData';
+import PageCmsContent from '@/components/PageCmsContent';
 
 // Hero images for carousel
 const heroImages = [
@@ -353,6 +354,8 @@ export default function PropertiesPage() {
           </Link>
         </div>
       </section>
+
+      <PageCmsContent slug="properties" />
     </div>
   );
 }

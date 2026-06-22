@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import { desc, eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function GET() {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('contacts');
     const db = getDb();
     const contacts = await db
       .select()
@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('contacts', true);
     const { id, status } = await request.json();
     if (!id || !status) return jsonError('Missing id or status');
 
@@ -40,7 +40,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('contacts', true);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) return jsonError('Missing id');

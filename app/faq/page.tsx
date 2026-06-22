@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, ChevronUp, HelpCircle, Phone, Mail, MessageCircle } from 'lucide-react';
+import PageCmsContent from '@/components/PageCmsContent';
 
 // FAQ data
 const faqCategories = [
@@ -330,6 +331,8 @@ export default function FAQPage() {
           </div>
         </div>
       </section>
+
+      <PageCmsContent slug="faq" />
     </div>
   );
 }

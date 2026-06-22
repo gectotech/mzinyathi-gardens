@@ -1,12 +1,12 @@
 import { NextRequest } from 'next/server';
 import { desc, eq } from 'drizzle-orm';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 export async function GET() {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('jobs');
     const db = getDb();
     const jobs = await db.select().from(schema.jobs).orderBy(desc(schema.jobs.createdAt));
     return jsonOk({ jobs });
@@ -17,7 +17,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('jobs', true);
     const body = await request.json();
     const db = getDb();
     const [job] = await db
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('jobs', true);
     const body = await request.json();
     if (!body.id) return jsonError('Missing id');
 
@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('jobs', true);
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) return jsonError('Missing id');

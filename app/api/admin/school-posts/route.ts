@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
 import { getDb, schema } from '@/lib/db';
-import { requireAuth, logAudit } from '@/lib/auth';
+import { requirePermission, logAudit } from '@/lib/auth';
 import { jsonOk, jsonError, handleAuthError } from '@/lib/api-utils';
 
 const postSchema = z.object({
@@ -17,7 +17,7 @@ const postSchema = z.object({
 
 export async function GET() {
   try {
-    await requireAuth(['admin', 'super_admin']);
+    await requirePermission('school_content');
     const db = getDb();
     const posts = await db
       .select()
@@ -31,7 +31,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('school_content', true);
     const body = postSchema.parse(await request.json());
     const db = getDb();
     const [post] = await db
@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('school_content', true);
     const body = await request.json();
     const { id, ...updates } = body;
     if (!id) return jsonError('Missing id');
@@ -90,7 +90,7 @@ export async function PATCH(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await requireAuth(['admin', 'super_admin']);
+    const user = await requirePermission('school_content', true);
     const id = new URL(request.url).searchParams.get('id');
     if (!id) return jsonError('Missing id');
 

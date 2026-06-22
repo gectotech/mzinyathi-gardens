@@ -8,6 +8,7 @@ import {
   ArrowLeft, Bed, Ruler, Home, DollarSign, Shield, Sun, Droplets, 
   Road, TreePine, FileText, CheckCircle, Zap, Construction, MapPin 
 } from 'lucide-react';
+import PageCmsContent from '@/components/PageCmsContent';
 
 // House plan mapping based on bedroom count
 const getHousePlanImage = (beds: number, title: string, planId?: string): string => {
@@ -395,6 +396,8 @@ function HousePlanDetails() {
           </Link>
         </div>
       </section>
+
+      <PageCmsContent slug="projects" />
     </div>
   );
 }

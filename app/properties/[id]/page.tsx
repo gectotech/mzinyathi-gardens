@@ -187,6 +187,12 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
                     <span className="text-gray-600">Size</span>
                     <span className="font-semibold text-gray-800">{house.size} m²</span>
                   </div>
+                  {house.price && (
+                    <div className="flex justify-between items-center pb-2 border-b border-blue-100">
+                      <span className="text-gray-600">Price</span>
+                      <span className="font-semibold text-red-600">{house.price}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between items-center pb-2 border-b border-blue-100">
                     <span className="text-gray-600">Phase</span>
                     <span className="font-semibold text-gray-800">{house.phase}</span>

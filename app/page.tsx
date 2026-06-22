@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Shield, Sun, Droplets, ArrowRight, Home, Building2, Users, TreePine } from 'lucide-react';
 import FAQSection from '@/components/ui/FAQSection';
+import PageCmsContent from '@/components/PageCmsContent';
 
 // Hero images for carousel
 const heroImages = [
@@ -190,6 +191,8 @@ export default function HomePage() {
           <Link href="/contact" className="inline-block bg-white text-red-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition">Get In Touch</Link>
         </div>
       </section>
+
+      <PageCmsContent slug="home" />
     </div>
   );
 }
