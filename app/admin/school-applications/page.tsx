@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import ExportPanel from '@/components/admin/ExportPanel';
 import type { SchoolAdmissionDocuments } from '@/lib/school-admission';
 
 type SchoolApplication = {
@@ -90,6 +91,8 @@ export default function AdminSchoolApplicationsPage() {
         <h1 className="text-2xl font-bold">School Admissions</h1>
         <p className="text-gray-600">Student applications for the 2027 intake</p>
       </div>
+
+      <ExportPanel endpoint="/api/admin/school-applications" filename="school-applications.csv" />
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full text-sm">

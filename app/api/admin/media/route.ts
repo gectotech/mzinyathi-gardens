@@ -19,6 +19,30 @@ export async function GET() {
   }
 }
 
+export async function PATCH(request: NextRequest) {
+  try {
+    const user = await requireAuth(['admin', 'super_admin']);
+    const { id, caption, showInGallery } = await request.json();
+    if (!id) return jsonError('Missing id');
+
+    const db = getDb();
+    const [updated] = await db
+      .update(schema.mediaFiles)
+      .set({
+        ...(caption != null ? { caption } : {}),
+        ...(showInGallery != null ? { showInGallery } : {}),
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.mediaFiles.id, id))
+      .returning();
+
+    await logAudit(user.id, 'update', 'media', id, { caption, showInGallery });
+    return jsonOk({ media: updated });
+  } catch (error) {
+    return handleAuthError(error);
+  }
+}
+
 export async function DELETE(request: NextRequest) {
   try {
     const user = await requireAuth(['admin', 'super_admin']);

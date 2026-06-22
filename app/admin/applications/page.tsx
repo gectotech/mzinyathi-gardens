@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import ExportPanel from '@/components/admin/ExportPanel';
 
 type Application = {
   id: string;
@@ -44,6 +45,7 @@ export default function AdminApplicationsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Job Applications</h1>
+      <ExportPanel endpoint="/api/admin/applications" filename="job-applications.csv" />
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-gray-50">

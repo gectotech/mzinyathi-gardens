@@ -127,8 +127,8 @@ export default async function PhasePage({ params }: { params: Promise<{ phaseId:
                       alt={house.title}
                       className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
                     />
-                    <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                      <DollarSign size={14} /> {house.price}
+                    <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      Available
                     </div>
                   </div>
                   <div className="p-5">
@@ -158,7 +158,7 @@ export default async function PhasePage({ params }: { params: Promise<{ phaseId:
                     
                     {/* Updated: Link to Projects page with house details */}
                     <Link 
-                      href={`/projects?house=${encodeURIComponent(house.title)}&beds=${house.beds}&baths=${house.baths}&size=${house.size}&price=${encodeURIComponent(house.price)}&id=${house.id}`}
+                      href={`/projects?house=${encodeURIComponent(house.title)}&beds=${house.beds}&baths=${house.baths}&size=${house.size}&id=${house.id}`}
                       className="block w-full bg-blue-600 text-white text-center py-2.5 rounded-full text-sm md:text-base font-semibold hover:bg-red-600 transition duration-300"
                     >
                       View Details & Inquire

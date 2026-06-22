@@ -92,25 +92,18 @@ const infrastructureProjects = [
   },
 ];
 
-// House plans data with updated prices (no square meters)
+// House plans data (pricing available on inquiry)
 const housePlans = [
-  // 3 Bedroom Plans - $45,000
-  { id: '3bed', name: '3 Bedroom House', beds: 3, baths: 2, price: '$45,000', image: '/images/plan_3bed.jpg' },
-  { id: '3bed2', name: '3 Bedroom House - Design 2', beds: 3, baths: 2, price: '$45,000', image: '/images/plan_3bed2.jpg' },
-  { id: '3bed3', name: '3 Bedroom House - Design 3', beds: 3, baths: 2, price: '$45,000', image: '/images/plan_3bed3.jpg' },
-  { id: '3bed4', name: '3 Bedroom House - Design 4', beds: 3, baths: 2, price: '$45,000', image: '/images/plan_3bed4.jpg' },
-  { id: '3bed5', name: '3 Bedroom House - Design 5', beds: 3, baths: 2, price: '$45,000', image: '/images/plan_3bed5.jpg' },
-  
-  // 4 Bedroom Plans - $55,000
-  { id: '4bed', name: '4 Bedroom House', beds: 4, baths: 3, price: '$55,000', image: '/images/plan_4bed.jpg' },
-  { id: '4bed2', name: '4 Bedroom House - Design 2', beds: 4, baths: 3, price: '$55,000', image: '/images/plan_4bed2.jpg' },
-  { id: '4bed3', name: '4 Bedroom House - Design 3', beds: 4, baths: 3, price: '$55,000', image: '/images/plan_4bed3.jpg' },
-  
-  // 5 Bedroom Plans - $75,000
-  { id: '5bed', name: '5 Bedroom House', beds: 5, baths: 4, price: '$75,000', image: '/images/plan_5bed.jpg' },
-  
-  // Double Story - $75,000
-  { id: 'doublestory', name: 'Double Story House', beds: 5, baths: 4, price: '$75,000', image: '/images/plan_double.jpg' },
+  { id: '3bed', name: '3 Bedroom House', beds: 3, baths: 2, image: '/images/plan_3bed.jpg' },
+  { id: '3bed2', name: '3 Bedroom House - Design 2', beds: 3, baths: 2, image: '/images/plan_3bed2.jpg' },
+  { id: '3bed3', name: '3 Bedroom House - Design 3', beds: 3, baths: 2, image: '/images/plan_3bed3.jpg' },
+  { id: '3bed4', name: '3 Bedroom House - Design 4', beds: 3, baths: 2, image: '/images/plan_3bed4.jpg' },
+  { id: '3bed5', name: '3 Bedroom House - Design 5', beds: 3, baths: 2, image: '/images/plan_3bed5.jpg' },
+  { id: '4bed', name: '4 Bedroom House', beds: 4, baths: 3, image: '/images/plan_4bed.jpg' },
+  { id: '4bed2', name: '4 Bedroom House - Design 2', beds: 4, baths: 3, image: '/images/plan_4bed2.jpg' },
+  { id: '4bed3', name: '4 Bedroom House - Design 3', beds: 4, baths: 3, image: '/images/plan_4bed3.jpg' },
+  { id: '5bed', name: '5 Bedroom House', beds: 5, baths: 4, image: '/images/plan_5bed.jpg' },
+  { id: 'doublestory', name: 'Double Story House', beds: 5, baths: 4, image: '/images/plan_double.jpg' },
 ];
 
 function HousePlanDetails() {
@@ -118,7 +111,6 @@ function HousePlanDetails() {
   const houseTitle = searchParams.get('house');
   const bedsParam = searchParams.get('beds');
   const bathsParam = searchParams.get('baths');
-  const priceParam = searchParams.get('price');
   const planIdParam = searchParams.get('planId');
 
   const [selectedBeds, setSelectedBeds] = useState<number>(bedsParam ? parseInt(bedsParam) : 4);
@@ -158,7 +150,6 @@ function HousePlanDetails() {
                 <div className="flex gap-4 mt-1 text-sm flex-wrap">
                   <span className="flex items-center gap-1"><Bed size={14} /> {bedsParam || selectedBeds} beds</span>
                   <span className="flex items-center gap-1"><Ruler size={14} /> {bathsParam || (selectedBeds === 3 ? 2 : selectedBeds === 4 ? 3 : 4)} baths</span>
-                  <span className="flex items-center gap-1"><DollarSign size={14} /> {priceParam || (selectedBeds === 3 ? '$45,000' : selectedBeds === 4 ? '$55,000' : '$75,000')}</span>
                 </div>
               </div>
               <Link href="/contact" className="bg-red-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-red-700 transition shadow-md">
@@ -209,10 +200,6 @@ function HousePlanDetails() {
                     <span className="text-gray-500">Bathrooms</span>
                     <span className="font-semibold">{selectedPlanData?.baths || (selectedBeds === 3 ? 2 : selectedBeds === 4 ? 3 : 4)}</span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-gray-500">Price</span>
-                    <span className="font-semibold text-red-600">{selectedPlanData?.price || (selectedBeds === 3 ? '$45,000' : selectedBeds === 4 ? '$55,000' : '$75,000')}</span>
-                  </div>
                 </div>
                 <Link href="/contact" className="block w-full bg-blue-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-red-600 transition">
                   Request a Quote
@@ -228,11 +215,10 @@ function HousePlanDetails() {
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-blue-600 mb-8">Browse All House Plans</h2>
           
-          {/* 3 Bedroom Plans Section - $45,000 */}
+          {/* 3 Bedroom Plans */}
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-blue-600 border-l-4 border-red-500 pl-3">3 Bedroom House Plans</h3>
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">From $45,000</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {housePlans.filter(p => p.beds === 3).map((plan) => (
@@ -247,22 +233,20 @@ function HousePlanDetails() {
                   <img src={plan.image} alt={plan.name} className="w-full h-40 object-cover" />
                   <div className="p-3">
                     <h3 className="text-sm font-bold text-blue-600 mb-1 line-clamp-2">{plan.name}</h3>
-                    <div className="flex justify-between text-gray-600 text-xs mb-2">
+                    <div className="flex justify-between text-gray-600 text-xs">
                       <span><Bed size={12} className="inline" /> {plan.beds} beds</span>
                       <span><Ruler size={12} className="inline" /> {plan.baths} baths</span>
                     </div>
-                    <p className="text-red-600 font-semibold text-sm">{plan.price}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 4 Bedroom Plans Section - $55,000 */}
+          {/* 4 Bedroom Plans */}
           <div className="mb-12">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-blue-600 border-l-4 border-red-500 pl-3">4 Bedroom House Plans</h3>
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">From $55,000</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {housePlans.filter(p => p.beds === 4).map((plan) => (
@@ -277,22 +261,20 @@ function HousePlanDetails() {
                   <img src={plan.image} alt={plan.name} className="w-full h-40 object-cover" />
                   <div className="p-3">
                     <h3 className="text-sm font-bold text-blue-600 mb-1 line-clamp-2">{plan.name}</h3>
-                    <div className="flex justify-between text-gray-600 text-xs mb-2">
+                    <div className="flex justify-between text-gray-600 text-xs">
                       <span><Bed size={12} className="inline" /> {plan.beds} beds</span>
                       <span><Ruler size={12} className="inline" /> {plan.baths} baths</span>
                     </div>
-                    <p className="text-red-600 font-semibold text-sm">{plan.price}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* 5 Bedroom & Double Story Plans Section - $75,000 */}
+          {/* 5 Bedroom & Double Story Plans */}
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold text-blue-600 border-l-4 border-red-500 pl-3">5 Bedroom & Double Story Plans</h3>
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">From $75,000</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {housePlans.filter(p => p.beds === 5).map((plan) => (
@@ -307,11 +289,10 @@ function HousePlanDetails() {
                   <img src={plan.image} alt={plan.name} className="w-full h-40 object-cover" />
                   <div className="p-3">
                     <h3 className="text-sm font-bold text-blue-600 mb-1 line-clamp-2">{plan.name}</h3>
-                    <div className="flex justify-between text-gray-600 text-xs mb-2">
+                    <div className="flex justify-between text-gray-600 text-xs">
                       <span><Bed size={12} className="inline" /> {plan.beds} beds</span>
                       <span><Ruler size={12} className="inline" /> {plan.baths} baths</span>
                     </div>
-                    <p className="text-red-600 font-semibold text-sm">{plan.price}</p>
                   </div>
                 </div>
               ))}

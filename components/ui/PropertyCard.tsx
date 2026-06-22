@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, DollarSign, Ruler } from 'lucide-react';
+import { MapPin, Ruler } from 'lucide-react';
 import { Property } from '@/types';
 
 export default function PropertyCard({ property }: { property: Property }) {
@@ -12,10 +12,6 @@ export default function PropertyCard({ property }: { property: Property }) {
           <div className="flex items-center text-gray-600 text-sm">
             <MapPin size={16} className="mr-2 text-primary" />
             {property.location}
-          </div>
-          <div className="flex items-center text-gray-600 font-semibold">
-            <DollarSign size={16} className="mr-2 text-primary" />
-            ${property.price.toLocaleString()}
           </div>
           <div className="flex items-center text-gray-600">
             <Ruler size={16} className="mr-2 text-primary" />

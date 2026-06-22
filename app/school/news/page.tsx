@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSchoolPosts } from "@/lib/use-school-posts";
 import {
   Newspaper,
   GraduationCap,
@@ -15,44 +16,7 @@ import {
 } from "lucide-react";
 
 export default function NewsPage() {
-  const latestNews = [
-    {
-      title: "New Classroom Block Construction Update",
-      image: "/school/school1.jpg",
-      date: "20 May 2026",
-      category: "Development",
-      icon: Building2,
-      description:
-        "Construction of our modern classroom block continues as we prepare for opening in 2027.",
-    },
-    {
-      title: "Curriculum Planning Underway",
-      image: "/school/student.jpg",
-      date: "18 May 2026",
-      category: "Academics",
-      icon: GraduationCap,
-      description:
-        "Our academic team is preparing a world-class curriculum for learners.",
-    },
-    {
-      title: "Community Engagement Meeting",
-      image: "/school/school2.jpg",
-      date: "15 May 2026",
-      category: "Events",
-      icon: Users,
-      description:
-        "Parents and stakeholders joined discussions about the school's future.",
-    },
-    {
-      title: "Sports Facilities Development",
-      image: "/school/sport.jpg",
-      date: "10 May 2026",
-      category: "Development",
-      icon: Building2,
-      description:
-        "Construction of sports facilities is progressing well for 2027.",
-    },
-  ];
+  const { posts: latestNews } = useSchoolPosts(undefined, 8);
 
   return (
     <main className="bg-slate-50 overflow-hidden">
@@ -271,40 +235,37 @@ export default function NewsPage() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-          {latestNews.map((item, index) => {
-            const Icon = item.icon;
+          {latestNews.map((item) => {
+            const Icon =
+              item.category === 'activity' ? Users : item.category === 'event' ? Bell : Building2;
 
             return (
               <article
-                key={index}
+                key={item.id}
                 className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3"
               >
                 <div className="relative h-60">
-
                   <Image
-                    src={item.image}
+                    src={item.imageUrl}
                     alt={item.title}
                     fill
                     className="object-cover"
                   />
-
                 </div>
 
                 <div className="p-6">
-
                   <div className="flex items-center gap-2 mb-4">
-
                     <Icon size={16} className="text-red-600" />
-
-                    <span className="text-red-600 text-sm font-bold">
+                    <span className="text-red-600 text-sm font-bold capitalize">
                       {item.category}
                     </span>
-
                   </div>
 
                   <div className="flex items-center gap-2 text-slate-400 text-sm mb-4">
                     <Calendar size={14} />
-                    {item.date}
+                    {item.publishedAt
+                      ? new Date(item.publishedAt).toLocaleDateString()
+                      : 'Recent'}
                   </div>
 
                   <h3 className="font-black text-xl text-slate-900 mb-3">
@@ -312,9 +273,8 @@ export default function NewsPage() {
                   </h3>
 
                   <p className="text-slate-600 text-sm leading-relaxed">
-                    {item.description}
+                    {item.excerpt}
                   </p>
-
                 </div>
               </article>
             );

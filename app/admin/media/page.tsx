@@ -11,6 +11,8 @@ type Media = {
   originalName: string;
   resourceType: string;
   format: string | null;
+  caption: string | null;
+  showInGallery: boolean;
   createdAt: string;
 };
 
@@ -37,12 +39,24 @@ export default function AdminMediaPage() {
     load();
   };
 
+  const updateMedia = async (id: string, patch: { caption?: string; showInGallery?: boolean }) => {
+    const res = await fetch('/api/admin/media', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, ...patch }),
+    });
+    if (res.ok) {
+      toast.success('Updated');
+      load();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Media Library</h1>
-          <p className="text-gray-600 text-sm">Cloudinary uploads — images, PDFs, videos, and files</p>
+          <p className="text-gray-600 text-sm">Upload images and videos — toggle &quot;Show in gallery&quot; for the public school gallery page.</p>
         </div>
         <MediaUploader onUploaded={() => load()} />
       </div>
@@ -73,6 +87,24 @@ export default function AdminMediaPage() {
             <div className="p-3">
               <p className="text-sm font-medium truncate">{item.originalName}</p>
               <p className="text-xs text-gray-500">{item.resourceType} · {new Date(item.createdAt).toLocaleDateString()}</p>
+              <input
+                className="w-full border rounded px-2 py-1 text-xs mt-2"
+                placeholder="Caption (optional)"
+                defaultValue={item.caption || ''}
+                onBlur={(e) => {
+                  if (e.target.value !== (item.caption || '')) {
+                    updateMedia(item.id, { caption: e.target.value });
+                  }
+                }}
+              />
+              <label className="flex items-center gap-2 mt-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={item.showInGallery}
+                  onChange={(e) => updateMedia(item.id, { showInGallery: e.target.checked })}
+                />
+                Show in public gallery
+              </label>
               <div className="flex gap-2 mt-2">
                 <button onClick={() => copyUrl(item.secureUrl)} className="text-[#4169E1] text-xs flex items-center gap-1">
                   <Copy size={14} /> Copy URL

@@ -46,6 +46,11 @@ export const mediaTypeEnum = pgEnum('media_type', [
   'pdf',
   'raw',
 ]);
+export const schoolPostCategoryEnum = pgEnum('school_post_category', [
+  'news',
+  'activity',
+  'event',
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -209,8 +214,26 @@ export const mediaFiles = pgTable('media_files', {
   bytes: integer('bytes'),
   originalName: text('original_name').notNull(),
   folder: text('folder').notNull().default('mzinyathi'),
+  caption: text('caption'),
+  showInGallery: boolean('show_in_gallery').notNull().default(false),
   uploadedBy: uuid('uploaded_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const schoolPosts = pgTable('school_posts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: text('title').notNull(),
+  excerpt: text('excerpt').notNull(),
+  content: text('content').notNull().default(''),
+  imageUrl: text('image_url').notNull(),
+  category: schoolPostCategoryEnum('category').notNull().default('news'),
+  status: publishStatusEnum('status').notNull().default('draft'),
+  publishedAt: timestamp('published_at'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: uuid('updated_by').references(() => users.id),
 });
 
 export const siteSettings = pgTable('site_settings', {
@@ -265,5 +288,6 @@ export type SchoolApplication = typeof schoolApplications.$inferSelect;
 export type Phase = typeof phases.$inferSelect;
 export type House = typeof houses.$inferSelect;
 export type MediaFile = typeof mediaFiles.$inferSelect;
+export type SchoolPost = typeof schoolPosts.$inferSelect;
 export type SitePage = typeof sitePages.$inferSelect;
 export type CodeAsset = typeof codeAssets.$inferSelect;

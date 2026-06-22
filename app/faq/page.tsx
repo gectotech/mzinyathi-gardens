@@ -46,8 +46,8 @@ const faqCategories = [
       },
       {
         id: 6,
-        question: 'What are the house prices?',
-        answer: 'Our house prices are: 3-bedroom houses from $45,000, 4-bedroom houses from $55,000, and 5-bedroom/Double Story houses from $75,000.'
+        question: 'How do I get pricing information?',
+        answer: 'Please contact our sales team for current availability and pricing. We will provide a tailored quote based on your preferred property and payment plan.'
       },
       {
         id: 7,
