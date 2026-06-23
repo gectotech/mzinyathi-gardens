@@ -8,7 +8,7 @@ export default function AdmissionsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState("");
-  const totalSteps = 9;
+  const totalSteps = 10;
 
   const [formData, setFormData] = useState({
     // Learner Details
@@ -19,6 +19,7 @@ export default function AdmissionsPage() {
     nationality: "",
     birthCertificateNumber: "",
     gradeApplyingFor: "",
+    applicantType: "" as "" | "transfer" | "fresh",
     previousSchool: "",
     // Parent/Guardian
     parentFullName: "",
@@ -54,6 +55,7 @@ export default function AdmissionsPage() {
     requiresTransport: "",
     pickupArea: "",
     // Declaration
+    reviewConfirmed: false,
     declaration: false,
     signature: "",
     // File uploads
@@ -126,14 +128,17 @@ export default function AdmissionsPage() {
       emergencyRelationship: formData.emergencyRelationship,
       emergencyPhone: formData.emergencyPhone,
       // Step 6: Academic
+      applicantType: formData.applicantType,
       lastGrade: formData.lastGrade,
-      // Step 9: Declaration
+      // Step 9: Review
+      reviewConfirmed: formData.reviewConfirmed,
+      // Step 10: Declaration
       declaration: formData.declaration,
       signature: formData.signature,
     };
 
     const emptyFields = Object.entries(requiredFields).filter(([key, value]) => {
-      if (key === "declaration") return !value;
+      if (key === "declaration" || key === "reviewConfirmed") return !value;
       if (typeof value !== "string") return false;
       return !value || value.trim() === "";
     });
@@ -147,6 +152,16 @@ export default function AdmissionsPage() {
 
     if (!formData.birthCertificate || !formData.parentIdCopy) {
       alert("Birth certificate and parent/guardian ID copies are required.");
+      return;
+    }
+
+    if (formData.applicantType === "transfer" && !formData.previousSchool?.trim()) {
+      alert("Please provide your previous school name for transfer applications.");
+      return;
+    }
+
+    if (formData.applicantType === "transfer" && !formData.previousSchoolReport) {
+      alert("Previous school report is required for transfer applications.");
       return;
     }
 
@@ -183,7 +198,11 @@ export default function AdmissionsPage() {
           nationality: formData.nationality,
           birthCertNumber: formData.birthCertificateNumber,
           gradeApplying: formData.gradeApplyingFor,
-          learnerPreviousSchool: formData.previousSchool || undefined,
+          applicantType: formData.applicantType || undefined,
+          learnerPreviousSchool:
+            formData.applicantType === "transfer" ? formData.previousSchool || undefined : undefined,
+          currentSchool:
+            formData.applicantType === "transfer" ? formData.currentSchool || undefined : undefined,
           parentName: formData.parentFullName,
           parentRelationship: formData.relationship,
           parentNationalId: formData.nationalId || undefined,
@@ -205,7 +224,6 @@ export default function AdmissionsPage() {
           disabilities: formData.disabilities || undefined,
           medications: formData.medication || undefined,
           doctorInfo: formData.doctorInfo || undefined,
-          currentSchool: formData.currentSchool || undefined,
           lastGradeCompleted: formData.lastGrade,
           languagesSpoken: formData.languages || undefined,
           talentsInterests: formData.talents || undefined,
@@ -279,6 +297,7 @@ export default function AdmissionsPage() {
                 "Academic",
                 "Documents",
                 "Transport",
+                "Review",
                 "Declaration"
               ].map((step, index) => (
                 <div
@@ -372,14 +391,7 @@ export default function AdmissionsPage() {
                         <option>Grade 5</option>
                         <option>Grade 6</option>
                         <option>Grade 7</option>
-                      </select>
-
-                      <input
-                        name="previousSchool"
-                        value={formData.previousSchool}
-                        onChange={handleChange}
-                        placeholder="Previous School"
-                      />
+                    </select>
                     </div>
 
                     <label className="upload-label">
@@ -683,14 +695,42 @@ export default function AdmissionsPage() {
                       Step 6: Academic Information
                     </h3>
 
-                    <div className="grid">
-                      <input
-                        name="currentSchool"
-                        value={formData.currentSchool}
+                    <div className="mb-6">
+                      <label className="block text-sm font-semibold mb-2">
+                        Are you transferring from another school or starting fresh? *
+                      </label>
+                      <select
+                        required
+                        name="applicantType"
+                        value={formData.applicantType}
                         onChange={handleChange}
-                        placeholder="Current School"
-                      />
+                        className="w-full"
+                      >
+                        <option value="">Select an option</option>
+                        <option value="transfer">Transferring from another school</option>
+                        <option value="fresh">Starting fresh (new learner)</option>
+                      </select>
+                    </div>
 
+                    {formData.applicantType === "transfer" && (
+                      <div className="grid mb-4">
+                        <input
+                          required
+                          name="previousSchool"
+                          value={formData.previousSchool}
+                          onChange={handleChange}
+                          placeholder="Previous School Name *"
+                        />
+                        <input
+                          name="currentSchool"
+                          value={formData.currentSchool}
+                          onChange={handleChange}
+                          placeholder="Current School (if different)"
+                        />
+                      </div>
+                    )}
+
+                    <div className="grid">
                       <input
                         required
                         name="lastGrade"
@@ -772,12 +812,13 @@ export default function AdmissionsPage() {
                       </div>
 
                       <div className="document-card">
-                        <label>Previous School Report</label>
+                        <label>Previous School Report{formData.applicantType === "transfer" ? " *" : ""}</label>
                         <input
                           type="file"
                           name="previousSchoolReport"
                           accept=".pdf,.jpg,.jpeg,.png"
                           onChange={handleFileChange}
+                          required={formData.applicantType === "transfer"}
                         />
                         {formData.previousSchoolReport && (
                           <div className="mt-2 text-sm text-green-400">
@@ -832,6 +873,7 @@ export default function AdmissionsPage() {
                         )}
                       </div>
 
+                      {formData.applicantType === "transfer" && (
                       <div className="document-card">
                         <label>Transfer Letter</label>
                         <input
@@ -846,6 +888,7 @@ export default function AdmissionsPage() {
                           </div>
                         )}
                       </div>
+                      )}
                     </div>
 
                     <div className="navigation-buttons">
@@ -908,11 +951,100 @@ export default function AdmissionsPage() {
                   </div>
                 )}
 
-                {/* STEP 9: DECLARATION */}
+                {/* STEP 9: REVIEW INFORMATION */}
                 {currentStep === 9 && (
                   <div className="step-content">
                     <h3 className="section-title">
-                      Step 9: Declaration & Confirmation
+                      Step 9: Review Information
+                    </h3>
+                    <p className="text-gray-300 mb-6 text-sm">
+                      Please review all information below before proceeding to final submission.
+                    </p>
+
+                    <div className="space-y-4 text-sm">
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <h4 className="font-bold text-yellow-400 mb-2">Learner</h4>
+                        <p>{formData.firstName} {formData.surname} · {formData.gradeApplyingFor}</p>
+                        <p>DOB: {formData.dateOfBirth} · {formData.gender} · {formData.nationality}</p>
+                        <p>Birth cert: {formData.birthCertificateNumber}</p>
+                        <p>Applicant type: {formData.applicantType === "transfer" ? "Transferring" : formData.applicantType === "fresh" ? "Starting fresh" : "—"}</p>
+                        {formData.applicantType === "transfer" && (
+                          <p>Previous school: {formData.previousSchool || "—"}</p>
+                        )}
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <h4 className="font-bold text-yellow-400 mb-2">Parent / Guardian</h4>
+                        <p>{formData.parentFullName} ({formData.relationship})</p>
+                        <p>Phone: {formData.phoneNumber} · ID: {formData.nationalId || "—"}</p>
+                        <p>Email: {formData.email || "—"}</p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <h4 className="font-bold text-yellow-400 mb-2">Address & Emergency</h4>
+                        <p>{formData.homeAddress}, {formData.suburb}, {formData.city}, {formData.province}</p>
+                        <p>Emergency: {formData.emergencyName} — {formData.emergencyPhone}</p>
+                      </div>
+
+                      <div className="bg-white/5 rounded-lg p-4">
+                        <h4 className="font-bold text-yellow-400 mb-2">Academic & Documents</h4>
+                        <p>Last grade: {formData.lastGrade}</p>
+                        <p>Transport: {formData.requiresTransport || "—"} {formData.pickupArea && `· ${formData.pickupArea}`}</p>
+                        <p className="mt-2">
+                          Files:{" "}
+                          {[
+                            formData.birthCertificate && "Birth certificate",
+                            formData.parentIdCopy && "Parent ID",
+                            formData.studentPhoto && "Student photo",
+                            formData.previousSchoolReport && "Previous report",
+                          ]
+                            .filter(Boolean)
+                            .join(", ") || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="declaration-box mt-6">
+                      <label className="checkbox-row">
+                        <input
+                          required
+                          name="reviewConfirmed"
+                          type="checkbox"
+                          checked={formData.reviewConfirmed}
+                          onChange={handleChange}
+                        />
+                        <span>
+                          I have reviewed all information above and confirm it is accurate.
+                        </span>
+                      </label>
+                    </div>
+
+                    <div className="navigation-buttons">
+                      <button type="button" className="nav-btn back-btn" onClick={handleBack}>
+                        ← Back
+                      </button>
+                      <button
+                        type="button"
+                        className="nav-btn next-btn"
+                        onClick={() => {
+                          if (!formData.reviewConfirmed) {
+                            alert("Please confirm you have reviewed your information.");
+                            return;
+                          }
+                          handleNext();
+                        }}
+                      >
+                        Continue to Declaration →
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 10: DECLARATION */}
+                {currentStep === 10 && (
+                  <div className="step-content">
+                    <h3 className="section-title">
+                      Step 10: Declaration & Confirmation
                     </h3>
 
                     <div className="declaration-box">

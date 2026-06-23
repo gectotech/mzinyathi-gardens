@@ -1,15 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Briefcase, Upload, CheckCircle, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { uploadSchoolDocument } from "@/lib/school-admission";
 
 type Step = "personal" | "education" | "experience" | "documents" | "questions" | "review";
+
+type JobListing = {
+  id: string;
+  title: string;
+  department: string;
+};
 
 export default function CareersPage() {
   const [currentStep, setCurrentStep] = useState<Step>("personal");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [applicationId, setApplicationId] = useState("");
+  const [jobs, setJobs] = useState<JobListing[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState("");
 
   const [formData, setFormData] = useState({
     // Personal Information
@@ -43,6 +53,46 @@ export default function CareersPage() {
     certificates: null as File | null,
   });
 
+  useEffect(() => {
+    fetch("/api/careers")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.jobs?.length) {
+          setJobs(d.jobs);
+          if (d.jobs.length === 1) setSelectedJobId(d.jobs[0].id);
+        }
+      })
+      .catch(() => {});
+
+    const interestRaw = localStorage.getItem("interestInfo");
+    if (interestRaw) {
+      try {
+        const interest = JSON.parse(interestRaw);
+        if (interest.name || interest.email) {
+          setFormData((prev) => ({
+            ...prev,
+            fullName: interest.name || prev.fullName,
+            email: interest.email || prev.email,
+          }));
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const interestRaw = localStorage.getItem("interestInfo");
+    if (!interestRaw || !jobs.length) return;
+    try {
+      const interest = JSON.parse(interestRaw);
+      const matched = jobs.find((j) => j.title === interest.position);
+      if (matched) setSelectedJobId(matched.id);
+    } catch {
+      /* ignore */
+    }
+  }, [jobs]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -74,8 +124,7 @@ export default function CareersPage() {
     alert("Draft saved successfully!");
   };
 
-  const handleSubmit = () => {
-    // Validate required fields
+  const handleSubmit = async () => {
     const requiredFields = {
       fullName: formData.fullName,
       nationalId: formData.nationalId,
@@ -98,23 +147,62 @@ export default function CareersPage() {
     };
 
     const emptyFields = Object.entries(requiredFields)
-      .filter(([key, value]) => !value || (typeof value === 'string' && value.trim() === ""))
+      .filter(([, value]) => !value || (typeof value === "string" && value.trim() === ""))
       .map(([key]) => key);
+
+    if (!selectedJobId) {
+      alert("Please select a position to apply for.");
+      return;
+    }
 
     if (emptyFields.length > 0) {
       alert(`Please complete all required fields before submitting.\n\nMissing fields:\n${emptyFields.join(", ")}`);
       return;
     }
 
-    // Validate file uploads
-    if (!uploadedFiles.cv || !uploadedFiles.nationalIdCopy || !uploadedFiles.certificates) {
-      alert("Please upload all required documents (CV/Resume, National ID Copy, and Certificates).");
+    if (!uploadedFiles.cv) {
+      alert("Please upload your CV/Resume.");
       return;
     }
 
-    const appId = "CAREER-" + Math.floor(100000 + Math.random() * 900000);
-    setApplicationId(appId);
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      const resumeUrl = await uploadSchoolDocument(uploadedFiles.cv);
+
+      const res = await fetch("/api/careers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jobId: selectedJobId,
+          fullName: formData.fullName,
+          nationalId: formData.nationalId,
+          dob: formData.dateOfBirth,
+          phone: formData.phoneNumber,
+          email: formData.email || undefined,
+          address: `${formData.physicalAddress}, ${formData.city}`,
+          education: formData.highestQualification,
+          institution: formData.school,
+          fieldOfStudy: formData.fieldOfStudy,
+          previousEmployer: formData.previousEmployer,
+          skills: formData.skills,
+          experience: `${formData.positionHeld} (${formData.yearsOfExperience} years). ${formData.whyHireYou}`,
+          interestMessage: `Available immediately: ${formData.availableImmediately}. References: ${formData.haveReferences}. Year completed: ${formData.yearCompleted}.`,
+          resumeUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Submission failed");
+
+      setApplicationId(data.trackingId);
+      setSubmitted(true);
+      localStorage.removeItem("interestInfo");
+      localStorage.removeItem("careersDraft");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Failed to submit application");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -193,6 +281,21 @@ export default function CareersPage() {
               <div>
                 <h2 className="text-2xl font-bold mb-6">A. Personal Information</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-bold text-gray-300 mb-2">Position Applying For *</label>
+                    <select
+                      value={selectedJobId}
+                      onChange={(e) => setSelectedJobId(e.target.value)}
+                      className="w-full px-4 py-3 border border-white/30 rounded-lg bg-white/10 text-white focus:outline-none focus:border-green-400 focus:bg-white/20 transition"
+                    >
+                      <option value="">Select a position</option>
+                      {jobs.map((job) => (
+                        <option key={job.id} value={job.id} className="text-black">
+                          {job.title} — {job.department}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-bold text-gray-300 mb-2">Full Name *</label>
                     <input
@@ -630,9 +733,10 @@ export default function CareersPage() {
                 {currentStep === "review" ? (
                   <button
                     onClick={handleSubmit}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold hover:from-green-400 hover:to-green-500 transition"
+                    disabled={submitting}
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-bold hover:from-green-400 hover:to-green-500 transition disabled:opacity-50"
                   >
-                    Submit Application
+                    {submitting ? "Submitting…" : "Submit Application"}
                   </button>
                 ) : (
                   <button

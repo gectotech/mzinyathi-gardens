@@ -9,12 +9,12 @@ type ExportPanelProps = {
 export default function ExportPanel({
   endpoint,
   filename,
-  label = 'Export to Excel (CSV)',
+  label = 'Export to Excel',
 }: ExportPanelProps) {
   const download = () => {
     const from = (document.getElementById(`${endpoint}-from`) as HTMLInputElement)?.value;
     const to = (document.getElementById(`${endpoint}-to`) as HTMLInputElement)?.value;
-    const params = new URLSearchParams({ format: 'csv' });
+    const params = new URLSearchParams({ format: 'xlsx' });
     if (from) params.set('from', from);
     if (to) params.set('to', to);
     window.open(`${endpoint}?${params.toString()}`, '_blank');
@@ -37,7 +37,9 @@ export default function ExportPanel({
       >
         {label}
       </button>
-      <p className="text-xs text-gray-500 w-full">Opens a CSV file with all fields and document links. Excel compatible.</p>
+      <p className="text-xs text-gray-500 w-full">
+        Downloads an Excel workbook with embedded document images where available.
+      </p>
     </div>
   );
 }

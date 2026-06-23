@@ -32,12 +32,14 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'submitted',
   'under_review',
   'shortlisted',
+  'interview',
   'rejected',
   'hired',
 ]);
 export const schoolAdmissionStatusEnum = pgEnum('school_admission_status', [
   'submitted',
   'under_review',
+  'interview',
   'accepted',
   'waitlisted',
   'rejected',
@@ -118,6 +120,7 @@ export const schoolApplications = pgTable('school_applications', {
   nationality: text('nationality').notNull(),
   birthCertNumber: text('birth_cert_number').notNull(),
   gradeApplying: text('grade_applying').notNull(),
+  applicantType: text('applicant_type'),
   learnerPreviousSchool: text('learner_previous_school'),
   parentName: text('parent_name').notNull(),
   parentRelationship: text('parent_relationship').notNull(),
@@ -150,6 +153,7 @@ export const schoolApplications = pgTable('school_applications', {
   informationConfirmed: boolean('information_confirmed').notNull().default(false),
   parentSignature: text('parent_signature').notNull(),
   status: schoolAdmissionStatusEnum('status').notNull().default('submitted'),
+  interviewScheduledAt: timestamp('interview_scheduled_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -175,6 +179,7 @@ export const jobApplications = pgTable('job_applications', {
   interestMessage: text('interest_message'),
   resumeUrl: text('resume_url'),
   status: applicationStatusEnum('status').notNull().default('submitted'),
+  interviewScheduledAt: timestamp('interview_scheduled_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
             nationality: data.nationality,
             birthCertNumber: data.birthCertNumber,
             gradeApplying: data.gradeApplying,
+            applicantType: data.applicantType || null,
             learnerPreviousSchool: data.learnerPreviousSchool || null,
             parentName: data.parentName,
             parentRelationship: data.parentRelationship,

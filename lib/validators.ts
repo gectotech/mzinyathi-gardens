@@ -10,23 +10,29 @@ export const contactSchema = z.object({
   preferredContact: z.enum(['call', 'email', 'whatsapp']),
 });
 
-export const applicationSchema = z.object({
-  jobTitle: z.string().min(2),
-  interestMessage: z.string().optional(),
-  fullName: z.string().min(2),
-  nationalId: z.string().min(2),
-  dob: z.string().min(4),
-  phone: z.string().min(6),
-  email: z.string().email(),
-  address: z.string().min(4),
-  education: z.string().min(2),
-  institution: z.string().min(2),
-  fieldOfStudy: z.string().min(2),
-  previousEmployer: z.string().optional(),
-  skills: z.string().min(2),
-  experience: z.string().min(2),
-  resumeUrl: z.string().url().optional().or(z.literal('')),
-});
+export const applicationSchema = z
+  .object({
+    jobId: z.string().uuid().optional(),
+    jobTitle: z.string().min(2).optional(),
+    interestMessage: z.string().optional(),
+    fullName: z.string().min(2),
+    nationalId: z.string().min(2),
+    dob: z.string().min(4),
+    phone: z.string().min(6),
+    email: z.string().email().optional().or(z.literal('')),
+    address: z.string().min(4),
+    education: z.string().min(2),
+    institution: z.string().min(2),
+    fieldOfStudy: z.string().min(2),
+    previousEmployer: z.string().optional(),
+    skills: z.string().min(2),
+    experience: z.string().min(2),
+    resumeUrl: z.string().url().optional().or(z.literal('')),
+  })
+  .refine((data) => data.jobId || data.jobTitle, {
+    message: 'A job position is required',
+    path: ['jobTitle'],
+  });
 
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -56,6 +62,7 @@ export const schoolAdmissionSchema = z.object({
   nationality: z.string().min(2),
   birthCertNumber: z.string().min(2),
   gradeApplying: z.string().min(2),
+  applicantType: z.enum(['transfer', 'fresh']).optional(),
   learnerPreviousSchool: z.string().optional(),
   parentName: z.string().min(2),
   parentRelationship: z.string().min(2),

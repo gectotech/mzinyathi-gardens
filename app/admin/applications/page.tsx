@@ -6,6 +6,8 @@ import { Eye, Briefcase, FileText, ExternalLink } from 'lucide-react';
 import ExportPanel from '@/components/admin/ExportPanel';
 import ViewDrawer from '@/components/admin/ViewDrawer';
 import StatusBadge from '@/components/admin/StatusBadge';
+import InterviewStatusControl from '@/components/admin/InterviewStatusControl';
+import ApplicationBulkTools from '@/components/admin/ApplicationBulkTools';
 import { DetailSection, DetailRow, DetailMessage } from '@/components/admin/DetailSection';
 
 type Application = {
@@ -15,6 +17,7 @@ type Application = {
   email: string;
   phone: string;
   status: string;
+  interviewScheduledAt: string | null;
   jobTitle: string;
   department: string;
   nationalId: string;
@@ -31,9 +34,19 @@ type Application = {
   createdAt: string;
 };
 
+const STATUS_OPTIONS = [
+  { value: 'submitted', label: 'Submitted' },
+  { value: 'under_review', label: 'Under Review' },
+  { value: 'shortlisted', label: 'Shortlisted' },
+  { value: 'interview', label: 'Interview' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'hired', label: 'Hired' },
+];
+
 export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [selected, setSelected] = useState<Application | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const load = () => {
     fetch('/api/admin/applications')
@@ -43,17 +56,30 @@ export default function AdminApplicationsPage() {
 
   useEffect(load, []);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: string, interviewScheduledAt: string | null) => {
     const res = await fetch('/api/admin/applications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
+      body: JSON.stringify({ id, status, interviewScheduledAt }),
     });
     if (res.ok) {
       toast.success('Status updated');
       load();
-      if (selected?.id === id) setSelected({ ...selected, status });
+      if (selected?.id === id) {
+        setSelected({ ...selected, status, interviewScheduledAt });
+      }
+    } else {
+      const data = await res.json();
+      toast.error(data.error || 'Update failed');
     }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(selectedIds.length === applications.length ? [] : applications.map((a) => a.id));
   };
 
   return (
@@ -63,12 +89,27 @@ export default function AdminApplicationsPage() {
         <p className="text-gray-600 text-sm">Review candidates and track hiring status</p>
       </div>
 
-      <ExportPanel endpoint="/api/admin/applications" filename="job-applications.csv" />
+      <ExportPanel endpoint="/api/admin/applications" filename="job-applications.xlsx" />
+
+      <ApplicationBulkTools
+        endpoint="/api/admin/applications"
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        onDeleted={load}
+        totalCount={applications.length}
+      />
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-50 border-b">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  checked={applications.length > 0 && selectedIds.length === applications.length}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Applicant</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Job</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Tracking ID</th>
@@ -80,21 +121,25 @@ export default function AdminApplicationsPage() {
           <tbody>
             {applications.map((app) => (
               <tr key={app.id} className="border-t hover:bg-slate-50/80 transition">
+                <td className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(app.id)}
+                    onChange={() => toggleSelect(app.id)}
+                  />
+                </td>
                 <td className="px-4 py-3 font-medium">{app.fullName}</td>
                 <td className="px-4 py-3 text-gray-600">{app.jobTitle}</td>
                 <td className="px-4 py-3 font-mono text-xs text-gray-500">{app.trackingId}</td>
-                <td className="px-4 py-3">
-                  <select
-                    value={app.status}
-                    onChange={(e) => updateStatus(app.id, e.target.value)}
-                    className="border rounded-lg px-2 py-1 text-xs bg-white"
-                  >
-                    <option value="submitted">Submitted</option>
-                    <option value="under_review">Under Review</option>
-                    <option value="shortlisted">Shortlisted</option>
-                    <option value="rejected">Rejected</option>
-                    <option value="hired">Hired</option>
-                  </select>
+                <td className="px-4 py-3 min-w-[160px]">
+                  <InterviewStatusControl
+                    status={app.status}
+                    interviewScheduledAt={app.interviewScheduledAt}
+                    statusOptions={STATUS_OPTIONS}
+                    onSave={(status, interviewScheduledAt) =>
+                      updateStatus(app.id, status, interviewScheduledAt)
+                    }
+                  />
                 </td>
                 <td className="px-4 py-3 text-gray-500">{new Date(app.createdAt).toLocaleDateString()}</td>
                 <td className="px-4 py-3">
@@ -146,6 +191,12 @@ export default function AdminApplicationsPage() {
               <DetailRow label="Submitted" value={new Date(selected.createdAt).toLocaleString()} />
               <DetailRow label="Position" value={selected.jobTitle} />
               <DetailRow label="Department" value={selected.department} />
+              {selected.interviewScheduledAt && (
+                <DetailRow
+                  label="Interview scheduled"
+                  value={new Date(selected.interviewScheduledAt).toLocaleString()}
+                />
+              )}
             </DetailSection>
 
             <DetailSection title="Contact">

@@ -6,6 +6,8 @@ import { Eye, GraduationCap, FileText, ExternalLink } from 'lucide-react';
 import ExportPanel from '@/components/admin/ExportPanel';
 import ViewDrawer from '@/components/admin/ViewDrawer';
 import StatusBadge from '@/components/admin/StatusBadge';
+import InterviewStatusControl from '@/components/admin/InterviewStatusControl';
+import ApplicationBulkTools from '@/components/admin/ApplicationBulkTools';
 import { DetailSection, DetailRow, DetailMessage } from '@/components/admin/DetailSection';
 import type { SchoolAdmissionDocuments } from '@/lib/school-admission';
 
@@ -15,10 +17,12 @@ type SchoolApplication = {
   firstName: string;
   surname: string;
   gradeApplying: string;
+  applicantType: string | null;
   parentName: string;
   parentPhone: string;
   parentEmail: string | null;
   status: string;
+  interviewScheduledAt: string | null;
   source: string;
   createdAt: string;
   dateOfBirth: string;
@@ -54,6 +58,15 @@ type SchoolApplication = {
   parentSignature: string;
 };
 
+const STATUS_OPTIONS = [
+  { value: 'submitted', label: 'Submitted' },
+  { value: 'under_review', label: 'Under Review' },
+  { value: 'interview', label: 'Interview' },
+  { value: 'accepted', label: 'Accepted' },
+  { value: 'waitlisted', label: 'Waitlisted' },
+  { value: 'rejected', label: 'Rejected' },
+];
+
 const documentLabels: Record<keyof SchoolAdmissionDocuments, string> = {
   studentPhoto: 'Student Photo',
   birthCertificate: 'Birth Certificate',
@@ -70,6 +83,7 @@ const isImageUrl = (url: string) => /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(url)
 export default function AdminSchoolApplicationsPage() {
   const [applications, setApplications] = useState<SchoolApplication[]>([]);
   const [selected, setSelected] = useState<SchoolApplication | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const load = () => {
     fetch('/api/admin/school-applications')
@@ -79,17 +93,30 @@ export default function AdminSchoolApplicationsPage() {
 
   useEffect(load, []);
 
-  const updateStatus = async (id: string, status: string) => {
+  const updateStatus = async (id: string, status: string, interviewScheduledAt: string | null) => {
     const res = await fetch('/api/admin/school-applications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, status }),
+      body: JSON.stringify({ id, status, interviewScheduledAt }),
     });
     if (res.ok) {
       toast.success('Status updated');
       load();
-      if (selected?.id === id) setSelected({ ...selected, status });
+      if (selected?.id === id) {
+        setSelected({ ...selected, status, interviewScheduledAt });
+      }
+    } else {
+      const data = await res.json();
+      toast.error(data.error || 'Update failed');
     }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  };
+
+  const toggleSelectAll = () => {
+    setSelectedIds(selectedIds.length === applications.length ? [] : applications.map((a) => a.id));
   };
 
   const docs = selected?.documents
@@ -103,12 +130,27 @@ export default function AdminSchoolApplicationsPage() {
         <p className="text-gray-600 text-sm">Student applications for the 2027 intake</p>
       </div>
 
-      <ExportPanel endpoint="/api/admin/school-applications" filename="school-applications.csv" />
+      <ExportPanel endpoint="/api/admin/school-applications" filename="school-applications.xlsx" />
+
+      <ApplicationBulkTools
+        endpoint="/api/admin/school-applications"
+        selectedIds={selectedIds}
+        onSelectionChange={setSelectedIds}
+        onDeleted={load}
+        totalCount={applications.length}
+      />
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <table className="min-w-full text-sm">
           <thead className="bg-slate-50 border-b">
             <tr>
+              <th className="px-4 py-3 text-left">
+                <input
+                  type="checkbox"
+                  checked={applications.length > 0 && selectedIds.length === applications.length}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Learner</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Grade</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Parent</th>
@@ -121,31 +163,35 @@ export default function AdminSchoolApplicationsPage() {
           <tbody>
             {applications.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-12 text-center text-gray-500">
+                <td colSpan={8} className="px-4 py-12 text-center text-gray-500">
                   No school applications yet
                 </td>
               </tr>
             ) : (
               applications.map((app) => (
                 <tr key={app.id} className="border-t hover:bg-slate-50/80 transition">
+                  <td className="px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.includes(app.id)}
+                      onChange={() => toggleSelect(app.id)}
+                    />
+                  </td>
                   <td className="px-4 py-3 font-medium">
                     {app.firstName} {app.surname}
                   </td>
                   <td className="px-4 py-3">{app.gradeApplying}</td>
                   <td className="px-4 py-3 text-gray-600">{app.parentName}</td>
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">{app.trackingId}</td>
-                  <td className="px-4 py-3">
-                    <select
-                      value={app.status}
-                      onChange={(e) => updateStatus(app.id, e.target.value)}
-                      className="border rounded-lg px-2 py-1 text-xs bg-white"
-                    >
-                      <option value="submitted">Submitted</option>
-                      <option value="under_review">Under Review</option>
-                      <option value="accepted">Accepted</option>
-                      <option value="waitlisted">Waitlisted</option>
-                      <option value="rejected">Rejected</option>
-                    </select>
+                  <td className="px-4 py-3 min-w-[160px]">
+                    <InterviewStatusControl
+                      status={app.status}
+                      interviewScheduledAt={app.interviewScheduledAt}
+                      statusOptions={STATUS_OPTIONS}
+                      onSave={(status, interviewScheduledAt) =>
+                        updateStatus(app.id, status, interviewScheduledAt)
+                      }
+                    />
                   </td>
                   <td className="px-4 py-3 text-gray-500">{new Date(app.createdAt).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
@@ -183,6 +229,7 @@ export default function AdminSchoolApplicationsPage() {
           <>
             <DetailSection title="Learner">
               <DetailRow label="Grade applying" value={selected.gradeApplying} />
+              <DetailRow label="Applicant type" value={selected.applicantType} />
               <DetailRow label="Date of birth" value={selected.dateOfBirth} />
               <DetailRow label="Gender" value={selected.gender} />
               <DetailRow label="Nationality" value={selected.nationality} />
@@ -229,6 +276,12 @@ export default function AdminSchoolApplicationsPage() {
             <DetailSection title="Application">
               <DetailRow label="Source" value={selected.source} />
               <DetailRow label="Submitted" value={new Date(selected.createdAt).toLocaleString()} />
+              {selected.interviewScheduledAt && (
+                <DetailRow
+                  label="Interview scheduled"
+                  value={new Date(selected.interviewScheduledAt).toLocaleString()}
+                />
+              )}
               <DetailRow label="Signature" value={selected.parentSignature} />
             </DetailSection>
 
