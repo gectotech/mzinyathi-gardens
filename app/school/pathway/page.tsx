@@ -5,6 +5,7 @@ import { GraduationCap, Briefcase, X, Eye, EyeOff, ArrowLeft, CheckCircle, Searc
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import AdmissionsLandingHub from '@/components/school/AdmissionsLandingHub';
 
 type PortalType = "admissions" | "jobs";
 type AuthMode = "choose" | "login" | "register";
@@ -117,6 +118,8 @@ export default function PortalPage() {
             Select the service you would like to access.
           </p>
         </motion.div>
+
+        <AdmissionsLandingHub />
 
         {/* Cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">

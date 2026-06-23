@@ -32,6 +32,7 @@ const NAV_ICONS: Record<string, LucideIcon> = {
   '/admin/contacts': Mail,
   '/admin/applications': Users,
   '/admin/school-applications': GraduationCap,
+  '/admin/students': Users,
   '/admin/school-content': Newspaper,
   '/admin/jobs': Briefcase,
   '/admin/properties': Home,
@@ -61,11 +62,11 @@ export default function AdminShell({ children, user }: AdminShellProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <aside className="w-64 bg-[#1a1a2e] text-white flex flex-col shrink-0">
+    <div className="min-h-screen bg-[var(--color-bg-secondary)] flex">
+      <aside className="w-64 bg-[var(--color-nav-primary)] text-[var(--color-text-on-nav)] flex flex-col shrink-0">
         <div className="p-5 border-b border-white/10">
-          <h1 className="text-lg font-bold text-[#4169E1]">Mzinyathi Admin</h1>
-          <p className="text-xs text-gray-400 mt-1">{user?.name || 'Administrator'}</p>
+          <h1 className="text-lg font-bold text-white">Mzinyathi Admin</h1>
+          <p className="text-xs text-white/60 mt-1">{user?.name || 'Administrator'}</p>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map(({ href, label }) => {
@@ -76,8 +77,8 @@ export default function AdminShell({ children, user }: AdminShellProps) {
                 href={href}
                 className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
                   pathname === href || pathname.startsWith(`${href}/`)
-                    ? 'bg-[#4169E1] text-white'
-                    : 'text-gray-300 hover:bg-white/10'
+                    ? 'bg-white/20 text-white font-medium'
+                    : 'text-white/75 hover:bg-white/10'
                 }`}
               >
                 <Icon size={18} /> {label}
@@ -97,8 +98,8 @@ export default function AdminShell({ children, user }: AdminShellProps) {
                     href={href}
                     className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm transition ${
                       pathname === href || pathname.startsWith(`${href}/`)
-                        ? 'bg-red-600 text-white'
-                        : 'text-gray-300 hover:bg-white/10'
+                        ? 'bg-[var(--color-accent-action)] text-white'
+                        : 'text-white/75 hover:bg-white/10'
                     }`}
                   >
                     <Icon size={18} /> {label}
@@ -124,7 +125,7 @@ export default function AdminShell({ children, user }: AdminShellProps) {
           {canEditPages && (
             <Link
               href="/admin/super/pages/home"
-              className="inline-flex items-center gap-2 text-sm bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+              className="inline-flex items-center gap-2 text-sm sms-btn-primary"
             >
               <FileCode2 size={16} /> Live Page Editor
             </Link>

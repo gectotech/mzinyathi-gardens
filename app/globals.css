@@ -1,13 +1,39 @@
 @import "tailwindcss";
 
+/* ── AQS / MGPS Design System (60-30-10) ── */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --brand-blue: #4169e1;
-  --brand-red: #dd3210;
-  --brand-dark: #0f172a;
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --foreground: #0f172a;
+
+  /* Dominant 60% — workspace */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f8fafc;
+  --color-bg-muted: #f1f5f9;
+
+  /* Navigation 30% — structure */
+  --color-nav-primary: #1e3a8a;
+  --color-nav-primary-hover: #1e40af;
+  --color-nav-primary-muted: #1e3a8a1a;
+
+  /* Accent 10% — CTAs & alerts */
+  --color-accent-action: #dc2626;
+  --color-accent-action-hover: #b91c1c;
+  --color-accent-success: #16a34a;
+  --color-accent-warning: #d97706;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94a3b8;
+  --color-text-on-nav: #ffffff;
+  --color-border-default: #e2e8f0;
+  --color-border-focus: #1e3a8a;
+
+  /* Legacy aliases (backward compatible) */
+  --brand-blue: #1e3a8a;
+  --brand-red: #dc2626;
+  --brand-dark: #1e3a8a;
+  --color-background: var(--color-bg-primary);
+  --color-foreground: var(--color-text-primary);
 }
 
 html {
@@ -15,37 +41,36 @@ html {
 }
 
 body {
-  background: #ffffff;
-  color: var(--foreground);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(65, 105, 225, 0.2);
-  color: #0f172a;
+  background: rgba(30, 58, 138, 0.15);
+  color: var(--color-text-primary);
 }
 
-/* Consistent focus rings for accessibility */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid var(--brand-blue);
+  outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
 }
 
 .text-primary {
-  color: var(--brand-blue);
+  color: var(--color-nav-primary);
 }
 
 .bg-dark {
-  background-color: #1a1a2e;
+  background-color: var(--color-nav-primary);
 }
 
 .btn-primary {
-  background-color: var(--brand-blue);
+  background-color: var(--color-nav-primary);
   color: white;
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -54,19 +79,73 @@ textarea:focus-visible {
 }
 
 .btn-primary:hover {
-  background-color: #3457c6;
+  background-color: var(--color-nav-primary-hover);
 }
 
 .btn-primary:active {
   transform: scale(0.98);
 }
 
-/* Subtle page section rhythm */
+/* SMS design system utilities */
+.sms-card {
+  background: var(--color-bg-primary);
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.75rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.sms-input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-border-default);
+  border-radius: 0.5rem;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.sms-input:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 0;
+  border-color: var(--color-border-focus);
+}
+
+.sms-btn-primary {
+  background: var(--color-accent-action);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.sms-btn-primary:hover {
+  background: var(--color-accent-action-hover);
+}
+
+.sms-btn-secondary {
+  background: var(--color-nav-primary);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.sms-btn-secondary:hover {
+  background: var(--color-nav-primary-hover);
+}
+
+.sms-btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 section {
   scroll-margin-top: 5rem;
 }
 
-/* Smooth image loading placeholder */
 img {
   background-color: #f3f4f6;
 }

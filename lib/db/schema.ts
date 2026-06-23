@@ -60,6 +60,12 @@ export const schoolPostCategoryEnum = pgEnum('school_post_category', [
   'activity',
   'event',
 ]);
+export const studentStatusEnum = pgEnum('student_status', [
+  'active',
+  'graduated',
+  'transferred',
+  'withdrawn',
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -292,11 +298,29 @@ export const auditLogs = pgTable('audit_logs', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+/** Enrolled students — permanent student_number (MGPYY0000A), separate from application tracking IDs. */
+export const students = pgTable('students', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  studentNumber: text('student_number').notNull().unique(),
+  applicationId: uuid('application_id').references(() => schoolApplications.id),
+  firstName: text('first_name').notNull(),
+  surname: text('surname').notNull(),
+  gender: text('gender').notNull(),
+  grade: text('grade').notNull(),
+  status: studentStatusEnum('status').notNull().default('active'),
+  graduatedYear: integer('graduated_year'),
+  parentEmail: text('parent_email'),
+  parentPhone: text('parent_phone'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type Job = typeof jobs.$inferSelect;
 export type JobApplication = typeof jobApplications.$inferSelect;
 export type SchoolApplication = typeof schoolApplications.$inferSelect;
+export type Student = typeof students.$inferSelect;
 export type Phase = typeof phases.$inferSelect;
 export type House = typeof houses.$inferSelect;
 export type MediaFile = typeof mediaFiles.$inferSelect;

@@ -8,7 +8,9 @@ import ViewDrawer from '@/components/admin/ViewDrawer';
 import StatusBadge from '@/components/admin/StatusBadge';
 import InterviewStatusControl from '@/components/admin/InterviewStatusControl';
 import ApplicationBulkTools from '@/components/admin/ApplicationBulkTools';
+import FloatingActionBar from '@/components/admin/FloatingActionBar';
 import { DetailSection, DetailRow, DetailMessage } from '@/components/admin/DetailSection';
+import { Trash2 } from 'lucide-react';
 import type { SchoolAdmissionDocuments } from '@/lib/school-admission';
 
 type SchoolApplication = {
@@ -123,8 +125,24 @@ export default function AdminSchoolApplicationsPage() {
     ? (Object.entries(selected.documents) as [keyof SchoolAdmissionDocuments, string][]).filter(([, url]) => url)
     : [];
 
+  const bulkDelete = async () => {
+    if (!selectedIds.length) return;
+    if (!confirm(`Delete ${selectedIds.length} application(s)?`)) return;
+    const res = await fetch('/api/admin/school-applications', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: selectedIds }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast.success(`Deleted ${data.deleted} application(s)`);
+      setSelectedIds([]);
+      load();
+    } else toast.error(data.error || 'Delete failed');
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24">
       <div>
         <h1 className="text-2xl font-bold">School Admissions</h1>
         <p className="text-gray-600 text-sm">Student applications for the 2027 intake</p>
@@ -138,6 +156,7 @@ export default function AdminSchoolApplicationsPage() {
         onSelectionChange={setSelectedIds}
         onDeleted={load}
         totalCount={applications.length}
+        hideDeleteSelected
       />
 
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -312,6 +331,21 @@ export default function AdminSchoolApplicationsPage() {
           </>
         )}
       </ViewDrawer>
+
+      <FloatingActionBar
+        selectedCount={selectedIds.length}
+        itemLabel="application"
+        onClearSelection={() => setSelectedIds([])}
+        actions={[
+          {
+            id: 'delete',
+            label: 'Delete Selected',
+            icon: <Trash2 size={14} />,
+            onClick: bulkDelete,
+            variant: 'danger',
+          },
+        ]}
+      />
     </div>
   );
 }

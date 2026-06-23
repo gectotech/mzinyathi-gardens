@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Search, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import ApplicationProgressTracker from "@/components/ui/ApplicationProgressTracker";
 
 type TrackStep = {
   step: string;
@@ -177,32 +178,12 @@ export default function TrackApplicationPage() {
                   </div>
                 </div>
 
-                <h5 className="text-base font-bold text-blue-900 mb-4">Application Progress</h5>
-                <div className="flex flex-col gap-0">
-                  {applicationStatus.steps.map((step, index) => (
-                    <div key={index} className="flex items-start gap-4 pb-5 relative">
-                      {index < applicationStatus.steps.length - 1 && (
-                        <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-gray-200" />
-                      )}
-                      <div
-                        className={`w-10 h-10 rounded-full border-2 flex items-center justify-center flex-shrink-0 relative z-10 ${
-                          step.status === "completed"
-                            ? "border-green-500 bg-green-50 text-green-600"
-                            : step.status === "in_progress"
-                            ? "border-yellow-500 bg-yellow-50 text-yellow-600"
-                            : "border-gray-300 bg-white text-gray-400"
-                        }`}
-                      >
-                        {step.status === "completed" && <CheckCircle size={16} />}
-                        {step.status === "in_progress" && <span className="text-lg">⏳</span>}
-                        {step.status === "pending" && <AlertCircle size={16} />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-blue-900 mb-1">{step.step}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <ApplicationProgressTracker
+                  steps={applicationStatus.steps.map((s) => ({
+                    step: s.step,
+                    status: s.status as 'completed' | 'in_progress' | 'pending',
+                  }))}
+                />
               </div>
             )}
           </div>

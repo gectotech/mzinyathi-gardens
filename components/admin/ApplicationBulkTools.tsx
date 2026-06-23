@@ -10,6 +10,8 @@ type ApplicationBulkToolsProps = {
   onSelectionChange: (ids: string[]) => void;
   onDeleted: () => void;
   totalCount: number;
+  /** When true, selection delete is handled by FloatingActionBar elsewhere */
+  hideDeleteSelected?: boolean;
 };
 
 export default function ApplicationBulkTools({
@@ -18,6 +20,7 @@ export default function ApplicationBulkTools({
   onSelectionChange,
   onDeleted,
   totalCount,
+  hideDeleteSelected = false,
 }: ApplicationBulkToolsProps) {
   const [purgeBefore, setPurgeBefore] = useState('');
   const [purgeFrom, setPurgeFrom] = useState('');
@@ -99,6 +102,7 @@ export default function ApplicationBulkTools({
             {selectedIds.length} of {totalCount} selected
           </p>
         </div>
+        {!hideDeleteSelected && (
         <button
           type="button"
           onClick={deleteSelected}
@@ -107,6 +111,7 @@ export default function ApplicationBulkTools({
         >
           <Trash2 size={14} /> Delete selected
         </button>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-4 pt-2 border-t">

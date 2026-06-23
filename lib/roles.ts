@@ -32,6 +32,7 @@ type Permission =
   | 'contacts'
   | 'job_applications'
   | 'school_applications'
+  | 'school_students'
   | 'school_content'
   | 'jobs'
   | 'properties'
@@ -50,6 +51,7 @@ const PERMISSIONS: Record<Permission, UserRole[]> = {
   contacts: ['super_admin', 'admin', 'viewer'],
   job_applications: ['super_admin', 'admin', 'viewer'],
   school_applications: ['super_admin', 'admin', 'school_admin', 'viewer'],
+  school_students: ['super_admin', 'admin', 'school_admin', 'viewer'],
   school_content: ['super_admin', 'admin', 'school_admin', 'content_editor'],
   jobs: ['super_admin', 'admin', 'viewer'],
   properties: ['super_admin', 'admin', 'property_admin', 'viewer'],
@@ -82,6 +84,7 @@ const ROUTE_ACCESS: { prefix: string; permission: Permission }[] = [
   { prefix: '/admin/contacts', permission: 'contacts' },
   { prefix: '/admin/applications', permission: 'job_applications' },
   { prefix: '/admin/school-applications', permission: 'school_applications' },
+  { prefix: '/admin/students', permission: 'school_students' },
   { prefix: '/admin/school-content', permission: 'school_content' },
   { prefix: '/admin/jobs', permission: 'jobs' },
   { prefix: '/admin/properties', permission: 'properties' },
@@ -107,6 +110,7 @@ export function navItemsForRole(role: string) {
     { href: '/admin/contacts', permission: 'contacts' as Permission, label: 'Contacts' },
     { href: '/admin/applications', permission: 'job_applications' as Permission, label: 'Job Applications' },
     { href: '/admin/school-applications', permission: 'school_applications' as Permission, label: 'School Admissions' },
+    { href: '/admin/students', permission: 'school_students' as Permission, label: 'Student Roster' },
     { href: '/admin/school-content', permission: 'school_content' as Permission, label: 'School Content' },
     { href: '/admin/jobs', permission: 'jobs' as Permission, label: 'Jobs' },
     { href: '/admin/properties', permission: 'properties' as Permission, label: 'Properties' },
