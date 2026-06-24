@@ -220,7 +220,7 @@ export default function CareersPage() {
               <p className="text-3xl font-bold text-yellow-400 mb-4">{applicationId}</p>
               <p className="text-sm text-gray-400">Please save this number for tracking your application status.</p>
             </div>
-            <Link href="/school/pathway" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-400 transition-colors">
+            <Link href="/school/portal" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-400 transition-colors">
               <ArrowLeft size={18} /> Back to Portal
             </Link>
           </div>
@@ -235,7 +235,7 @@ export default function CareersPage() {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-10">
-            <Link href="/school/pathway" className="inline-flex items-center gap-2 text-green-200 hover:text-white mb-6 transition">
+            <Link href="/school/portal" className="inline-flex items-center gap-2 text-green-200 hover:text-white mb-6 transition">
               <ArrowLeft size={16} /> Back to Portal
             </Link>
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-green-500/20 border border-green-400/30 mb-6">

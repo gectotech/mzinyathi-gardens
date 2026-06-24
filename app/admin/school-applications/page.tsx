@@ -113,6 +113,27 @@ export default function AdminSchoolApplicationsPage() {
     }
   };
 
+  const enrolStudent = async (app: SchoolApplication) => {
+    if (!confirm(`Enrol ${app.firstName} ${app.surname}? This creates a student number and portal accounts.`)) return;
+    const res = await fetch('/api/admin/school-applications/enrol', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ applicationId: app.id }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast.success(
+        data.created
+          ? `Enrolled as ${data.studentNumber}. Temp password: ${data.tempPassword}`
+          : `Already enrolled: ${data.studentNumber}`,
+        { duration: 8000 }
+      );
+      load();
+    } else {
+      toast.error(data.error || 'Enrolment failed');
+    }
+  };
+
   const toggleSelect = (id: string) => {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
@@ -237,10 +258,21 @@ export default function AdminSchoolApplicationsPage() {
         headerIcon={<GraduationCap size={22} className="text-white" />}
         width="xl"
         footer={
-          selected?.parentEmail && (
-            <a href={`mailto:${selected.parentEmail}`} className="bg-[#4169E1] text-white px-4 py-2 rounded-lg text-sm font-medium inline-block">
-              Email parent
-            </a>
+          selected && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => enrolStudent(selected)}
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-emerald-700"
+              >
+                Enrol student
+              </button>
+              {selected.parentEmail && (
+                <a href={`mailto:${selected.parentEmail}`} className="bg-[#4169E1] text-white px-4 py-2 rounded-lg text-sm font-medium inline-block">
+                  Email parent
+                </a>
+              )}
+            </div>
           )
         }
       >

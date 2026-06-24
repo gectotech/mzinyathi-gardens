@@ -179,9 +179,17 @@ export async function seedDatabase() {
     }
   }
 
+  const { seedPortalDemoAccounts } = await import('../portal-service');
+  const portalAccounts = await seedPortalDemoAccounts();
+
+  const { seedPortalContent } = await import('../portal-content-seed');
+  const portalContent = await seedPortalContent();
+
   return {
     phases: phasesData.length,
     users,
+    portalAccounts,
+    portalContent,
     message: 'Database seeded successfully',
   };
 }

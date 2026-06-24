@@ -66,6 +66,31 @@ export const studentStatusEnum = pgEnum('student_status', [
   'transferred',
   'withdrawn',
 ]);
+export const portalRoleEnum = pgEnum('portal_role', ['student', 'teacher', 'parent']);
+export const feeInvoiceStatusEnum = pgEnum('fee_invoice_status', [
+  'paid',
+  'partial',
+  'outstanding',
+  'overdue',
+]);
+export const assignmentSubmissionStatusEnum = pgEnum('assignment_submission_status', [
+  'pending',
+  'draft',
+  'submitted',
+  'graded',
+]);
+export const attendanceStatusEnum = pgEnum('attendance_status', [
+  'present',
+  'absent',
+  'late',
+  'excused',
+]);
+export const timetableSlotTypeEnum = pgEnum('timetable_slot_type', ['lesson', 'exam']);
+export const termMilestoneStatusEnum = pgEnum('term_milestone_status', [
+  'completed',
+  'in_progress',
+  'pending',
+]);
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -311,8 +336,182 @@ export const students = pgTable('students', {
   graduatedYear: integer('graduated_year'),
   parentEmail: text('parent_email'),
   parentPhone: text('parent_phone'),
+  parentNationalId: text('parent_national_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export type PortalProfileData = {
+  department?: string;
+  studentId?: string;
+  children?: { studentId: string; name: string; grade: string; studentNumber: string }[];
+};
+
+/** School portal logins — students, teachers, and parents (separate from admin users). */
+export const portalAccounts = pgTable('portal_accounts', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  role: portalRoleEnum('role').notNull(),
+  email: text('email').notNull(),
+  identifier: text('identifier').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  studentId: uuid('student_id').references(() => students.id),
+  profileData: jsonb('profile_data').$type<PortalProfileData>().default({}),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+/** Student fee line items — linked to enrolled learners for portal fee views. */
+export const feeInvoices = pgTable('fee_invoices', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => students.id),
+  reference: text('reference').notNull().unique(),
+  description: text('description').notNull(),
+  amountCents: integer('amount_cents').notNull(),
+  currency: text('currency').notNull().default('USD'),
+  status: feeInvoiceStatusEnum('status').notNull().default('outstanding'),
+  dueDate: timestamp('due_date'),
+  paidAt: timestamp('paid_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+/** Inbox messages for portal accounts (student, parent, teacher). */
+export const portalMessages = pgTable('portal_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  recipientAccountId: uuid('recipient_account_id')
+    .notNull()
+    .references(() => portalAccounts.id),
+  senderAccountId: uuid('sender_account_id').references(() => portalAccounts.id),
+  senderName: text('sender_name').notNull(),
+  senderRole: portalRoleEnum('sender_role').notNull(),
+  subject: text('subject').notNull(),
+  body: text('body').notNull(),
+  studentId: uuid('student_id').references(() => students.id),
+  isRead: boolean('is_read').notNull().default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+/** Teacher class groups — linked to portal teacher accounts. */
+export const portalClasses = pgTable('portal_classes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  teacherAccountId: uuid('teacher_account_id')
+    .notNull()
+    .references(() => portalAccounts.id),
+  name: text('name').notNull(),
+  grade: text('grade').notNull(),
+  subject: text('subject').notNull(),
+  scheduleNote: text('schedule_note'),
+  academicYear: integer('academic_year').notNull().default(2026),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalClassEnrollments = pgTable('portal_class_enrollments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id')
+    .notNull()
+    .references(() => portalClasses.id),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => students.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalTimetableSlots = pgTable('portal_timetable_slots', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id')
+    .notNull()
+    .references(() => portalClasses.id),
+  dayOfWeek: integer('day_of_week').notNull(),
+  startTime: text('start_time').notNull(),
+  endTime: text('end_time').notNull(),
+  subject: text('subject').notNull(),
+  room: text('room').notNull(),
+  slotType: timetableSlotTypeEnum('slot_type').notNull().default('lesson'),
+  examDate: timestamp('exam_date'),
+  examPaper: text('exam_paper'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalAssignments = pgTable('portal_assignments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id')
+    .notNull()
+    .references(() => portalClasses.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  dueDate: timestamp('due_date').notNull(),
+  maxScore: integer('max_score').notNull().default(20),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalAssignmentSubmissions = pgTable('portal_assignment_submissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  assignmentId: uuid('assignment_id')
+    .notNull()
+    .references(() => portalAssignments.id),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => students.id),
+  status: assignmentSubmissionStatusEnum('status').notNull().default('pending'),
+  score: integer('score'),
+  feedback: text('feedback'),
+  submittedAt: timestamp('submitted_at'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const portalResultEntries = pgTable('portal_result_entries', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => students.id),
+  subject: text('subject').notNull(),
+  term: text('term').notNull(),
+  academicYear: integer('academic_year').notNull().default(2026),
+  scorePercent: integer('score_percent').notNull(),
+  classPosition: integer('class_position'),
+  classSize: integer('class_size'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalAttendance = pgTable('portal_attendance', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classId: uuid('class_id')
+    .notNull()
+    .references(() => portalClasses.id),
+  studentId: uuid('student_id')
+    .notNull()
+    .references(() => students.id),
+  attendanceDate: timestamp('attendance_date').notNull(),
+  status: attendanceStatusEnum('status').notNull().default('present'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalResources = pgTable('portal_resources', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  teacherAccountId: uuid('teacher_account_id')
+    .notNull()
+    .references(() => portalAccounts.id),
+  classId: uuid('class_id').references(() => portalClasses.id),
+  title: text('title').notNull(),
+  description: text('description'),
+  resourceType: text('resource_type').notNull().default('document'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const portalTermMilestones = pgTable('portal_term_milestones', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  grade: text('grade').notNull(),
+  term: text('term').notNull().default('Term 2'),
+  academicYear: integer('academic_year').notNull().default(2026),
+  label: text('label').notNull(),
+  status: termMilestoneStatusEnum('status').notNull().default('pending'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 export type User = typeof users.$inferSelect;
@@ -321,6 +520,12 @@ export type Job = typeof jobs.$inferSelect;
 export type JobApplication = typeof jobApplications.$inferSelect;
 export type SchoolApplication = typeof schoolApplications.$inferSelect;
 export type Student = typeof students.$inferSelect;
+export type PortalAccount = typeof portalAccounts.$inferSelect;
+export type FeeInvoice = typeof feeInvoices.$inferSelect;
+export type PortalMessage = typeof portalMessages.$inferSelect;
+export type PortalClass = typeof portalClasses.$inferSelect;
+export type PortalAssignment = typeof portalAssignments.$inferSelect;
+export type PortalResultEntry = typeof portalResultEntries.$inferSelect;
 export type Phase = typeof phases.$inferSelect;
 export type House = typeof houses.$inferSelect;
 export type MediaFile = typeof mediaFiles.$inferSelect;

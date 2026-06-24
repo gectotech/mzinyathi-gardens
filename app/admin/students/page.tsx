@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { Rocket, Trash2, UserPlus, Eye } from 'lucide-react';
+import { Rocket, Trash2, UserPlus, Eye, Wallet } from 'lucide-react';
 import VirtualDataTable, { type VirtualColumn } from '@/components/admin/VirtualDataTable';
 import FloatingActionBar from '@/components/admin/FloatingActionBar';
 import StatusBadge from '@/components/admin/StatusBadge';
@@ -26,6 +26,8 @@ export default function AdminStudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [feeModalOpen, setFeeModalOpen] = useState(false);
+  const [feeForm, setFeeForm] = useState({ description: '', amount: '', dueDate: '' });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -87,6 +89,36 @@ export default function AdminStudentsPage() {
       load();
       setSelectedIds([]);
     } else toast.error(data.error || 'Delete failed');
+  };
+
+  const selectedStudent = selectedIds.length === 1 ? students.find((s) => s.id === selectedIds[0]) : null;
+
+  const issueFeeInvoice = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedStudent) return;
+    const amountCents = Math.round(parseFloat(feeForm.amount) * 100);
+    if (!feeForm.description || !amountCents) {
+      toast.error('Description and amount are required');
+      return;
+    }
+    const res = await fetch('/api/admin/fee-invoices', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentId: selectedStudent.id,
+        description: feeForm.description,
+        amountCents,
+        dueDate: feeForm.dueDate || undefined,
+      }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      toast.success(`Invoice ${data.invoice.reference} created (${data.invoice.amount})`);
+      setFeeModalOpen(false);
+      setFeeForm({ description: '', amount: '', dueDate: '' });
+    } else {
+      toast.error(data.error || 'Failed to create invoice');
+    }
   };
 
   const columns: VirtualColumn<Student>[] = [
@@ -212,6 +244,17 @@ export default function AdminStudentsPage() {
         itemLabel="student"
         onClearSelection={() => setSelectedIds([])}
         actions={[
+          ...(selectedStudent
+            ? [
+                {
+                  id: 'invoice',
+                  label: 'Issue Fee Invoice',
+                  icon: <Wallet size={14} />,
+                  onClick: () => setFeeModalOpen(true),
+                  variant: 'primary' as const,
+                },
+              ]
+            : []),
           {
             id: 'promote',
             label: 'Bulk Promote',
@@ -228,6 +271,64 @@ export default function AdminStudentsPage() {
           },
         ]}
       />
+
+      {feeModalOpen && selectedStudent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <form
+            onSubmit={issueFeeInvoice}
+            className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl space-y-4"
+          >
+            <h3 className="text-lg font-bold">Issue fee invoice</h3>
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              {selectedStudent.firstName} {selectedStudent.surname} · {selectedStudent.studentNumber}
+            </p>
+            <label className="block text-sm">
+              <span className="font-medium">Description</span>
+              <input
+                className="mt-1 w-full rounded-lg border border-[var(--color-border-default)] px-3 py-2"
+                value={feeForm.description}
+                onChange={(e) => setFeeForm((f) => ({ ...f, description: e.target.value }))}
+                placeholder="Term 3 tuition"
+                required
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium">Amount (USD)</span>
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border-default)] px-3 py-2"
+                value={feeForm.amount}
+                onChange={(e) => setFeeForm((f) => ({ ...f, amount: e.target.value }))}
+                placeholder="120.00"
+                required
+              />
+            </label>
+            <label className="block text-sm">
+              <span className="font-medium">Due date (optional)</span>
+              <input
+                type="date"
+                className="mt-1 w-full rounded-lg border border-[var(--color-border-default)] px-3 py-2"
+                value={feeForm.dueDate}
+                onChange={(e) => setFeeForm((f) => ({ ...f, dueDate: e.target.value }))}
+              />
+            </label>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setFeeModalOpen(false)}
+                className="px-4 py-2 text-sm rounded-lg border border-[var(--color-border-default)]"
+              >
+                Cancel
+              </button>
+              <button type="submit" className="px-4 py-2 text-sm rounded-lg bg-[var(--color-nav-primary)] text-white">
+                Create invoice
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

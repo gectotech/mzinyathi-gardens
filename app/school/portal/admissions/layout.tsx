@@ -13,7 +13,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Dashboard',        icon: Home,        href: '/school/portal/admissions/dashboard' },
   { id: 'profile',   label: 'Student Profile',  icon: User,        href: '/school/portal/admissions/profile' },
   { id: 'edit',      label: 'Edit Profile',     icon: Edit,        href: '/school/portal/admissions/edit-profile' },
-  { id: 'admission', label: 'Admissions Status',icon: CheckCircle, href: '/school/portal/admissions/admissions-status' },
+  { id: 'admission', label: 'Admissions Status',icon: CheckCircle, href: '/school/portal/admissions/application-status' },
   { id: 'payments',  label: 'Online Payments',  icon: CreditCard,  href: '/school/portal/admissions/payments' },
   { id: 'feedback',  label: 'Feedback',         icon: Mail,        href: '/school/portal/admissions/feedback' },
 ];

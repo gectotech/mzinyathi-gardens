@@ -206,7 +206,7 @@ export default function NewsPage() {
             </div>
 
             <Link
-              href="/school/pathway"
+              href="/school/portal"
               className="mt-8 block text-center bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-bold transition"
             >
               Apply
@@ -471,7 +471,7 @@ export default function NewsPage() {
             </p>
 
             <Link
-              href="/school/pathway"
+              href="/school/portal"
               className="inline-flex items-center gap-3 bg-white text-red-600 px-10 py-5 rounded-xl font-black text-lg hover:scale-105 transition"
             >
               Apply

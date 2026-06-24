@@ -7,15 +7,17 @@ import SchoolFooter from '../../components/school/SchoolFooter';
 
 export default function SchoolLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  
-  // Hide school navbar and footer on portal pages
-  const isPortalPage = pathname?.startsWith('/school/pathway');
+
+  const hideChrome =
+    pathname?.startsWith('/school/pathway') ||
+    pathname?.startsWith('/school/portal') ||
+    pathname?.startsWith('/school/student-portal');
 
   return (
     <div className="school-site">
-      {!isPortalPage && <SchoolNavbar />}
+      {!hideChrome && <SchoolNavbar />}
       {children}
-      {!isPortalPage && <SchoolFooter />}
+      {!hideChrome && <SchoolFooter />}
     </div>
   );
 }

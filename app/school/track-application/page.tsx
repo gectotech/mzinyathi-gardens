@@ -88,7 +88,7 @@ export default function TrackApplicationPage() {
       <div className="container mx-auto px-6 py-20 flex items-center justify-center min-h-screen">
         <div className="w-full max-w-2xl">
           <div className="text-center mb-10">
-            <Link href="/school/pathway" className="inline-flex items-center gap-2 text-green-200 hover:text-white mb-6 transition">
+            <Link href="/school/portal" className="inline-flex items-center gap-2 text-green-200 hover:text-white mb-6 transition">
               <ArrowLeft size={16} /> Back to Portal
             </Link>
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-500/20 border border-blue-400/30 mb-6">

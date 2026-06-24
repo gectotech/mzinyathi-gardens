@@ -1125,7 +1125,7 @@ export default function AdmissionsPage() {
                   <p className="text-sm text-gray-400">Please save this number for tracking your application status.</p>
                 </div>
                 <a
-                  href="/school/pathway"
+                  href="/school/portal"
                   className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-400 transition-colors"
                 >
                   Back to Portal
