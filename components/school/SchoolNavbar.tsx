@@ -56,7 +56,6 @@ export default function SchoolNavbar() {
           <nav className="hidden lg:flex items-center gap-7">
             <Link href="/school" className="text-gray-800 hover:text-red-600 font-medium text-sm transition">Home</Link>
             <Link href="/school/about" className="text-gray-800 hover:text-red-600 font-medium text-sm transition">About Us</Link>
-            <Link href="/school/portal" className="text-gray-800 hover:text-red-600 font-medium text-sm transition"> School Portal</Link>
             <Link href="/school/what-we-offer" className="text-gray-800 hover:text-red-600 font-medium text-sm transition">What We Offer</Link>
             <Link href="/school/news" className="text-gray-800 hover:text-red-600 font-medium text-sm transition">News & Updates</Link>
             <Link href="/school/portal" className="bg-[var(--color-nav-primary)] hover:bg-[var(--color-nav-primary-hover)] text-white px-4 py-2 rounded-lg font-medium text-sm transition">
@@ -73,7 +72,6 @@ export default function SchoolNavbar() {
           <div className="lg:hidden pb-4 flex flex-col gap-4">
             <Link href="/school" onClick={() => setMobileMenu(false)} className="text-gray-800 hover:text-red-600 font-medium text-sm transition">Home</Link>
             <Link href="/school/about" onClick={() => setMobileMenu(false)}className="text-gray-800 hover:text-red-600 font-medium text-sm transition">About Us</Link>
-            <Link href="/school/portal" onClick={() => setMobileMenu(false)} className="text-gray-800 hover:text-red-600 font-medium text-sm transition"> School Portal</Link>
             <Link href="/school/what-we-offer" onClick={() => setMobileMenu(false)}className="text-gray-800 hover:text-red-600 font-medium text-sm transition">What We Offer</Link>
             <Link href="/school/news" onClick={() => setMobileMenu(false)}className="text-gray-800 hover:text-red-600 font-medium text-sm transition">News & Updates</Link>
             <Link href="/school/portal" onClick={() => setMobileMenu(false)} className="bg-[var(--color-nav-primary)] text-white px-4 py-2 rounded-lg text-center"> School Portal</Link>

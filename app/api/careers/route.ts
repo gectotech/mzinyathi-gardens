@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
             fullName: data.fullName,
             nationalId: data.nationalId,
             dob: data.dob,
+            gender: data.gender || null,                          // ← NEW
             phone: data.phone,
             email: data.email || `${trackingId.toLowerCase()}@applicant.mzinyathi.local`,
             address: data.address,
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
             experience: data.experience,
             interestMessage: data.interestMessage,
             resumeUrl: data.resumeUrl || null,
+            documents: Array.isArray(data.documents) ? data.documents : [], // ← NEW
           })
           .returning();
         break;

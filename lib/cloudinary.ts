@@ -38,16 +38,21 @@ export async function uploadToCloudinary(
 
   const isVideo = file.type.startsWith('video/');
   const isPdf = file.type === 'application/pdf' || file.name.endsWith('.pdf');
+  const isDoc = file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx');
+
+  // For PDFs and documents, use 'raw' resource type to ensure public access
+  const resourceType = isPdf || isDoc ? 'raw' : (isVideo ? 'video' : 'auto');
 
   const result = await cloudinary.uploader.upload(dataUri, {
     folder,
-    resource_type: isVideo ? 'video' : 'auto',
+    resource_type: resourceType,
     use_filename: true,
     unique_filename: true,
-    ...(isPdf ? { format: 'pdf' } : {}),
-    ...(!isVideo && !isPdf
-      ? { quality: 'auto:good', fetch_format: 'auto' }
-      : {}),
+    // Don't apply image transformations to documents
+    ...(isPdf || isDoc ? {} : {
+      quality: 'auto:good',
+      fetch_format: 'auto',
+    }),
     ...(isVideo ? { quality: 'auto' } : {}),
   });
 

@@ -124,13 +124,26 @@ export async function enrolApplication(applicationId: string, tempPassword?: str
     .limit(1);
 
   if (existingStudent) {
-    return { student: existingStudent, studentNumber: existingStudent.studentNumber, created: false };
+    return {
+      student: existingStudent,
+      studentNumber: existingStudent.studentNumber,
+      // Return the stored plain tempPassword so admin can re-show it if needed
+      tempPassword: existingStudent.tempPassword ?? undefined,
+      created: false,
+    };
   }
 
   const studentNumber = await allocateStudentNumber(db);
   const password = tempPassword || `Welcome${studentNumber.slice(-4)}`;
   const passwordHash = await hashPassword(password);
 
+  // ── Save the plain tempPassword so the track API can return it ──────────────
+  // IMPORTANT: your students table needs a nullable text column called tempPassword.
+  // Add this migration if it doesn't exist:
+  //   ALTER TABLE students ADD COLUMN temp_password TEXT;
+  // In your Drizzle schema (schema.students):
+  //   tempPassword: text('temp_password'),
+  // ────────────────────────────────────────────────────────────────────────────
   const [student] = await db
     .insert(schema.students)
     .values({
@@ -143,6 +156,8 @@ export async function enrolApplication(applicationId: string, tempPassword?: str
       parentEmail: app.parentEmail,
       parentPhone: app.parentPhone,
       status: 'active',
+      // Save the plain password so the track route can return it for the letter
+      tempPassword: password,
     })
     .returning();
 
@@ -165,6 +180,7 @@ export async function enrolApplication(applicationId: string, tempPassword?: str
     .select()
     .from(schema.portalClasses)
     .where(eq(schema.portalClasses.grade, app.gradeApplying));
+
   for (const cls of gradeClasses) {
     const [existing] = await db
       .select()
@@ -205,10 +221,16 @@ export async function enrolApplication(applicationId: string, tempPassword?: str
 
     if (existingParent) {
       const children = existingParent.profileData?.children || [];
-      const updated = [...children.filter((c) => c.studentId !== student.id), childEntry];
+      const updated = [
+        ...children.filter((c) => c.studentId !== student.id),
+        childEntry,
+      ];
       await db
         .update(schema.portalAccounts)
-        .set({ profileData: { ...existingParent.profileData, children: updated }, updatedAt: new Date() })
+        .set({
+          profileData: { ...existingParent.profileData, children: updated },
+          updatedAt: new Date(),
+        })
         .where(eq(schema.portalAccounts.id, existingParent.id));
     } else {
       const parentParts = app.parentName.trim().split(/\s+/);

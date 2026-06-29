@@ -189,6 +189,12 @@ export const schoolApplications = pgTable('school_applications', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// ── Job application document upload type ────────────────────────────────────
+export type JobApplicationDocument = {
+  label: string; // e.g. "National ID", "Degree Certificate", "Resume / CV"
+  url: string;   // Cloudinary secureUrl
+};
+
 export const jobApplications = pgTable('job_applications', {
   id: uuid('id').defaultRandom().primaryKey(),
   trackingId: text('tracking_id').notNull().unique(),
@@ -198,6 +204,7 @@ export const jobApplications = pgTable('job_applications', {
   fullName: text('full_name').notNull(),
   nationalId: text('national_id').notNull(),
   dob: text('dob').notNull(),
+  gender: text('gender'),                                          // ← NEW
   phone: text('phone').notNull(),
   email: text('email').notNull(),
   address: text('address').notNull(),
@@ -209,6 +216,9 @@ export const jobApplications = pgTable('job_applications', {
   experience: text('experience').notNull(),
   interestMessage: text('interest_message'),
   resumeUrl: text('resume_url'),
+  documents: jsonb('documents')                                    // ← NEW
+    .$type<JobApplicationDocument[]>()
+    .default([]),
   status: applicationStatusEnum('status').notNull().default('submitted'),
   interviewScheduledAt: timestamp('interview_scheduled_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -323,7 +333,6 @@ export const auditLogs = pgTable('audit_logs', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-/** Enrolled students — permanent student_number (MGPYY0000A), separate from application tracking IDs. */
 export const students = pgTable('students', {
   id: uuid('id').defaultRandom().primaryKey(),
   studentNumber: text('student_number').notNull().unique(),
@@ -337,6 +346,7 @@ export const students = pgTable('students', {
   parentEmail: text('parent_email'),
   parentPhone: text('parent_phone'),
   parentNationalId: text('parent_national_id'),
+  tempPassword: text('temp_password'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -347,7 +357,6 @@ export type PortalProfileData = {
   children?: { studentId: string; name: string; grade: string; studentNumber: string }[];
 };
 
-/** School portal logins — students, teachers, and parents (separate from admin users). */
 export const portalAccounts = pgTable('portal_accounts', {
   id: uuid('id').defaultRandom().primaryKey(),
   role: portalRoleEnum('role').notNull(),
@@ -363,7 +372,6 @@ export const portalAccounts = pgTable('portal_accounts', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-/** Student fee line items — linked to enrolled learners for portal fee views. */
 export const feeInvoices = pgTable('fee_invoices', {
   id: uuid('id').defaultRandom().primaryKey(),
   studentId: uuid('student_id')
@@ -380,7 +388,6 @@ export const feeInvoices = pgTable('fee_invoices', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-/** Inbox messages for portal accounts (student, parent, teacher). */
 export const portalMessages = pgTable('portal_messages', {
   id: uuid('id').defaultRandom().primaryKey(),
   recipientAccountId: uuid('recipient_account_id')
@@ -396,7 +403,6 @@ export const portalMessages = pgTable('portal_messages', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-/** Teacher class groups — linked to portal teacher accounts. */
 export const portalClasses = pgTable('portal_classes', {
   id: uuid('id').defaultRandom().primaryKey(),
   teacherAccountId: uuid('teacher_account_id')
@@ -513,6 +519,8 @@ export const portalTermMilestones = pgTable('portal_term_milestones', {
   sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+// ─── Inferred types ───────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;

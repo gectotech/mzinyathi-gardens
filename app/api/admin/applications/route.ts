@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
         createdAt: schema.jobApplications.createdAt,
         nationalId: schema.jobApplications.nationalId,
         dob: schema.jobApplications.dob,
+        gender: schema.jobApplications.gender,
         address: schema.jobApplications.address,
         education: schema.jobApplications.education,
         institution: schema.jobApplications.institution,
@@ -41,6 +42,7 @@ export async function GET(request: NextRequest) {
         experience: schema.jobApplications.experience,
         interestMessage: schema.jobApplications.interestMessage,
         resumeUrl: schema.jobApplications.resumeUrl,
+        documents: schema.jobApplications.documents,
         jobTitle: schema.jobs.title,
         department: schema.jobs.department,
       })

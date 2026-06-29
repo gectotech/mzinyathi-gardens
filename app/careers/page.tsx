@@ -1,8 +1,11 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Mail, User, MessageSquare, Briefcase, MapPin, Download, Smartphone, ChevronDown } from 'lucide-react';
+import {
+  Mail, User, MessageSquare, Briefcase, MapPin,
+  Download, Smartphone, ChevronDown, Upload, X, FileText, CheckCircle, Loader2,
+} from 'lucide-react';
 import PageCmsContent from '@/components/PageCmsContent';
 
 type JobListing = {
@@ -13,13 +16,19 @@ type JobListing = {
   tagline: string;
 };
 
-// ----- Hero images (placed in public/images/) -----
+type UploadedFile = {
+  label: string;
+  url: string;
+  name: string;
+};
+
 const heroImages = ['/images/hero1.jpg', '/images/hero2.jpg', '/images/hero3.jpg'];
 
 type ApplicationData = {
   fullName: string;
   nationalId: string;
   dob: string;
+  gender: string;
   phone: string;
   email: string;
   address: string;
@@ -31,6 +40,76 @@ type ApplicationData = {
   experience: string;
   jobId: number;
 };
+
+// ─── File Upload Field ────────────────────────────────────────────────────────
+
+function FileUploadField({
+  label,
+  required,
+  accept,
+  uploaded,
+  uploading,
+  onUpload,
+  onRemove,
+}: {
+  label: string;
+  required?: boolean;
+  accept?: string;
+  uploaded: UploadedFile | null;
+  uploading: boolean;
+  onUpload: (file: File, label: string) => void;
+  onRemove: () => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <div className="space-y-1">
+      <label className="block text-sm font-medium text-gray-800">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+
+      {uploaded ? (
+        <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+          <CheckCircle size={16} className="text-green-600 shrink-0" />
+          <span className="text-sm text-green-800 truncate flex-1">{uploaded.name}</span>
+          <button
+            type="button"
+            onClick={onRemove}
+            className="text-gray-400 hover:text-red-500 transition shrink-0"
+          >
+            <X size={15} />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="w-full flex items-center gap-2 border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-sm text-gray-500 hover:border-[#4169E1] hover:text-[#4169E1] transition disabled:opacity-60"
+        >
+          {uploading ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Upload size={16} />
+          )}
+          {uploading ? 'Uploading…' : `Click to upload ${label}`}
+        </button>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept || '.pdf,.doc,.docx,.jpg,.jpeg,.png'}
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onUpload(file, label);
+          e.target.value = '';
+        }}
+      />
+    </div>
+  );
+}
 
 export default function CareersPage() {
   return (
@@ -44,6 +123,7 @@ function CareersPageContent() {
   const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<JobListing[]>([]);
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
   useEffect(() => {
     fetch('/api/careers')
       .then((r) => r.json())
@@ -74,19 +154,56 @@ function CareersPageContent() {
   const [appDownloaded, setAppDownloaded] = useState(false);
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
   const [trackingId, setTrackingId] = useState('');
-  
+  const [submitting, setSubmitting] = useState(false);
+
+  // ── Upload state ──
+  // uploadingKey tracks which field is currently uploading
+  const [uploadingKey, setUploadingKey] = useState<string | null>(null);
+  const [uploads, setUploads] = useState<Record<string, UploadedFile>>({});
+  // uploads keys: 'resume' | 'nationalId' | 'certificate1' | 'certificate2'
+
   const [interestForm, setInterestForm] = useState({
-    name: '',
-    email: '',
-    position: '',
-    message: ''
+    name: '', email: '', position: '', message: '',
   });
 
   const [formData, setFormData] = useState<ApplicationData>({
-    fullName: '', nationalId: '', dob: '', phone: '', email: '', address: '',
-    education: '', institution: '', fieldOfStudy: '', previousEmployer: '', skills: '', experience: '',
-    jobId: 0,
+    fullName: '', nationalId: '', dob: '', gender: '', phone: '', email: '',
+    address: '', education: '', institution: '', fieldOfStudy: '',
+    previousEmployer: '', skills: '', experience: '', jobId: 0,
   });
+
+  // ── Upload a file to Cloudinary via existing /api/media endpoint ──
+  const uploadFile = async (file: File, fieldKey: string, label: string) => {
+    setUploadingKey(fieldKey);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('folder', 'job-applications');
+
+      const res = await fetch('/api/media', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error('Upload failed');
+      const data = await res.json();
+      const url: string = data.media?.secureUrl || data.media?.url;
+      if (!url) throw new Error('No URL returned');
+
+      setUploads((prev) => ({
+        ...prev,
+        [fieldKey]: { label, url, name: file.name },
+      }));
+    } catch {
+      alert(`Failed to upload ${label}. Please try again.`);
+    } finally {
+      setUploadingKey(null);
+    }
+  };
+
+  const removeUpload = (key: string) => {
+    setUploads((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
 
   const handleInterestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,32 +211,37 @@ function CareersPageContent() {
       alert('Please select a position from the dropdown.');
       return;
     }
-    const matchedJob = jobs.find(job => job.title === interestForm.position);
+    const matchedJob = jobs.find((job) => job.title === interestForm.position);
     if (matchedJob) {
       setSelectedJob(matchedJob);
-      localStorage.setItem('interestInfo', JSON.stringify(interestForm));
-      window.location.href = '/school/careers';
+      setAppDownloaded(true); // go straight to form, skip app prompt
     } else {
       alert('Please select a valid position.');
     }
   };
 
-  const handleConfirmDownload = () => {
-    setAppDownloaded(true);
-    setShowAppPrompt(false);
-    if (interestForm.email) {
-      setFormData(prev => ({ ...prev, email: interestForm.email, fullName: interestForm.name }));
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedJob) return;
+
+    // Require CV
+    if (!uploads.resume) {
+      alert('Please upload your CV / Resume before submitting.');
+      return;
+    }
+
+    setSubmitting(true);
     try {
+      // Build documents array from all uploads
+      const documents = Object.values(uploads).map((u) => ({
+        label: u.label,
+        url: u.url,
+      }));
+
       const res = await fetch('/api/careers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -127,40 +249,47 @@ function CareersPageContent() {
           jobTitle: selectedJob.title,
           interestMessage: interestForm.message,
           ...formData,
+          resumeUrl: uploads.resume?.url || null,   // keep legacy field populated
+          documents,                                  // new structured array
         }),
       });
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Submission failed');
+
       setTrackingId(data.trackingId);
       setApplicationSubmitted(true);
       setSelectedJob(null);
       setAppDownloaded(false);
+      setUploads({});
       setInterestForm({ name: '', email: '', position: '', message: '' });
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to submit application');
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const resetAndApplyAgain = () => {
     setApplicationSubmitted(false);
     setTrackingId('');
+    setUploads({});
     setFormData({
-      fullName: '', nationalId: '', dob: '', phone: '', email: '', address: '',
-      education: '', institution: '', fieldOfStudy: '', previousEmployer: '', skills: '', experience: '',
-      jobId: 0,
+      fullName: '', nationalId: '', dob: '', gender: '', phone: '', email: '',
+      address: '', education: '', institution: '', fieldOfStudy: '',
+      previousEmployer: '', skills: '', experience: '', jobId: 0,
     });
   };
 
   const googlePlayUrl = 'https://play.google.com/store/apps/details?id=com.mzinyathi.mzinyathigardens';
-  const appStoreUrl = 'https://apps.apple.com/app/id123456789';
-  const appImage = '/images/Mzinyathi App.png';
-
-  const royalBlue = '#4169E1';
-  const accentRed = '#DD3210';
+  const appStoreUrl   = 'https://apps.apple.com/app/id123456789';
+  const appImage      = '/images/Mzinyathi App.png';
+  const royalBlue     = '#4169E1';
+  const accentRed     = '#DD3210';
 
   return (
     <main className="bg-white text-dark">
-      {/* Hero Section - only VACANCY / CAREER in white */}
+      {/* Hero */}
       <div
         className="relative h-[60vh] bg-cover bg-center transition-all duration-1000"
         style={{ backgroundImage: `url(${heroImages[currentHeroIndex]})` }}
@@ -171,42 +300,43 @@ function CareersPageContent() {
         </div>
       </div>
 
-      {/* Heading and description below hero */}
+      {/* Intro */}
       <div className="container mx-auto px-4 pt-16 pb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: royalBlue }}>Join Our Team!</h1>
         <p className="text-gray-700 text-lg max-w-3xl mx-auto">
-          At Mzinyathi Gardens, we don’t just build homes — we build careers. 
+          At Mzinyathi Gardens, we don't just build homes — we build careers.
           Join a community-driven real estate leader where your growth is our mission.
         </p>
       </div>
 
-      {/* Two‑column layout */}
+      {/* Two‑column */}
       <div className="container mx-auto px-4 py-8 pb-16">
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* LEFT COLUMN: Job cards (no buttons, dark text) */}
-          <div>
-            <div className="space-y-6">
-              {jobs.map((job) => (
-                <div key={job.id} className="bg-gray-50 rounded-lg p-6 shadow-sm border-l-4 hover:shadow-md transition" style={{ borderLeftColor: royalBlue }}>
-                  <h3 className="text-2xl font-bold text-gray-900">{job.title}</h3>
-                  <p className="mt-2 text-gray-700 italic">“{job.tagline}”</p>
-                </div>
-              ))}
-            </div>
+          {/* Job cards */}
+          <div className="space-y-6">
+            {jobs.map((job) => (
+              <div
+                key={job.id}
+                className="bg-gray-50 rounded-lg p-6 shadow-sm border-l-4 hover:shadow-md transition"
+                style={{ borderLeftColor: royalBlue }}
+              >
+                <h3 className="text-2xl font-bold text-gray-900">{job.title}</h3>
+                <p className="mt-2 text-gray-700 italic">"{job.tagline}"</p>
+              </div>
+            ))}
           </div>
 
-          {/* RIGHT COLUMN: Application form */}
+          {/* Interest form */}
           <div>
             <div className="bg-gray-50 rounded-lg p-8 shadow-md border border-gray-200">
-              <h2 className="text-3xl font-bold mb-6" style={{ color: royalBlue }}>Join Our Team</h2>
+              <h2 className="text-3xl font-bold mb-6" style={{ color: royalBlue }}>Apply Here</h2>
               <form onSubmit={handleInterestSubmit} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-800 mb-1">Your Name *</label>
                   <div className="relative">
                     <User className="absolute left-3 top-3 text-gray-500" size={18} />
                     <input
-                      type="text"
-                      required
+                      type="text" required
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4169E1] text-gray-900 bg-white"
                       value={interestForm.name}
                       onChange={(e) => setInterestForm({ ...interestForm, name: e.target.value })}
@@ -218,8 +348,7 @@ function CareersPageContent() {
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 text-gray-500" size={18} />
                     <input
-                      type="email"
-                      required
+                      type="email" required
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4169E1] text-gray-900 bg-white"
                       value={interestForm.email}
                       onChange={(e) => setInterestForm({ ...interestForm, email: e.target.value })}
@@ -227,7 +356,7 @@ function CareersPageContent() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1">Your Position *</label>
+                  <label className="block text-sm font-medium text-gray-800 mb-1">Position *</label>
                   <div className="relative">
                     <Briefcase className="absolute left-3 top-3 text-gray-500" size={18} />
                     <select
@@ -246,12 +375,11 @@ function CareersPageContent() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-800 mb-1">Enter your message *</label>
+                  <label className="block text-sm font-medium text-gray-800 mb-1">Why do you want to join us? *</label>
                   <div className="relative">
                     <MessageSquare className="absolute left-3 top-3 text-gray-500" size={18} />
                     <textarea
-                      required
-                      rows={4}
+                      required rows={4}
                       className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4169E1] text-gray-900 bg-white"
                       placeholder="Why would you like to join us?"
                       value={interestForm.message}
@@ -264,12 +392,9 @@ function CareersPageContent() {
                   className="w-full text-white py-3 rounded-md hover:bg-opacity-90 transition font-semibold text-lg"
                   style={{ backgroundColor: royalBlue }}
                 >
-                  Apply here
+                  Continue to Application
                 </button>
               </form>
-              <p className="text-xs text-gray-600 mt-4 text-center">
-                By applying, you agree to our privacy policy. You will be redirected to our school careers portal to complete your application.
-              </p>
             </div>
           </div>
         </div>
@@ -280,88 +405,180 @@ function CareersPageContent() {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto text-center">
             <Smartphone className="w-16 h-16 mx-auto mb-4" style={{ color: royalBlue }} />
-            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: royalBlue }}>Download Our Free Mobile Apps Today</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: royalBlue }}>Download Our Free Mobile App</h2>
             <p className="text-gray-800 max-w-2xl mx-auto mb-8 font-medium">
-              Track your application status, manage your property payments, and stay connected with Mzinyathi Gardens – all from our mobile app.
+              Track your application status, manage your property payments, and stay connected with Mzinyathi Gardens.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
               <a href={googlePlayUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition" style={{ backgroundColor: royalBlue }}>
                 <Download size={20} /> Get it on Google Play
               </a>
               <a href={appStoreUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition" style={{ backgroundColor: royalBlue }}>
-                <Download size={20} /> Download on the App Store
+                <Download size={20} /> Download on App Store
               </a>
-            </div>
-            <div className="flex flex-col md:flex-row items-center justify-center gap-8 border-t border-gray-300 pt-10">
-              <div className="text-center">
-                <a href={googlePlayUrl} target="_blank" rel="noopener noreferrer" className="block cursor-pointer">
-                  <div className="bg-white p-3 rounded-xl shadow-md inline-block hover:shadow-lg transition">
-                    <img src={appImage} alt="Mzinyathi Gardens App" className="w-48 h-auto object-contain rounded-lg" onError={(e) => { e.currentTarget.src = 'https://placehold.co/200x400?text=App+Preview'; }} />
-                  </div>
-                </a>
-                <p className="mt-2 text-sm font-semibold" style={{ color: royalBlue }}>Tap image to download</p>
-              </div>
-              <div className="text-left max-w-sm">
-                <p className="text-gray-800 font-medium">
-                  Click the image or use the buttons above to download the Mzinyathi Gardens App. Complete your application, track status, and manage your account on the go.
-                </p>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Mobile App Required Modal */}
-      {showAppPrompt && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 text-center">
-            <h2 className="text-2xl font-bold mb-4" style={{ color: royalBlue }}>Mobile App Required</h2>
-            <p className="text-gray-700 mb-4">
-              To continue your application for <strong>{selectedJob?.title}</strong>, please download the Mzinyathi Gardens App.
-            </p>
-            <p className="text-sm text-gray-600 mb-4">
-              Final submission and application tracking are available exclusively on the app.
-            </p>
-            <div className="flex flex-col gap-3">
-              <a href={googlePlayUrl} target="_blank" rel="noopener noreferrer" className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: royalBlue }}>Download from Google Play</a>
-              <a href={appStoreUrl} target="_blank" rel="noopener noreferrer" className="text-white px-4 py-2 rounded-lg" style={{ backgroundColor: royalBlue }}>Download from App Store</a>
-              <button onClick={handleConfirmDownload} className="hover:underline mt-2" style={{ color: accentRed }}>
-                I have downloaded the app, continue to application form
-              </button>
-              <button onClick={() => setShowAppPrompt(false)} className="text-gray-500 hover:underline mt-2">Cancel</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Full Application Form */}
+      {/* ── Full Application Form Modal ── */}
       {appDownloaded && !applicationSubmitted && selectedJob && (
-        <div className="fixed inset-0 bg-black/50 overflow-y-auto z-50 p-4">
-          <div className="bg-white rounded-lg max-w-3xl mx-auto my-8 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold" style={{ color: royalBlue }}>Apply for: {selectedJob.title}</h2>
-              <button onClick={() => { setAppDownloaded(false); setSelectedJob(null); }} className="text-gray-500 text-2xl">×</button>
+        <div className="fixed inset-0 bg-black/60 overflow-y-auto z-50 p-4">
+          <div className="bg-white rounded-xl max-w-3xl mx-auto my-8 shadow-2xl">
+            {/* Modal header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b sticky top-0 bg-white rounded-t-xl z-10">
+              <div>
+                <h2 className="text-xl font-bold" style={{ color: royalBlue }}>
+                  Apply for: {selectedJob.title}
+                </h2>
+                <p className="text-xs text-gray-500 mt-0.5">All fields marked * are required</p>
+              </div>
+              <button
+                onClick={() => { setAppDownloaded(false); setSelectedJob(null); setUploads({}); }}
+                className="text-gray-400 hover:text-gray-700 transition p-1"
+              >
+                <X size={22} />
+              </button>
             </div>
-            <form onSubmit={handleSubmitApplication} className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <input name="fullName" placeholder="Full Name *" onChange={handleInputChange} required className="border p-2 rounded text-gray-900" />
-                <input name="nationalId" placeholder="National ID *" onChange={handleInputChange} required className="border p-2 rounded" />
-                <input name="dob" type="date" onChange={handleInputChange} required className="border p-2 rounded" />
-                <input name="phone" placeholder="Phone *" onChange={handleInputChange} required className="border p-2 rounded" />
-                <input name="email" type="email" placeholder="Email *" onChange={handleInputChange} required className="border p-2 rounded" value={formData.email} />
-                <input name="address" placeholder="Address *" onChange={handleInputChange} required className="border p-2 rounded" />
-              </div>
-              <h3 className="font-semibold text-lg" style={{ color: royalBlue }}>Education</h3>
-              <div className="grid md:grid-cols-2 gap-4">
-                <input name="education" placeholder="Qualification *" onChange={handleInputChange} required className="border p-2 rounded" />
-                <input name="institution" placeholder="Institution *" onChange={handleInputChange} required className="border p-2 rounded" />
-                <input name="fieldOfStudy" placeholder="Field of Study *" onChange={handleInputChange} required className="border p-2 rounded" />
-              </div>
-              <h3 className="font-semibold text-lg" style={{ color: royalBlue }}>Work Experience</h3>
-              <input name="previousEmployer" placeholder="Previous Employer" onChange={handleInputChange} className="border p-2 rounded w-full" />
-              <input name="skills" placeholder="Skills *" onChange={handleInputChange} required className="border p-2 rounded w-full" />
-              <textarea name="experience" placeholder="Describe your experience *" onChange={handleInputChange} required className="border p-2 rounded w-full" rows={3} />
-              <button type="submit" className="text-white px-6 py-2 rounded-lg w-full" style={{ backgroundColor: royalBlue }}>Submit Application</button>
+
+            <form onSubmit={handleSubmitApplication} className="p-6 space-y-6">
+
+              {/* Personal details */}
+              <section>
+                <h3 className="font-semibold text-base mb-3" style={{ color: royalBlue }}>Personal Details</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Full Name *</label>
+                    <input name="fullName" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">National ID *</label>
+                    <input name="nationalId" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Date of Birth *</label>
+                    <input name="dob" type="date" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Gender *</label>
+                    <select name="gender" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1] bg-white">
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
+                    <input name="phone" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
+                    <input name="email" type="email" required onChange={handleInputChange} value={formData.email}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Address *</label>
+                    <input name="address" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                </div>
+              </section>
+
+              {/* Education */}
+              <section>
+                <h3 className="font-semibold text-base mb-3" style={{ color: royalBlue }}>Education</h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Highest Qualification *</label>
+                    <input name="education" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Institution *</label>
+                    <input name="institution" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Field of Study *</label>
+                    <input name="fieldOfStudy" required onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                </div>
+              </section>
+
+              {/* Experience */}
+              <section>
+                <h3 className="font-semibold text-base mb-3" style={{ color: royalBlue }}>Work Experience</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Previous Employer</label>
+                    <input name="previousEmployer" onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Skills *</label>
+                    <input name="skills" required onChange={handleInputChange} placeholder="e.g. Communication, MS Office, Teamwork"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Describe your experience *</label>
+                    <textarea name="experience" required rows={3} onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#4169E1]" />
+                  </div>
+                </div>
+              </section>
+
+              {/* Document Uploads */}
+              <section>
+                <h3 className="font-semibold text-base mb-1" style={{ color: royalBlue }}>Documents & Uploads</h3>
+                <p className="text-xs text-gray-500 mb-3">Accepted formats: PDF, DOC, DOCX, JPG, PNG. Max 10MB each.</p>
+                <div className="space-y-3">
+                  <FileUploadField
+                    label="CV / Resume"
+                    required
+                    uploaded={uploads.resume ?? null}
+                    uploading={uploadingKey === 'resume'}
+                    onUpload={(file, label) => uploadFile(file, 'resume', label)}
+                    onRemove={() => removeUpload('resume')}
+                  />
+                  <FileUploadField
+                    label="National ID Document"
+                    uploaded={uploads.nationalId ?? null}
+                    uploading={uploadingKey === 'nationalId'}
+                    onUpload={(file, label) => uploadFile(file, 'nationalId', label)}
+                    onRemove={() => removeUpload('nationalId')}
+                  />
+                  <FileUploadField
+                    label="Academic Certificate / Degree"
+                    uploaded={uploads.certificate1 ?? null}
+                    uploading={uploadingKey === 'certificate1'}
+                    onUpload={(file, label) => uploadFile(file, 'certificate1', label)}
+                    onRemove={() => removeUpload('certificate1')}
+                  />
+                  <FileUploadField
+                    label="Additional Certificate (optional)"
+                    uploaded={uploads.certificate2 ?? null}
+                    uploading={uploadingKey === 'certificate2'}
+                    onUpload={(file, label) => uploadFile(file, 'certificate2', label)}
+                    onRemove={() => removeUpload('certificate2')}
+                  />
+                </div>
+              </section>
+
+              <button
+                type="submit"
+                disabled={submitting || !!uploadingKey}
+                className="w-full text-white py-3 rounded-lg font-semibold text-base hover:opacity-90 transition disabled:opacity-60 flex items-center justify-center gap-2"
+                style={{ backgroundColor: royalBlue }}
+              >
+                {submitting ? <><Loader2 size={18} className="animate-spin" /> Submitting…</> : 'Submit Application'}
+              </button>
             </form>
           </div>
         </div>
@@ -370,15 +587,23 @@ function CareersPageContent() {
       {/* Success Modal */}
       {applicationSubmitted && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6 text-center">
+          <div className="bg-white rounded-xl max-w-md w-full p-8 text-center shadow-2xl">
+            <CheckCircle size={48} className="text-green-500 mx-auto mb-3" />
             <h2 className="text-2xl font-bold text-green-600">Application Submitted!</h2>
-            <p className="text-gray-700 mt-2">Your tracking ID:</p>
-            <p className="text-xl font-mono font-bold my-2" style={{ color: royalBlue }}>{trackingId}</p>
-            <p className="text-sm text-gray-600">Status: <span className="font-semibold">Submitted</span></p>
-            <button onClick={() => { setApplicationSubmitted(false); resetAndApplyAgain(); }} className="text-white px-6 py-2 rounded-lg mt-6" style={{ backgroundColor: royalBlue }}>Apply for another position</button>
+            <p className="text-gray-600 mt-2 text-sm">Save your tracking ID to check your application status.</p>
+            <p className="text-xl font-mono font-bold my-3" style={{ color: royalBlue }}>{trackingId}</p>
+            <p className="text-sm text-gray-500">Status: <span className="font-semibold text-gray-700">Submitted</span></p>
+            <button
+              onClick={resetAndApplyAgain}
+              className="text-white px-6 py-2 rounded-lg mt-6 font-medium"
+              style={{ backgroundColor: royalBlue }}
+            >
+              Apply for another position
+            </button>
           </div>
         </div>
       )}
+
       <PageCmsContent slug="careers" />
     </main>
   );

@@ -18,6 +18,7 @@ export const applicationSchema = z
     fullName: z.string().min(2),
     nationalId: z.string().min(2),
     dob: z.string().min(4),
+    gender: z.string().optional(),                                         // ← NEW
     phone: z.string().min(6),
     email: z.string().email().optional().or(z.literal('')),
     address: z.string().min(4),
@@ -28,6 +29,10 @@ export const applicationSchema = z
     skills: z.string().min(2),
     experience: z.string().min(2),
     resumeUrl: z.string().url().optional().or(z.literal('')),
+    documents: z                                                           // ← NEW
+      .array(z.object({ label: z.string(), url: z.string().url() }))
+      .optional()
+      .default([]),
   })
   .refine((data) => data.jobId || data.jobTitle, {
     message: 'A job position is required',
