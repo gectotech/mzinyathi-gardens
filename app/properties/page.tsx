@@ -1,11 +1,15 @@
 // app/properties/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { Search, ArrowRight, Shield, Sun, Droplets, Road, TreePine, Construction, Home } from 'lucide-react';
 import { allPhases, phasesData } from '../../lib/housesData';
 import PageCmsContent from '@/components/PageCmsContent';
+import SectionHero from '@/components/layout/SectionHero';
+import PageContainer from '@/components/layout/PageContainer';
+import AnimatedCard from '@/components/motion/AnimatedCard';
+import { StaggerGrid, StaggerItem } from '@/components/motion/RevealOnScroll';
 
 // Hero images for carousel
 const heroImages = [
@@ -19,20 +23,8 @@ const heroImages = [
 const popularPhases = ['phase_i', 'phase_vii', 'phase_xi'];
 
 export default function PropertiesPage() {
-  const [currentHero, setCurrentHero] = useState(0);
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Auto-rotate hero background
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const interval = setInterval(() => {
-      setCurrentHero((prev) => (prev + 1) % heroImages.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [isAutoPlaying]);
-
-  // Get popular phases data
   const getPopularPhases = () => {
     return popularPhases
       .map(id => phasesData[id])
@@ -54,68 +46,34 @@ export default function PropertiesPage() {
   const popularPhasesList = getPopularPhases();
 
   return (
-    <div className="bg-white min-h-screen">
-      {/* Hero Carousel - Full Screen Centered Text */}
-      <div className="relative h-screen w-full">
-        {heroImages.map((img, idx) => (
-          <div
-            key={idx}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              idx === currentHero ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 to-red-900/60 z-10" />
-            <img
-              src={img}
-              alt={`Hero ${idx + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ))}
-        {/* Centered Content - Exactly in the middle */}
-        <div className="relative z-20 container mx-auto px-4 h-full flex items-center justify-center">
-          <div className="text-center text-white max-w-4xl">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4">
-              Modern Houses - Mzinyathi Gardens - Esigodlweni samatebele
-            </h1>
-            <p className="text-xl md:text-2xl lg:text-3xl font-semibold text-yellow-300 mb-4">
-              The Matebele Legacy
-            </p>
-            <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-              Discover secure, modern living in our gated community. 
-              Stands available across 12 unique phases.
-            </p>
-          </div>
+    <div className="bg-white min-h-screen overflow-x-hidden">
+      <SectionHero images={heroImages} altPrefix="Properties">
+        <div className="text-center text-white max-w-4xl mx-auto px-2">
+          <h1 className="text-display font-bold mb-4 break-words">
+            Modern Houses - Mzinyathi Gardens - Esigodlweni samatebele
+          </h1>
+          <p className="text-heading-lg font-semibold text-yellow-300 mb-4">
+            The Matebele Legacy
+          </p>
+          <p className="text-body-lg max-w-2xl mx-auto">
+            Discover secure, modern living in our gated community. Stands available across 12
+            unique phases.
+          </p>
         </div>
-        {/* Hero indicators */}
-        <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-2 z-20">
-          {heroImages.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setCurrentHero(idx);
-                setIsAutoPlaying(false);
-                setTimeout(() => setIsAutoPlaying(true), 10000);
-              }}
-              className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all ${
-                idx === currentHero ? 'bg-red-500 w-6 md:w-8' : 'bg-white/70'
-              }`}
-            />
-          ))}
-        </div>
-      </div>
+      </SectionHero>
 
-      {/* Search Bar - Clean and Clear */}
-      <div className="container mx-auto px-4 -mt-6 md:-mt-8 relative z-30">
-        <div className="bg-white rounded-2xl shadow-xl p-1 max-w-2xl mx-auto">
-          <div className="flex items-center bg-white rounded-xl px-4 py-2 border border-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all">
-            <Search size={20} className="text-blue-500 mr-2" />
+      {/* Search Bar */}
+      <div className="page-container -mt-6 sm:-mt-8 relative z-30 pb-2">
+        <div className="bg-white rounded-2xl shadow-xl p-1 max-w-2xl mx-auto w-full">
+          <div className="flex items-center bg-white rounded-xl px-3 sm:px-4 py-1 border border-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all min-h-[44px]">
+            <Search size={20} className="text-blue-500 mr-2 shrink-0" />
             <input
-              type="text"
+              type="search"
               placeholder="Search by phase name..."
-              className="flex-1 px-2 py-2 outline-none bg-transparent text-gray-700 placeholder-gray-400 text-base"
+              className="flex-1 min-w-0 px-2 py-2.5 outline-none bg-transparent text-gray-700 placeholder-gray-400 text-base"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search properties by phase name"
             />
           </div>
         </div>
@@ -133,17 +91,15 @@ export default function PropertiesPage() {
                 Our most sought-after phases – each offering a unique living experience
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <StaggerGrid className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {popularPhasesList.map((phase) => (
-                <div
-                  key={phase.id}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-t-4 border-red-500 group"
-                >
-                  <div className="relative overflow-hidden h-56 md:h-64">
+                <StaggerItem key={phase.id}>
+                <AnimatedCard className="bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-red-500 h-full">
+                  <div className="relative overflow-hidden h-48 sm:h-56 md:h-64">
                     <img
                       src={phase.image}
                       alt={phase.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                      className="card-image w-full h-full object-cover"
                     />
                     {phase.status === 'under_construction' && (
                       <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
@@ -180,9 +136,10 @@ export default function PropertiesPage() {
                       {phase.status === 'active' ? 'View Houses in this Phase' : 'Register Interest'}
                     </Link>
                   </div>
-                </div>
+                </AnimatedCard>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerGrid>
           </div>
         </section>
       )}

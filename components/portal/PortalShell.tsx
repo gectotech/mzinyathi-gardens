@@ -159,7 +159,7 @@ export default function PortalShell({ role, children, title }: PortalShellProps)
                   <>
                     <span className="flex-1">{item.label}</span>
                     {item.badge && (
-                      <span className="text-[10px] font-bold bg-[var(--color-accent-action)] text-white px-1.5 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold bg-[var(--color-accent-action)] text-white px-1.5 py-0.5 rounded-full pulse-attention">
                         {item.badge}
                       </span>
                     )}
@@ -194,7 +194,8 @@ export default function PortalShell({ role, children, title }: PortalShellProps)
           <button
             type="button"
             onClick={() => setMobileOpen(true)}
-            className="lg:hidden p-2 rounded-lg border border-[var(--color-border-default)]"
+            className="lg:hidden touch-target p-2 rounded-lg border border-[var(--color-border-default)]"
+            aria-label="Open menu"
           >
             <Menu size={20} />
           </button>
@@ -212,7 +213,7 @@ export default function PortalShell({ role, children, title }: PortalShellProps)
           </div>
         </header>
 
-        <main className="flex-1 p-4 lg:p-8 overflow-auto">{children}</main>
+        <main className="flex-1 p-4 lg:p-8 overflow-x-hidden overflow-y-auto portal-main-content">{children}</main>
       </div>
     </div>
   );

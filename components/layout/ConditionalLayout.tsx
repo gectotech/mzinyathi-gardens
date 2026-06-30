@@ -6,6 +6,7 @@ import Footer from './Footer';
 import GlobalSiteAssets from '../GlobalSiteAssets';
 import DynamicPageAssets from '../DynamicPageAssets';
 import PageSectionsBanner from '../PageSectionsBanner';
+import SiteEnhancements from '../motion/SiteEnhancements';
 
 const slugMap: Record<string, string> = {
   '/': 'home',
@@ -29,13 +30,13 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <>
+    <SiteEnhancements>
       <GlobalSiteAssets />
       {pageSlug && <DynamicPageAssets slug={pageSlug} />}
       <Navbar />
       {pageSlug && <PageSectionsBanner slug={pageSlug} />}
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen relative z-[1] overflow-x-hidden">{children}</main>
       <Footer />
-    </>
+    </SiteEnhancements>
   );
 }

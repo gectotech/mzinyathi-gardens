@@ -9,6 +9,7 @@ import StatusBadge from '@/components/admin/StatusBadge';
 import InterviewStatusControl from '@/components/admin/InterviewStatusControl';
 import ApplicationBulkTools from '@/components/admin/ApplicationBulkTools';
 import { DetailSection, DetailRow, DetailMessage } from '@/components/admin/DetailSection';
+import DataTableShell from '@/components/ui/DataTableShell';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -352,8 +353,9 @@ export default function AdminApplicationsPage() {
         totalCount={applications.length}
       />
 
-      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-        <table className="min-w-full text-sm">
+      <div className="bg-white rounded-xl shadow-sm border">
+        <DataTableShell>
+        <table className="min-w-[920px] w-full text-sm">
           <thead className="bg-slate-50 border-b">
             <tr>
               <th className="px-4 py-3 text-left">
@@ -368,7 +370,9 @@ export default function AdminApplicationsPage() {
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Tracking ID</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Status</th>
               <th className="px-4 py-3 text-left font-semibold text-gray-600">Date</th>
-              <th className="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
+              <th className="px-4 py-3 text-left font-semibold text-gray-600 sticky right-0 bg-slate-50 shadow-[-8px_0_12px_-8px_rgba(15,23,42,0.08)]">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -380,7 +384,7 @@ export default function AdminApplicationsPage() {
               </tr>
             ) : (
               applications.map((app) => (
-                <tr key={app.id} className="border-t hover:bg-slate-50/80 transition">
+                <tr key={app.id} className="border-t hover:bg-slate-50/80 transition group">
                   <td className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -404,10 +408,10 @@ export default function AdminApplicationsPage() {
                   <td className="px-4 py-3 text-gray-500">
                     {new Date(app.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 sticky right-0 bg-white group-hover:bg-slate-50/80 shadow-[-8px_0_12px_-8px_rgba(15,23,42,0.12)]">
                     <button
                       onClick={() => setSelected(app)}
-                      className="inline-flex items-center gap-1.5 text-[#4169E1] hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-medium transition"
+                      className="inline-flex items-center gap-1.5 whitespace-nowrap text-[#4169E1] hover:bg-blue-50 px-3 py-1.5 rounded-lg text-xs font-medium transition min-h-[44px]"
                     >
                       <Eye size={14} /> View
                     </button>
@@ -417,6 +421,7 @@ export default function AdminApplicationsPage() {
             )}
           </tbody>
         </table>
+        </DataTableShell>
       </div>
 
       <ViewDrawer

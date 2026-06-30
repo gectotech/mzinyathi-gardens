@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import AdminShell from '@/components/admin/AdminShell';
+import SiteEnhancements from '@/components/motion/SiteEnhancements';
 import { useEffect, useState } from 'react';
 
 export default function AdminLayoutClient({ children }: { children: React.ReactNode }) {
@@ -20,5 +21,9 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
     return <>{children}</>;
   }
 
-  return <AdminShell user={user}>{children}</AdminShell>;
+  return (
+    <SiteEnhancements enableAmbient={false}>
+      <AdminShell user={user}>{children}</AdminShell>
+    </SiteEnhancements>
+  );
 }

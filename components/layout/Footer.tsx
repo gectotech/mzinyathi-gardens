@@ -30,7 +30,7 @@ export default function Footer() {
                 alt="Mzinyathi Gardens logo"
                 width={320}
                 height={230}
-                className="h-28 sm:h-32 w-auto object-contain"
+                className="brand-logo h-28 sm:h-32 w-auto object-contain"
               />
               <h3 className="text-xl font-bold">Mzinyathi Gardens</h3>
             </div>

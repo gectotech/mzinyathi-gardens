@@ -218,7 +218,8 @@ export default function AdminShell({
 
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 hover:bg-gray-100 lg:hidden"
+              className="touch-target rounded-lg p-2 hover:bg-gray-100 lg:hidden"
+              aria-label="Open menu"
             >
               <Menu size={26} />
             </button>
@@ -246,9 +247,8 @@ export default function AdminShell({
           )}
         </header>
 
-        <main className="flex-1 overflow-x-hidden overflow-y-auto p-4 md:p-6 lg:p-8">
-
-        {children}
+        <main className="admin-main-content flex-1 min-w-0 overflow-y-auto p-4 md:p-6 lg:p-8">
+          {children}
         </main>
       </div>
     </div>

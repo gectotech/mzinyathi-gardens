@@ -28,7 +28,7 @@ export default function AboutPage() {
     <main className="bg-white min-h-screen">
 
       {/* HERO */}
-      <section className="relative h-[700px] overflow-hidden">
+      <section className="relative min-h-[50svh] sm:min-h-[60svh] lg:min-h-[70svh] max-h-[900px] overflow-hidden">
         {heroImages.map((img, index) => (
           <div
             key={img}
@@ -49,27 +49,27 @@ export default function AboutPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#04194b]/95 via-[#04194b]/75 to-black/40" />
 
         {/* floating particles */}
-        <div className="absolute top-20 left-20 w-72 h-72 rounded-full bg-blue-500/20 blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full bg-red-500/20 blur-3xl animate-pulse" />
+        <div className="absolute top-10 left-4 sm:left-20 w-40 sm:w-72 h-40 sm:h-72 rounded-full bg-blue-500/20 blur-3xl animate-pulse" />
+        <div className="absolute bottom-10 right-4 sm:right-20 w-48 sm:w-96 h-48 sm:h-96 rounded-full bg-red-500/20 blur-3xl animate-pulse" />
 
-        <div className="relative z-20 max-w-7xl mx-auto px-6 h-full flex items-center">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 h-full min-h-[inherit] flex items-center py-12">
           <motion.div
             initial={{ opacity: 0, y: 60 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
             className="max-w-3xl text-white"
           >
-            <p className="text-red-400 text-3xl italic mb-6">
+            <p className="text-red-400 text-xl sm:text-3xl italic mb-4 sm:mb-6">
               About Us
             </p>
 
-            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
+            <h1 className="text-display font-black leading-tight mb-4 sm:mb-6">
               Building Future Leaders
               <br />
               With Values & Vision
             </h1>
 
-            <p className="text-xl text-gray-200 leading-relaxed">
+            <p className="text-body-lg text-gray-200 leading-relaxed">
               Discover the story, mission and values that make
               Mzinyathi Gardens Primary School a place of excellence,
               innovation and lifelong learning.

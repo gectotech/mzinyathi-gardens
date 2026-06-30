@@ -1,6 +1,6 @@
 import { Toaster } from 'react-hot-toast';
 import { Inter } from 'next/font/google';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import './globals.css';
 import ConditionalLayout from '../components/layout/ConditionalLayout';
@@ -14,10 +14,17 @@ export const metadata: Metadata = {
   description: 'Discover secure, sustainable, and community-driven living in Bulawayo, Zimbabwe.',
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: 'cover',
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
-      <body className={inter.className}>
+      <body className={`${inter.className} overflow-x-hidden antialiased`}>
         <ConditionalLayout>{children}</ConditionalLayout>
         <Toaster position="top-right" />
         <Script

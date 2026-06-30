@@ -34,6 +34,13 @@ export default function Navbar() {
     setIsOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   const closeMenu = () => setIsOpen(false);
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -52,29 +59,29 @@ export default function Navbar() {
       />
 
       <nav className="bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+        <div className="page-container">
+          <div className="flex justify-between items-center h-16 sm:h-20 min-w-0 overflow-hidden">
             <Link
               href="/"
-              className="flex items-center shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4169E1]/40 focus-visible:ring-offset-2"
+              className="brand-logo flex h-10 sm:h-12 md:h-14 w-[130px] sm:w-[170px] md:w-[200px] shrink-0 items-center overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4169E1]/40 focus-visible:ring-offset-2"
             >
               <Image
                 src="/images/whlogo.png"
                 alt="Mzinyathi Gardens logo"
-                width={280}
-                height={128}
-                className="h-14 sm:h-16 w-auto object-contain"
+                width={200}
+                height={56}
+                className="h-full w-full object-contain object-left"
                 priority
                 unoptimized
               />
             </Link>
 
-            <div className="hidden lg:flex items-center gap-0.5">
+            <div className="hidden lg:flex items-center gap-0.5 shrink-0">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative px-3.5 py-2 text-[13px] font-medium tracking-wide rounded-lg transition-colors duration-200 ${
+                  className={`interactive-link relative px-3.5 py-2.5 text-[13px] font-medium tracking-wide rounded-lg transition-colors duration-200 min-h-[44px] inline-flex items-center ${
                     isActive(link.href)
                       ? 'text-[#DD3210]'
                       : 'text-slate-600 hover:text-[#4169E1] hover:bg-slate-50'
@@ -88,7 +95,7 @@ export default function Navbar() {
               ))}
               <Link
                 href="/contact"
-                className="ml-4 inline-flex items-center justify-center px-5 py-2.5 text-[13px] font-semibold tracking-wide text-white bg-[#DD3210] hover:bg-[#c42b0e] rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                className="interactive-btn ml-3 inline-flex items-center justify-center px-5 py-2.5 min-h-[44px] text-[13px] font-semibold tracking-wide text-white bg-[#DD3210] hover:bg-[#c42b0e] rounded-lg shadow-sm pulse-attention"
               >
                 Enquire Now
               </Link>
@@ -97,7 +104,7 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setIsOpen(!isOpen)}
-              className="lg:hidden inline-flex items-center justify-center h-10 w-10 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
+              className="lg:hidden touch-target inline-flex items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
               aria-label={isOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isOpen}
             >
@@ -106,18 +113,16 @@ export default function Navbar() {
           </div>
 
           <div
-            className={`lg:hidden overflow-hidden bg-white transition-[max-height,opacity] duration-300 ease-in-out ${
-              isOpen ? 'max-h-[36rem] opacity-100 pb-5' : 'max-h-0 opacity-0'
-            }`}
+            className={`lg:hidden mobile-nav-panel bg-white ${isOpen ? 'is-open pb-5' : ''}`}
           >
             <div className="pt-3 pb-1 border-t border-gray-100">
-              <div className="grid gap-0.5">
+              <div className="grid gap-1">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMenu}
-                    className={`flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center min-h-[44px] px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                       isActive(link.href)
                         ? 'text-[#DD3210] bg-red-50/80'
                         : 'text-slate-700 hover:bg-slate-50'
@@ -130,7 +135,7 @@ export default function Navbar() {
               <Link
                 href="/contact"
                 onClick={closeMenu}
-                className="mt-3 flex items-center justify-center w-full py-3 text-sm font-semibold text-white bg-[#DD3210] hover:bg-[#c42b0e] rounded-lg shadow-sm transition-colors"
+                className="interactive-btn mt-3 flex items-center justify-center w-full min-h-[44px] py-3 text-sm font-semibold text-white bg-[#DD3210] hover:bg-[#c42b0e] rounded-lg shadow-sm transition-colors"
               >
                 Enquire Now
               </Link>

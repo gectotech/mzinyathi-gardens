@@ -432,9 +432,9 @@ export default function TrackApplicationPage() {
     (applicationStatus?.studentNumber || applicationStatus?.tempPassword);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-950 via-black to-green-900 text-white">
-      <div className="container mx-auto px-6 py-20 flex items-center justify-center min-h-screen">
-        <div className="w-full max-w-2xl">
+    <main className="min-h-screen bg-gradient-to-br from-green-950 via-black to-green-900 text-white overflow-x-hidden">
+      <div className="page-container py-10 sm:py-16 lg:py-20 flex items-center justify-center min-h-[calc(100svh-4rem)]">
+        <div className="w-full max-w-2xl min-w-0">
 
           {/* Page header */}
           <div className="text-center mb-10">
@@ -456,12 +456,12 @@ export default function TrackApplicationPage() {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-blue-500/20 border border-blue-400/30 mb-6">
               <Search className="w-10 h-10 text-blue-400" />
             </div>
-            <h1 className="text-4xl font-bold mb-3">Track Application</h1>
+            <h1 className="text-heading-xl font-bold mb-3 break-words">Track Application</h1>
             <p className="text-gray-300">Enter your application details to check your status</p>
           </div>
 
           {/* Card */}
-          <div className="bg-white rounded-2xl p-8 shadow-2xl text-gray-900">
+          <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-2xl text-gray-900 overflow-hidden">
 
             {/* ── SEARCH FORM ── */}
             {!applicationStatus ? (
@@ -474,7 +474,7 @@ export default function TrackApplicationPage() {
                     value={trackForm.mgNumber}
                     onChange={(e) => setTrackForm((f) => ({ ...f, mgNumber: e.target.value }))}
                     placeholder="e.g., MGP-123456 or CAREER-123456"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:border-blue-600 focus:bg-white transition"
+                    className="w-full min-h-[44px] px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:border-blue-600 focus:bg-white transition text-base"
                   />
                 </div>
                 <div>
@@ -485,7 +485,7 @@ export default function TrackApplicationPage() {
                     value={trackForm.nationalId}
                     onChange={(e) => setTrackForm((f) => ({ ...f, nationalId: e.target.value }))}
                     placeholder="09-2199172G08"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:border-blue-600 focus:bg-white transition"
+                    className="w-full min-h-[44px] px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:border-blue-600 focus:bg-white transition text-base"
                   />
                   <p className="text-xs text-gray-500 mt-2">
                     Use the parent&apos;s ID for school admissions, or your own ID for career applications.
@@ -499,7 +499,7 @@ export default function TrackApplicationPage() {
                 )}
 
                 <button
-                  className="w-full py-3 bg-blue-900 text-white font-bold rounded-lg hover:bg-blue-800 transition flex items-center justify-center gap-2 disabled:opacity-60"
+                  className="interactive-btn w-full min-h-[44px] py-3 bg-blue-900 text-white font-bold rounded-lg hover:bg-blue-800 transition flex items-center justify-center gap-2 disabled:opacity-60"
                   onClick={handleTrackSubmit}
                   disabled={trackLoading}
                 >
@@ -570,7 +570,7 @@ export default function TrackApplicationPage() {
                 )}
 
                 {/* Summary grid */}
-                <div className="grid grid-cols-2 gap-3 text-sm mb-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm mb-5">
                   <div className="bg-gray-50 rounded-lg px-4 py-3">
                     <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1">
                       {applicationStatus.type === "career" ? "Position" : "Grade"}

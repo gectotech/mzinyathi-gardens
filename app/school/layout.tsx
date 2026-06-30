@@ -4,6 +4,7 @@
 import { usePathname } from 'next/navigation';
 import SchoolNavbar from '../../components/school/SchoolNavbar';
 import SchoolFooter from '../../components/school/SchoolFooter';
+import SiteEnhancements from '../../components/motion/SiteEnhancements';
 
 export default function SchoolLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -13,11 +14,21 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
     pathname?.startsWith('/school/portal') ||
     pathname?.startsWith('/school/student-portal');
 
+  if (hideChrome) {
+    return (
+      <SiteEnhancements enableAmbient={false}>
+        <div className="school-site min-h-screen overflow-x-hidden">{children}</div>
+      </SiteEnhancements>
+    );
+  }
+
   return (
-    <div className="school-site">
-      {!hideChrome && <SchoolNavbar />}
-      {children}
-      {!hideChrome && <SchoolFooter />}
-    </div>
+    <SiteEnhancements>
+      <div className="school-site min-h-screen overflow-x-hidden">
+        <SchoolNavbar />
+        <main className="relative z-[1] min-h-[inherit] overflow-x-hidden">{children}</main>
+        <SchoolFooter />
+      </div>
+    </SiteEnhancements>
   );
 }
