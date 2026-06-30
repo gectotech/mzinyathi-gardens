@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import toast from 'react-hot-toast';
 import { Eye, Briefcase, FileText, ExternalLink, X, Download } from 'lucide-react';
 import ExportPanel from '@/components/admin/ExportPanel';
@@ -10,10 +11,11 @@ import InterviewStatusControl from '@/components/admin/InterviewStatusControl';
 import ApplicationBulkTools from '@/components/admin/ApplicationBulkTools';
 import { DetailSection, DetailRow, DetailMessage } from '@/components/admin/DetailSection';
 import DataTableShell from '@/components/ui/DataTableShell';
+import { buildJobApplicationDocList, type JobDocItem } from '@/lib/job-application-documents';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type DocItem = { label: string; url: string };
+type DocItem = JobDocItem;
 
 type Application = {
   id: string;
@@ -63,8 +65,9 @@ function getFileType(url: string): 'pdf' | 'word' | 'image' | 'other' {
   if (clean.endsWith('.pdf'))                             return 'pdf';
   if (clean.endsWith('.doc') || clean.endsWith('.docx')) return 'word';
   if (/\.(jpg|jpeg|png|gif|webp|bmp|svg)$/.test(clean)) return 'image';
-  // Fallback to path hints
+  // Cloudinary resource-type hints (before generic path fallbacks)
   if (clean.includes('/raw/upload/'))                    return 'pdf';
+  if (clean.includes('/video/upload/'))                  return 'other';
   if (clean.includes('/image/upload/'))                  return 'image';
   return 'other';
 }
@@ -81,21 +84,6 @@ function proxyUrl(url: string, download = false): string {
   if (!url) return url;
   const base = `/api/admin/media/view?url=${encodeURIComponent(url)}`;
   return download ? `${base}&download=1` : base;
-}
-
-/** Build the full document list from structured array + legacy resumeUrl */
-function buildDocList(app: Application): DocItem[] {
-  const docs: DocItem[] = [];
-  if (Array.isArray(app.documents)) {
-    for (const d of app.documents) {
-      if (d?.url) docs.push({ label: d.label || 'Document', url: d.url });
-    }
-  }
-  if (app.resumeUrl) {
-    const alreadyIn = docs.some((d) => d.url === app.resumeUrl);
-    if (!alreadyIn) docs.push({ label: 'CV / Resume', url: app.resumeUrl });
-  }
-  return docs;
 }
 
 function FileTypeBadge({ type }: { type: ReturnType<typeof getFileType> }) {
@@ -288,9 +276,11 @@ function DocumentGallery({ docs }: { docs: DocItem[] }) {
         })}
       </div>
 
-      {viewing && (
-        <DocumentViewer doc={viewing} onClose={() => setViewing(null)} />
-      )}
+      {viewing &&
+        createPortal(
+          <DocumentViewer doc={viewing} onClose={() => setViewing(null)} />,
+          document.body
+        )}
     </>
   );
 }
@@ -502,7 +492,7 @@ export default function AdminApplicationsPage() {
             )}
 
             <DetailSection title="Documents & uploads">
-              <DocumentGallery docs={buildDocList(selected)} />
+              <DocumentGallery docs={buildJobApplicationDocList(selected.resumeUrl, selected.documents)} />
             </DetailSection>
           </>
         )}

@@ -1,6 +1,7 @@
 import { readdir } from 'fs/promises';
 import path from 'path';
 import { getDb, schema } from '@/lib/db';
+import { buildJobApplicationDocList } from '@/lib/job-application-documents';
 import { parsePageSections, type GalleryImage } from '@/lib/page-sections';
 import type { MediaUsage, SiteMediaItem } from '@/lib/site-media-types';
 
@@ -228,17 +229,29 @@ export async function collectSiteMedia(): Promise<SiteMediaItem[]> {
   }
 
   const jobApps = await db
-    .select({ resumeUrl: schema.jobApplications.resumeUrl, fullName: schema.jobApplications.fullName })
+    .select({
+      resumeUrl: schema.jobApplications.resumeUrl,
+      documents: schema.jobApplications.documents,
+      fullName: schema.jobApplications.fullName,
+      trackingId: schema.jobApplications.trackingId,
+    })
     .from(schema.jobApplications)
-    .limit(200);
+    .limit(500);
   for (const app of jobApps) {
-    if (app.resumeUrl) {
-      addToMap(map, app.resumeUrl, {
-        name: `Resume: ${app.fullName}`,
+    const docList = buildJobApplicationDocList(app.resumeUrl, app.documents);
+    for (const doc of docList) {
+      addToMap(map, doc.url, {
+        name: `${doc.label}: ${app.fullName}`,
         source: 'application',
         sourceLabel: 'Job application',
         folder: 'applications',
-        usages: [{ type: 'job_app', label: `Applicant: ${app.fullName}`, href: `/admin/applications` }],
+        usages: [
+          {
+            type: 'job_app',
+            label: `${app.fullName} (${app.trackingId})`,
+            href: `/admin/applications`,
+          },
+        ],
       });
     }
   }

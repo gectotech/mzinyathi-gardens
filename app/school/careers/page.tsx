@@ -165,9 +165,29 @@ export default function CareersPage() {
       return;
     }
 
+    if (!uploadedFiles.nationalIdCopy) {
+      alert("Please upload a copy of your National ID.");
+      return;
+    }
+
+    if (!uploadedFiles.certificates) {
+      alert("Please upload your academic certificate(s).");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const resumeUrl = await uploadSchoolDocument(uploadedFiles.cv);
+      const [resumeUrl, nationalIdUrl, certificateUrl] = await Promise.all([
+        uploadSchoolDocument(uploadedFiles.cv),
+        uploadSchoolDocument(uploadedFiles.nationalIdCopy),
+        uploadSchoolDocument(uploadedFiles.certificates),
+      ]);
+
+      const documents: { label: string; url: string }[] = [
+        { label: 'CV / Resume', url: resumeUrl },
+        { label: 'National ID Document', url: nationalIdUrl },
+        { label: 'Academic Certificate / Degree', url: certificateUrl },
+      ];
 
       const res = await fetch("/api/careers", {
         method: "POST",
@@ -188,6 +208,7 @@ export default function CareersPage() {
           experience: `${formData.positionHeld} (${formData.yearsOfExperience} years). ${formData.whyHireYou}`,
           interestMessage: `Available immediately: ${formData.availableImmediately}. References: ${formData.haveReferences}. Year completed: ${formData.yearCompleted}.`,
           resumeUrl,
+          documents,
         }),
       });
 
